@@ -1,0 +1,19 @@
+[project]
+name = "whiteriverdata"
+version = "0.1.0"
+description = "Real-time water condition monitoring for White Hole on the White River near Bull Shoals Dam"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.13.3",
+    "matplotlib>=3.10.1",
+    "playwright>=1.51.0",
+    "requests>=2.32.3",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+]
