@@ -1,0 +1,17 @@
+*.pyc
+__pycache__/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Secrets (never commit)
+.white_hole_secrets
+
+# Virtual environment
+.venv/
+
+# Test-generated HTML and charts (keep production output files)
+white_hole_conditions_*.html
+vertical_flow_chart_*.png
