@@ -303,6 +303,7 @@ class TestGenerateHtmlSummary:
             timeline_data=timeline_data
         )
 
+        assert 'Water Timeline' in html
         assert 'AT WHITE HOLE NOW' in html
         assert 'Arrives' in html
         assert '8000' in html or '8,000' in html
@@ -329,3 +330,152 @@ class TestGenerateHtmlSummary:
 
         assert '@media' in html
         assert 'max-width: 600px' in html
+
+
+class TestWaterTimelineRendering:
+    """Tests for the merged water timeline in HTML output."""
+
+    def _make_html(self, base_time, normal_conditions_data, forecast_timeline=None, white_hole_cfs=1500, wading_condition="excellent wading", timeline_data=None):
+        latest_entry = normal_conditions_data[0]
+        relevant_entry = normal_conditions_data[0]
+        return generate_html_summary(
+            current_time=base_time,
+            white_hole_cfs=white_hole_cfs,
+            generators_equivalent=white_hole_cfs / 3300,
+            water_state="stable",
+            wading_condition=wading_condition,
+            boating_condition="low for boating",
+            recent_trend="steady",
+            forecast="stable conditions expected",
+            latest_entry=latest_entry,
+            relevant_entry=relevant_entry,
+            recent_data=normal_conditions_data,
+            timeline_data=timeline_data or [],
+            forecast_timeline=forecast_timeline,
+        )
+
+    def test_no_timeline_when_no_data(self, base_time, normal_conditions_data):
+        """Timeline should not appear when both sources are empty."""
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=None, timeline_data=[])
+        assert 'Water Timeline' not in html
+
+    def test_timeline_with_only_actual_data(self, base_time, normal_conditions_data):
+        """Timeline should show actual section even without forecast."""
+        timeline_data = [
+            {
+                'release_time': base_time - timedelta(hours=3),
+                'cfs': 6600, 'generators': '2 generators',
+                'arrival_time': base_time - timedelta(hours=0.5),
+                'status': 'current', 'minutes_until': None
+            }
+        ]
+        html = self._make_html(base_time, normal_conditions_data, timeline_data=timeline_data)
+        assert 'Water Timeline' in html
+        assert 'Actual (dam readings)' in html
+        assert 'Scheduled (SWPA forecast)' not in html
+
+    def test_timeline_with_only_forecast_data(self, base_time, normal_conditions_data):
+        """Timeline should show forecast section even without actual."""
+        forecast_timeline = [
+            {
+                'scheduled_time': base_time + timedelta(hours=2),
+                'hour': 14, 'mw': 40, 'cfs': 2951,
+                'generation_cfs': 2701, 'min_flow_cfs': 250,
+                'generators': '0-1 generators',
+                'arrival_time': base_time + timedelta(hours=5),
+                'wading': 'still wadable', 'boating': 'ideal boating',
+            }
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
+        assert 'Water Timeline' in html
+        assert 'Scheduled (SWPA forecast)' in html
+        assert 'Actual (dam readings)' not in html
+
+    def test_merged_timeline_shows_both(self, base_time, normal_conditions_data):
+        """Timeline should show both forecast and actual sections."""
+        timeline_data = [
+            {
+                'release_time': base_time - timedelta(hours=3),
+                'cfs': 728, 'generators': '0-1 generators',
+                'arrival_time': base_time - timedelta(hours=0.5),
+                'status': 'current', 'minutes_until': None
+            }
+        ]
+        forecast_timeline = [
+            {
+                'scheduled_time': base_time + timedelta(hours=2),
+                'hour': 14, 'mw': 40, 'cfs': 2951,
+                'generation_cfs': 2701, 'min_flow_cfs': 250,
+                'generators': '0-1 generators',
+                'arrival_time': base_time + timedelta(hours=5),
+                'wading': 'still wadable', 'boating': 'ideal boating',
+            }
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline, timeline_data=timeline_data)
+        assert 'Scheduled (SWPA forecast)' in html
+        assert 'Actual (dam readings)' in html
+        assert '2,951 CFS' in html
+        assert '2701 generation + 250 min flow' in html
+
+    def test_forecast_limited_to_4_hours(self, base_time, normal_conditions_data):
+        """Forecast section should show at most 4 hours."""
+        forecast_timeline = [
+            {
+                'scheduled_time': base_time + timedelta(hours=h),
+                'hour': h, 'mw': 7, 'cfs': 723,
+                'generation_cfs': 473, 'min_flow_cfs': 250,
+                'generators': '0-1 generators',
+                'arrival_time': base_time + timedelta(hours=h + 3.7),
+                'wading': 'excellent wading', 'boating': 'low for boating',
+            }
+            for h in range(1, 9)  # 8 hours of forecast
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
+        # Count forecast rows (each has the light purple background)
+        assert html.count('faf5ff') == 4
+
+    def test_forecast_wading_condition_shown(self, base_time, normal_conditions_data):
+        """Forecast rows should show wading condition."""
+        forecast_timeline = [
+            {
+                'scheduled_time': base_time + timedelta(hours=2),
+                'hour': 14, 'mw': 200, 'cfs': 13504,
+                'generation_cfs': 13254, 'min_flow_cfs': 250,
+                'generators': '4-5 generators',
+                'arrival_time': base_time + timedelta(hours=4),
+                'wading': 'no wading', 'boating': 'ideal boating',
+            }
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
+        assert 'No Wading' in html
+
+    def test_banner_scheduled_alert_high_water(self, base_time, normal_conditions_data):
+        """Banner should show scheduled alert when high water is coming."""
+        forecast_timeline = [
+            {
+                'scheduled_time': base_time + timedelta(hours=2),
+                'hour': 14, 'mw': 200, 'cfs': 13504,
+                'generation_cfs': 13254, 'min_flow_cfs': 250,
+                'generators': '4-5 generators',
+                'arrival_time': base_time + timedelta(hours=4),
+                'wading': 'no wading', 'boating': 'ideal boating',
+            }
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline, white_hole_cfs=1500, wading_condition="excellent wading")
+        assert 'HIGH WATER SCHEDULED' in html
+
+    def test_banner_no_alert_when_water_already_high(self, base_time, normal_conditions_data):
+        """Banner should not show scheduled alert if water is already high."""
+        forecast_timeline = [
+            {
+                'scheduled_time': base_time + timedelta(hours=2),
+                'hour': 14, 'mw': 200, 'cfs': 13504,
+                'generation_cfs': 13254, 'min_flow_cfs': 250,
+                'generators': '4-5 generators',
+                'arrival_time': base_time + timedelta(hours=4),
+                'wading': 'no wading', 'boating': 'ideal boating',
+            }
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline, white_hole_cfs=10000, wading_condition="no wading")
+        assert 'HIGH WATER SCHEDULED' not in html
+        assert 'HIGHER WATER SCHEDULED' not in html

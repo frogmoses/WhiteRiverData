@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from data_fetcher import get_bull_shoals_data
+from forecast_fetcher import get_swpa_forecast
 from water_calculator import (
     calculate_travel_time, determine_water_state, get_fishing_condition,
-    get_recent_trend, forecast_conditions, calculate_timeline
+    get_recent_trend, forecast_conditions, calculate_timeline,
+    calculate_forecast_timeline
 )
 from formatters import (
     generate_html_summary, generate_error_html, save_html_summary,
@@ -108,6 +110,15 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     # Calculate timeline data
     timeline_data = calculate_timeline(data, current_time)
 
+    # Fetch SWPA forecast schedule (optional — failures don't break the page)
+    forecast_timeline = None
+    try:
+        swpa_data = get_swpa_forecast(current_time)
+        if swpa_data:
+            forecast_timeline = calculate_forecast_timeline(swpa_data, current_time)
+    except Exception as e:
+        print(f"Warning: Could not fetch SWPA forecast: {e}")
+
     # Format the summary based on requested output format
     if output_format == "html":
         html_content = generate_html_summary(
@@ -122,7 +133,8 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             latest_entry=latest_entry,
             relevant_entry=relevant_entry,
             recent_data=recent_data,
-            timeline_data=timeline_data
+            timeline_data=timeline_data,
+            forecast_timeline=forecast_timeline
         )
 
         chart_filename = f"vertical_flow_chart_{dataset_name}.png" if dataset_name else "vertical_flow_chart.png"

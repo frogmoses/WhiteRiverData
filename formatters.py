@@ -1,5 +1,5 @@
 from datetime import datetime
-from water_calculator import calculate_travel_time, format_generators, calculate_timeline
+from water_calculator import calculate_travel_time, format_generators, calculate_timeline, get_fishing_condition
 
 
 def include_chart_in_html(html_content, chart_path):
@@ -34,7 +34,7 @@ def generate_table_rows(data):
 
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
-                           relevant_entry, recent_data=None, timeline_data=None):
+                           relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -83,54 +83,130 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         forecast_message = "STABLE CONDITIONS expected"
         forecast_icon = "➡️"
 
+    # Check SWPA scheduled generation for significant upcoming changes
+    scheduled_alert = ""
+    if forecast_timeline:
+        for item in forecast_timeline:
+            if item['cfs'] >= 5000 and white_hole_cfs < 5000:
+                scheduled_alert = f"HIGH WATER SCHEDULED — ~{item['arrival_time'].strftime('%I:%M %p').lstrip('0')}"
+                break
+            elif item['cfs'] >= 2000 and white_hole_cfs < 2000:
+                scheduled_alert = f"HIGHER WATER SCHEDULED — ~{item['arrival_time'].strftime('%I:%M %p').lstrip('0')}"
+                break
+
     # Format generators as integer range
     gen_display = format_generators(white_hole_cfs)
 
-    # Build timeline HTML
-    timeline_html = ""
-    if timeline_data:
-        timeline_rows = []
-        # Reverse to show newest first
-        for item in reversed(timeline_data):
-            time_str = item['release_time'].strftime('%H:%M')
-            cfs_formatted = f"{item['cfs']:,}"
+    # Build unified water timeline (scheduled forecast + actual dam readings)
+    water_timeline_html = ""
+    has_actual = timeline_data and len(timeline_data) > 0
+    has_forecast = forecast_timeline and len(forecast_timeline) > 0
 
-            if item['status'] == 'current':
-                status_html = '<span style="color: #319795; font-weight: bold;">← AT WHITE HOLE NOW</span>'
-                row_style = "background-color: #e6fffa;"
-            elif item['status'] == 'incoming':
-                arrival_str = item['arrival_time'].strftime('%H:%M')
-                mins = item['minutes_until']
-                status_html = f'<span style="color: #2b6cb0;">→ Arrives ~{arrival_str} (in {mins} min)</span>'
-                row_style = "background-color: #ebf8ff;"
-            else:
-                status_html = '<span style="color: #718096;">passed</span>'
-                row_style = ""
+    if has_actual or has_forecast:
+        # Build forecast rows (newest first, limit to 4)
+        forecast_rows_html = ""
+        if has_forecast:
+            forecast_rows = []
+            display_forecast = list(reversed(forecast_timeline[:4]))
+            for item in display_forecast:
+                hour_str = item['scheduled_time'].strftime('%I %p').lstrip('0')
+                arrival_str = item['arrival_time'].strftime('%I:%M %p').lstrip('0')
+                cfs_formatted = f"{item['cfs']:,}"
+                gen_cfs = item.get('generation_cfs', item['cfs'])
+                min_flow = item.get('min_flow_cfs', 0)
 
-            timeline_rows.append(f'''
-                <tr style="{row_style}">
-                    <td style="padding: 10px; font-weight: bold;">{time_str}</td>
-                    <td style="padding: 10px;">{cfs_formatted} CFS<br><small style="color: #666;">({item['generators']})</small></td>
-                    <td style="padding: 10px;">{status_html}</td>
-                </tr>
-            ''')
+                # Determine wading pill style
+                if item['wading'] == "no wading":
+                    wading_bg = "#fee2e2"
+                    wading_color = "#991b1b"
+                elif item['wading'] == "excellent wading":
+                    wading_bg = "#d1fae5"
+                    wading_color = "#065f46"
+                else:
+                    wading_bg = "#fef3c7"
+                    wading_color = "#92400e"
 
-        timeline_html = f'''
+                # Highlight row if conditions differ significantly from current
+                row_border = ""
+                if item['wading'] == "no wading" and wading_condition != "no wading":
+                    row_border = "border-left: 4px solid #e53e3e;"
+                elif item['wading'] == "excellent wading" and wading_condition != "excellent wading":
+                    row_border = "border-left: 4px solid #38a169;"
+
+                forecast_rows.append(f'''
+                    <tr style="background-color: #faf5ff; {row_border}">
+                        <td style="padding: 10px; font-weight: bold;">{hour_str}</td>
+                        <td style="padding: 10px;">{cfs_formatted} CFS<br><small style="color: #666;">({item['generators']}: {gen_cfs} generation + {min_flow} min flow)</small></td>
+                        <td style="padding: 10px;">~{arrival_str}
+                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: {wading_bg}; color: {wading_color};">{item['wading'].title()}</span>
+                        </td>
+                    </tr>
+                ''')
+
+            forecast_rows_html = f'''
+                <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #6b46c1; text-transform: uppercase; letter-spacing: 0.05em; background-color: #f3e8ff;">Scheduled (SWPA forecast)</td></tr>
+                {''.join(forecast_rows)}
+            '''
+
+        # Build actual data rows (newest first)
+        actual_rows_html = ""
+        if has_actual:
+            actual_rows = []
+            for item in reversed(timeline_data):
+                cfs_formatted = f"{item['cfs']:,}"
+
+                if item['status'] == 'current':
+                    status_html = '<span style="color: #319795; font-weight: bold;">← AT WHITE HOLE NOW</span>'
+                    row_style = "background-color: #e6fffa;"
+                elif item['status'] == 'incoming':
+                    arrival_str = item['arrival_time'].strftime('%I:%M %p').lstrip('0')
+                    mins = item['minutes_until']
+                    status_html = f'<span style="color: #2b6cb0;">→ Arrives ~{arrival_str} (in {mins} min)</span>'
+                    row_style = "background-color: #ebf8ff;"
+                else:
+                    status_html = '<span style="color: #718096;">passed</span>'
+                    row_style = ""
+
+                time_str = item['release_time'].strftime('%I:%M %p').lstrip('0')
+                actual_rows.append(f'''
+                    <tr style="{row_style}">
+                        <td style="padding: 10px; font-weight: bold;">{time_str}</td>
+                        <td style="padding: 10px;">{cfs_formatted} CFS<br><small style="color: #666;">({item['generators']})</small></td>
+                        <td style="padding: 10px;">{status_html}</td>
+                    </tr>
+                ''')
+
+            actual_rows_html = f'''
+                <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #2b6cb0; text-transform: uppercase; letter-spacing: 0.05em; background-color: #ebf8ff;">Actual (dam readings)</td></tr>
+                {''.join(actual_rows)}
+            '''
+
+        # Footer note if forecast data present
+        forecast_note = ""
+        if has_forecast:
+            forecast_note = '''
+            <p style="color: #999; font-size: 0.8em; margin-top: 10px;">Scheduled CFS are estimates based on generation plus ~250 CFS minimum base flow. Actual release may vary.</p>
+            <p style="color: #999; font-size: 0.8em; margin-top: 5px;">Forecast source: <a href="https://www.energy.gov/swpa/generation-schedules" target="_blank" style="color: #999;">SWPA Generation Schedules</a></p>
+            '''
+
+        water_timeline_html = f'''
         <div class="timeline-box">
-            <h3>What's Coming</h3>
+            <h3>Water Timeline</h3>
             <p style="color: #666; margin-bottom: 15px;">Water released at the dam takes 2-4 hours to reach White Hole</p>
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 2px solid #ddd;">
-                        <th style="padding: 10px; text-align: left;">Released</th>
+                        <th style="padding: 10px; text-align: left;">Time</th>
                         <th style="padding: 10px; text-align: left;">Flow</th>
-                        <th style="padding: 10px; text-align: left;">Status</th>
+                        <th style="padding: 10px; text-align: left;">At White Hole</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {''.join(timeline_rows)}
+                    {forecast_rows_html}
+                    {actual_rows_html}
                 </tbody>
             </table>
+            {forecast_note}
         </div>
         '''
 
@@ -317,6 +393,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     <div class="headline-banner">
         <div class="main-status">{wading_icon} {wading_message}</div>
         <div class="forecast-status">{forecast_icon} {forecast_message}</div>
+        {'<div class="forecast-status" style="margin-top: 5px; opacity: 0.9;">📅 ' + scheduled_alert + '</div>' if scheduled_alert else ''}
     </div>
 
     <!-- CURRENT CONDITIONS -->
@@ -333,8 +410,8 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         </a>
     </div>
 
-    <!-- TIMELINE -->
-    {timeline_html}
+    <!-- WATER TIMELINE -->
+    {water_timeline_html}
 
     <!-- CHART PLACEHOLDER -->
     <div class="chart-section">

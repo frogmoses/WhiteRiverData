@@ -8,7 +8,8 @@ from water_calculator import (
     get_recent_trend,
     forecast_conditions,
     format_generators,
-    calculate_timeline
+    calculate_timeline,
+    calculate_forecast_timeline
 )
 
 
@@ -320,3 +321,63 @@ class TestCalculateTimeline:
         """Test that timeline doesn't return too many entries."""
         timeline = calculate_timeline(normal_conditions_data, base_time)
         assert len(timeline) <= 4  # Should return at most 4 entries
+
+
+class TestCalculateForecastTimeline:
+    """Tests for calculate_forecast_timeline function."""
+
+    def test_empty_input(self, base_time):
+        result = calculate_forecast_timeline([], base_time)
+        assert result == []
+
+    def test_none_input(self, base_time):
+        result = calculate_forecast_timeline(None, base_time)
+        assert result == []
+
+    def test_basic_structure(self, base_time):
+        forecast_data = [
+            {'hour': 14, 'mw': 40, 'cfs': 2703, 'start_time': base_time + timedelta(hours=2), 'end_time': base_time + timedelta(hours=3)},
+        ]
+        result = calculate_forecast_timeline(forecast_data, base_time)
+        assert len(result) == 1
+        entry = result[0]
+        assert 'scheduled_time' in entry
+        assert 'mw' in entry
+        assert 'cfs' in entry
+        assert 'generators' in entry
+        assert 'arrival_time' in entry
+        assert 'wading' in entry
+        assert 'boating' in entry
+
+    def test_arrival_time_after_scheduled_time(self, base_time):
+        """Arrival at White Hole should always be after the scheduled release."""
+        forecast_data = [
+            {'hour': 14, 'mw': 40, 'cfs': 2703, 'start_time': base_time + timedelta(hours=2), 'end_time': base_time + timedelta(hours=3)},
+        ]
+        result = calculate_forecast_timeline(forecast_data, base_time)
+        assert result[0]['arrival_time'] > result[0]['scheduled_time']
+
+    def test_conditions_match_cfs(self, base_time):
+        """Wading/boating conditions should match the CFS thresholds."""
+        # Low CFS = excellent wading
+        forecast_low = [
+            {'hour': 1, 'mw': 7, 'cfs': 473, 'start_time': base_time + timedelta(hours=1), 'end_time': base_time + timedelta(hours=2)},
+        ]
+        result = calculate_forecast_timeline(forecast_low, base_time)
+        assert result[0]['wading'] == 'excellent wading'
+
+        # High CFS = no wading
+        forecast_high = [
+            {'hour': 20, 'mw': 200, 'cfs': 13504, 'start_time': base_time + timedelta(hours=8), 'end_time': base_time + timedelta(hours=9)},
+        ]
+        result = calculate_forecast_timeline(forecast_high, base_time)
+        assert result[0]['wading'] == 'no wading'
+
+    def test_multiple_hours(self, base_time):
+        """Test with multiple forecast hours."""
+        forecast_data = [
+            {'hour': h, 'mw': 7, 'cfs': 473, 'start_time': base_time + timedelta(hours=h), 'end_time': base_time + timedelta(hours=h+1)}
+            for h in range(1, 7)
+        ]
+        result = calculate_forecast_timeline(forecast_data, base_time)
+        assert len(result) == 6
