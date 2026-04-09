@@ -260,3 +260,50 @@ def calculate_timeline(data, current_time):
             filtered.append(item)
 
     return filtered[-4:]  # Return at most 4 entries for the timeline
+
+
+def calculate_forecast_timeline(forecast_data, current_time=None):
+    """
+    Calculate forecast timeline from SWPA scheduled generation data.
+
+    Takes hourly forecast entries from forecast_fetcher and applies travel time
+    to estimate when each scheduled release will arrive at White Hole.
+
+    Returns a list of dicts:
+        - scheduled_time: when the dam is scheduled to generate (start of hour)
+        - hour: hour number (1-24)
+        - mw: megawatts scheduled
+        - cfs: estimated CFS
+        - generators: formatted generator string
+        - arrival_time: estimated arrival at White Hole
+        - wading: wading condition string
+        - boating: boating condition string
+    """
+    if current_time is None:
+        current_time = datetime.now()
+
+    if not forecast_data:
+        return []
+
+    timeline = []
+    for entry in forecast_data:
+        cfs = entry['cfs']
+        travel_hours = calculate_travel_time(cfs) if cfs > 0 else calculate_travel_time(0)
+        arrival_time = entry['start_time'] + timedelta(hours=travel_hours)
+
+        wading, boating = get_fishing_condition(cfs)
+
+        timeline.append({
+            'scheduled_time': entry['start_time'],
+            'hour': entry['hour'],
+            'mw': entry['mw'],
+            'cfs': cfs,
+            'generation_cfs': entry.get('generation_cfs', cfs),
+            'min_flow_cfs': entry.get('min_flow_cfs', 0),
+            'generators': format_generators(cfs),
+            'arrival_time': arrival_time,
+            'wading': wading,
+            'boating': boating,
+        })
+
+    return timeline
