@@ -12,8 +12,9 @@ else
     PYTHON="python3"
 fi
 
-# Pull any code changes before running
+# Stash any uncommitted changes (from interrupted/failed runs) and pull
 echo "Pulling latest changes..."
+git stash quiet || true
 git pull --ff-only
 
 # Run the Python program
