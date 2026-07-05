@@ -14,7 +14,7 @@ fi
 
 # Stash any uncommitted changes (from interrupted/failed runs) and pull
 echo "Pulling latest changes..."
-git stash quiet || true
+git stash push -u -q || true
 git pull --ff-only
 
 # Run the Python program
