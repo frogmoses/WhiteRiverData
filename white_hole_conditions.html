@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>White Hole Conditions - 2026-08-18 10:00</title>
+    <title>White Hole Conditions - 2026-08-18 11:00</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -23,7 +23,7 @@
             margin-bottom: 20px;
         }
         .headline-banner {
-            background-color: #1a365d;
+            background-color: #2b6cb0;
             color: white;
             border-radius: 12px;
             padding: 25px;
@@ -73,12 +73,12 @@
             font-weight: 500;
         }
         .pill.wading {
-            background-color: #fee2e2;
-            color: #991b1b;
+            background-color: #fef3c7;
+            color: #92400e;
         }
         .pill.boating {
-            background-color: #fee2e2;
-            color: #991b1b;
+            background-color: #dbeafe;
+            color: #1e40af;
         }
         .timeline-box {
             background-color: white;
@@ -148,23 +148,23 @@
 </head>
 <body>
     <h1>White Hole Current Conditions</h1>
-    <p class="subtitle">Tuesday, August 18, 2026 at 10:00 AM</p>
+    <p class="subtitle">Tuesday, August 18, 2026 at 11:00 AM</p>
 
     <!-- HEADLINE BANNER -->
     <div class="headline-banner">
-        <div class="main-status">🚫 NO WADING — Water too high for safe wading</div>
-        <div class="forecast-status">➡️ STABLE CONDITIONS expected</div>
-        
+        <div class="main-status">⚠️ MARGINAL WADING — Use caution</div>
+        <div class="forecast-status">⏱️ RISING WATER arriving in ~43 minutes</div>
+        <div class="forecast-status" style="margin-top: 5px; opacity: 0.9;">📅 HIGH WATER SCHEDULED — ~3:31 PM</div>
     </div>
 
     <!-- CURRENT CONDITIONS -->
     <div class="current-conditions">
         <h3>Current Conditions at White Hole</h3>
-        <div class="flow-display">20,348 CFS</div>
-        <div class="generator-display">Equivalent to 6-7 generators</div>
+        <div class="flow-display">2,515 CFS</div>
+        <div class="generator-display">Equivalent to 0-1 generators</div>
         <div class="condition-pills">
-            <span class="pill wading">No Wading</span>
-            <span class="pill boating">High Water</span>
+            <span class="pill wading">Still Wadable</span>
+            <span class="pill boating">Ideal Boating</span>
         </div>
         <a href="https://www.youtube.com/channel/UCAXhb9nFnsfu367AthDrgIA/live" target="_blank" class="webcam-link" style="margin-top: 15px;">
             📹 View Live Webcam
@@ -188,7 +188,15 @@
                     
                 <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #6b46c1; text-transform: uppercase; letter-spacing: 0.05em; background-color: #f3e8ff;">Scheduled (SWPA forecast)</td></tr>
                 
-                    <tr style="background-color: #faf5ff; ">
+                    <tr style="background-color: #faf5ff; border-left: 4px solid #e53e3e;">
+                        <td style="padding: 10px; font-weight: bold;">2 PM</td>
+                        <td style="padding: 10px;">18,480 CFS<br><small style="color: #666;">(5-6 generators: 18230 generation + 250 min flow)</small></td>
+                        <td style="padding: 10px;">~4:08 PM
+                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: #fee2e2; color: #991b1b;">No Wading</span>
+                        </td>
+                    </tr>
+                
+                    <tr style="background-color: #faf5ff; border-left: 4px solid #e53e3e;">
                         <td style="padding: 10px; font-weight: bold;">1 PM</td>
                         <td style="padding: 10px;">11,728 CFS<br><small style="color: #666;">(3-4 generators: 11478 generation + 250 min flow)</small></td>
                         <td style="padding: 10px;">~3:31 PM
@@ -212,27 +220,31 @@
                         </td>
                     </tr>
                 
-                    <tr style="background-color: #faf5ff; ">
-                        <td style="padding: 10px; font-weight: bold;">10 AM</td>
-                        <td style="padding: 10px;">4,301 CFS<br><small style="color: #666;">(1-2 generators: 4051 generation + 250 min flow)</small></td>
-                        <td style="padding: 10px;">~1:27 PM
-                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: #fef3c7; color: #92400e;">Still Wadable</span>
-                        </td>
-                    </tr>
-                
             
                     
                 <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #2b6cb0; text-transform: uppercase; letter-spacing: 0.05em; background-color: #ebf8ff;">Actual (dam readings)</td></tr>
                 
+                    <tr style="background-color: #ebf8ff;">
+                        <td style="padding: 10px; font-weight: bold;">9:00 AM</td>
+                        <td style="padding: 10px;">4,826 CFS<br><small style="color: #666;">(1-2 generators)</small></td>
+                        <td style="padding: 10px;"><span style="color: #2b6cb0;">→ Arrives ~12:19 PM (in 79 min)</span></td>
+                    </tr>
+                
+                    <tr style="background-color: #ebf8ff;">
+                        <td style="padding: 10px; font-weight: bold;">8:00 AM</td>
+                        <td style="padding: 10px;">3,261 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
+                        <td style="padding: 10px;"><span style="color: #2b6cb0;">→ Arrives ~11:44 AM (in 43 min)</span></td>
+                    </tr>
+                
                     <tr style="background-color: #e6fffa;">
-                        <td style="padding: 10px; font-weight: bold;">6:00 PM</td>
-                        <td style="padding: 10px;">20,348 CFS<br><small style="color: #666;">(6-7 generators)</small></td>
+                        <td style="padding: 10px; font-weight: bold;">7:00 AM</td>
+                        <td style="padding: 10px;">2,515 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
                         <td style="padding: 10px;"><span style="color: #319795; font-weight: bold;">← AT WHITE HOLE NOW</span></td>
                     </tr>
                 
                     <tr style="">
-                        <td style="padding: 10px; font-weight: bold;">1:00 PM</td>
-                        <td style="padding: 10px;">11,442 CFS<br><small style="color: #666;">(3-4 generators)</small></td>
+                        <td style="padding: 10px; font-weight: bold;">4:00 AM</td>
+                        <td style="padding: 10px;">736 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
                         <td style="padding: 10px;"><span style="color: #718096;">passed</span></td>
                     </tr>
                 
@@ -262,17 +274,101 @@
         </summary>
         <div style="padding: 15px;">
             <ul>
-                <li>Latest dam reading: 20,348 CFS at 2026-08-17 18:00</li>
-                <li>Travel time to White Hole: 2.0 hours at current flow</li>
-                <li>White Hole conditions based on dam reading from: 2026-08-17 18:00</li>
+                <li>Latest dam reading: 4,826 CFS at 2026-08-18 09:00</li>
+                <li>Travel time to White Hole: 3.7 hours at current flow</li>
+                <li>White Hole conditions based on dam reading from: 2026-08-18 07:00</li>
             </ul>
         </div>
     </details>
 
     
+        <details class="details-section">
+            <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #f7fafc; border-radius: 8px;">
+                📊 View Last 12 Hours of Dam Readings
+            </summary>
+            <div style="padding: 15px;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2; border-bottom: 1px solid #ddd;">
+                            <th style="padding: 8px; text-align: left;">Date/Time</th>
+                            <th style="padding: 8px; text-align: right;">Flow (CFS)</th>
+                            <th style="padding: 8px; text-align: right;">Generators</th>
+                            <th style="padding: 8px; text-align: right;">Travel Time (hrs)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 09:00</td>
+                    <td style="padding: 8px; text-align: right;">4826</td>
+                    <td style="padding: 8px; text-align: right;">1.5</td>
+                    <td style="padding: 8px; text-align: right;">3.3</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 08:00</td>
+                    <td style="padding: 8px; text-align: right;">3261</td>
+                    <td style="padding: 8px; text-align: right;">1.0</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 07:00</td>
+                    <td style="padding: 8px; text-align: right;">2515</td>
+                    <td style="padding: 8px; text-align: right;">0.8</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 06:00</td>
+                    <td style="padding: 8px; text-align: right;">2293</td>
+                    <td style="padding: 8px; text-align: right;">0.7</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 05:00</td>
+                    <td style="padding: 8px; text-align: right;">747</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 04:00</td>
+                    <td style="padding: 8px; text-align: right;">736</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 03:00</td>
+                    <td style="padding: 8px; text-align: right;">734</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 02:00</td>
+                    <td style="padding: 8px; text-align: right;">740</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-18 01:00</td>
+                    <td style="padding: 8px; text-align: right;">740</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </details>
+        
 
     <div class="timestamp">
-        Data retrieved and processed on 2026-08-18 10:00:11
+        Data retrieved and processed on 2026-08-18 11:00:12
     </div>
 </body>
 </html>
