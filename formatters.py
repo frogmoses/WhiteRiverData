@@ -70,10 +70,10 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         incoming_minutes = None
         if timeline_data:
             for item in timeline_data:
-                if item['status'] == 'incoming' and item['minutes_until']:
+                if item['status'] == 'incoming' and item['minutes_until'] is not None:
                     incoming_minutes = item['minutes_until']
                     break
-        if incoming_minutes:
+        if incoming_minutes is not None:
             forecast_message = f"RISING WATER arriving in ~{incoming_minutes} minutes"
         else:
             forecast_message = "RISING WATER expected soon"
@@ -85,16 +85,19 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         forecast_message = "STABLE CONDITIONS expected"
         forecast_icon = "➡️"
 
-    # Check SWPA scheduled generation for significant upcoming changes
+    # Check SWPA scheduled generation for significant upcoming changes.
+    # Scan the whole schedule so an early moderate hour can't mask a later
+    # high-water hour; alert on the most severe level scheduled.
     scheduled_alert = ""
     if forecast_timeline:
-        for item in forecast_timeline:
-            if item['cfs'] >= 5000 and white_hole_cfs < 5000:
-                scheduled_alert = f"HIGH WATER SCHEDULED — ~{item['arrival_time'].strftime('%I:%M %p').lstrip('0')}"
-                break
-            elif item['cfs'] >= 2000 and white_hole_cfs < 2000:
-                scheduled_alert = f"HIGHER WATER SCHEDULED — ~{item['arrival_time'].strftime('%I:%M %p').lstrip('0')}"
-                break
+        high_hour = next((item for item in forecast_timeline
+                          if item['cfs'] >= 5000 and white_hole_cfs < 5000), None)
+        higher_hour = next((item for item in forecast_timeline
+                            if item['cfs'] >= 2000 and white_hole_cfs < 2000), None)
+        if high_hour is not None:
+            scheduled_alert = f"HIGH WATER SCHEDULED — ~{high_hour['arrival_time'].strftime('%I:%M %p').lstrip('0')}"
+        elif higher_hour is not None:
+            scheduled_alert = f"HIGHER WATER SCHEDULED — ~{higher_hour['arrival_time'].strftime('%I:%M %p').lstrip('0')}"
 
     # Format generators as integer range
     gen_display = format_generators(white_hole_cfs)
@@ -202,7 +205,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         water_timeline_html = f'''
         <div class="timeline-box">
             <h3>Water Timeline</h3>
-            <p style="color: #666; margin-bottom: 15px;">Water released at the dam takes 2-4 hours to reach White Hole</p>
+            <p style="color: #666; margin-bottom: 15px;">Water released at the dam takes about 1.5&ndash;4 hours to reach White Hole (faster at higher flows)</p>
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 2px solid #ddd;">
@@ -449,7 +452,8 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     {details_html}
 
     <div class="timestamp">
-        Data retrieved and processed on {current_time.strftime('%Y-%m-%d %H:%M:%S')}
+        Data retrieved and processed on {current_time.strftime('%Y-%m-%d %H:%M:%S')} (Central time)<br>
+        Travel times are observational estimates (per <a href="https://www.hisplaceresort.net/white-river-info" target="_blank" style="color: #718096;">His Place Resort</a>) &mdash; always judge wading safety on-site.
     </div>
 </body>
 </html>'''

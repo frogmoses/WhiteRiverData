@@ -58,7 +58,7 @@ def calculate_travel_time(cfs):
 
     return distance / speed
 
-def determine_water_state(data, current_time, white_hole_cfs):
+def determine_water_state(data, current_time):
     """Determine if water is rising, falling, or stable at White Hole."""
     # Get the most recent entries that would affect White Hole
     relevant_entries = []
@@ -165,6 +165,7 @@ def forecast_conditions(data, current_time):
     if latest_impact_time > current_time:
         # Find the entry that's currently affecting White Hole
         # recent_entries is already sorted newest to oldest, so iterate without reversing
+        current_cfs = None
         for entry in recent_entries:
             entry_flow = get_flow(entry)
             if entry_flow is not None:
@@ -173,17 +174,22 @@ def forecast_conditions(data, current_time):
 
                 if entry_impact_time <= current_time:
                     current_cfs = entry_flow
-
-                    # Compare to forecast what's coming
-                    if latest_cfs > current_cfs * 1.2 and latest_cfs - current_cfs > 500:
-                        return "rising water expected soon"
-                    elif current_cfs > latest_cfs * 1.2 and current_cfs - latest_cfs > 500:
-                        return "falling water expected soon"
-                    else:
-                        return "stable conditions expected"
-
                     break
-    
+
+        if current_cfs is None:
+            # Nothing has arrived yet (all readings very recent) — compare
+            # against the oldest release on the books instead
+            current_cfs = next((get_flow(entry) for entry in reversed(recent_entries)
+                                if get_flow(entry) is not None), None)
+
+        if current_cfs is not None:
+            if latest_cfs > current_cfs * 1.2 and latest_cfs - current_cfs > 500:
+                return "rising water expected soon"
+            elif current_cfs > latest_cfs * 1.2 and current_cfs - latest_cfs > 500:
+                return "falling water expected soon"
+            else:
+                return "stable conditions expected"
+
     return "conditions should remain similar"
 
 
@@ -300,7 +306,7 @@ def calculate_forecast_timeline(forecast_data, current_time=None):
     timeline = []
     for entry in forecast_data:
         cfs = entry['cfs']
-        travel_hours = calculate_travel_time(cfs) if cfs > 0 else calculate_travel_time(0)
+        travel_hours = calculate_travel_time(cfs)
         arrival_time = entry['start_time'] + timedelta(hours=travel_hours)
 
         wading, boating = get_fishing_condition(cfs)

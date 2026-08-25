@@ -82,7 +82,7 @@ forecast_fetcher.py: get_swpa_forecast(current_time) → scrapes energy.gov/swpa
 water_calculator.py:
     get_flow(entry) → total_release (turbine + spillway), falls back to turbine_release
     calculate_travel_time(cfs) → hours (float)
-    determine_water_state(data, current_time, cfs) → "rising"/"falling"/"stable"
+    determine_water_state(data, current_time) → "rising"/"falling"/"stable"
     get_fishing_condition(cfs) → (wading_str, boating_str)
     get_recent_trend(data, current_time) → first-vs-last trend description
     forecast_conditions(data, current_time) → forecast description string
@@ -147,7 +147,8 @@ uv run pytest -m integration                   # Only integration tests
 - Tests run from a temporary directory (autouse `run_in_tmp_path` fixture in `conftest.py`), so generated charts/HTML stay out of the repo root. Running `main.py` or `generate_test_html.py` directly, however, does write into the repo root — restore `vertical_flow_chart.png` and `white_hole_conditions.html` with `git checkout` if the run wasn't meant to be committed.
 - Never mix naive and aware datetimes in one dataset/call (comparison raises `TypeError`).
 - The remote `master` advances hourly (Pi output commits) — use `git pull --rebase` before pushing.
-- `data_fetcher.get_sample_data()` returns an error sentinel (single entry with `error: True`), not usable sample data.
+- `data_fetcher.get_error_data()` returns an error sentinel (single entry with `error: True`) used when scraping fails.
+- The chart x-axis scales to the data (floor 5,000 CFS), so bar lengths are not comparable across different days' charts — the CFS labels carry the magnitude.
 
 ## Deployment
 
