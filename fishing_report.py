@@ -32,21 +32,23 @@ from datetime import datetime, timedelta
 from water_calculator import (
     calculate_travel_time, get_flow, format_generators, get_fishing_condition
 )
+from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
 
-# Reach landmarks, miles below the dam. Gaston's and White Hole match the
-# repo's chart model (chart_generator.py); Cranor's Island extends it downstream.
+# Reach landmarks, miles below the dam. Gaston's and White Hole come from the
+# GPS-derived chart model (landmarks.py); Cranor's Island extends it downstream
+# (no intermediate GPS points below White Hole, so its mile stays estimated).
 REACH_SPOTS = [
-    ("Gaston's", 4.0),
-    ("White Hole", 7.0),
+    ("Gaston's", GASTONS_MILE),
+    ("White Hole", WHITE_HOLE_MILE),
     ("Cranor's Island", 9.5),
 ]
 
-WHITE_HOLE_MILE = 7.0  # the travel model's calibrated distance
-
 # Pinned coordinates (lat, lon) for reach landmarks, rendered as map links.
-# Cranor's Island pinned by Brian (the island below Cranor's White River
-# Lodge — his downstream turnaround).
+# Gaston's and White Hole from landmarks.py; Cranor's Island pinned by Brian
+# (the island below Cranor's White River Lodge — his downstream turnaround).
 SPOT_COORDS = {
+    "Gaston's": dict(LANDMARK_COORDS)["Gaston's"],
+    "White Hole": dict(LANDMARK_COORDS)["The White Hole"],
     "Cranor's Island": (36.333492497534266, -92.56191314472997),
 }
 
@@ -121,7 +123,8 @@ BAND_CONTENT = {
         "spin": {
             "rig": "White River rig both programs: dropper-loop Y, 6–10 in sinker leg with a "
                    "1/8–3/16 oz bell (#10–#9), size 10 barrel swivel up top, hook leg long "
-                   "at this flow (30–48 in). What changes by species is the leader and the size of everything on it.",
+                   "at this flow (30–48 in). Each program's 'Leader' below is the single piece "
+                   "of line the whole Y is tied from — both legs; your main line stays as spooled.",
             "browns": [
                 "Leader: 6 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 2–4 lb around wood; fish lower light instead of lighter line",
                 "Sculpin on a #1 drop-shot hook or large snelled Octopus, split shot a foot up, presented at the openings around the base of big rocks — THE trophy bait (catch your own flipping rocks; verify AGFC baitfish rules)",
@@ -176,7 +179,8 @@ BAND_CONTENT = {
             "Anchoring still reasonable at this level — but rig it to slip free",
         ],
         "spin": {
-            "rig": "White River rig both programs: 1/4 oz bell (#8), hook leg 24–36 in, size 10 swivel.",
+            "rig": "White River rig both programs: 1/4 oz bell (#8), hook leg 24–36 in, size 10 swivel. "
+                   "'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 6–8 lb fluorocarbon",
                 "Countdown jerkbaits (brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
@@ -230,7 +234,7 @@ BAND_CONTENT = {
         ],
         "spin": {
             "rig": "White River rig both programs: 3/8 oz bell (#7), hook leg shortened to 18–24 in "
-                   "(a long leader lays flat in faster water).",
+                   "(a long leader lays flat in faster water). 'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 8 lb fluorocarbon — the trophy window is open, fish accordingly",
                 "Jerkbait prime time (2–4 units): Countdowns and the suspending perch deep jerkbait, twitch-pause along the banks",
@@ -278,7 +282,8 @@ BAND_CONTENT = {
         ],
         "spin": {
             "rig": "White River rig: 1/2 oz bell (#6) or a bank sinker, hook leg 18–24 in. "
-                   "A tied boat needs roughly double the drift-chart weight to hold bottom.",
+                   "A tied boat needs roughly double the drift-chart weight to hold bottom. "
+                   "'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 8–10 lb fluorocarbon — the local guide spec for exactly this water",
                 "3-in minnow, lips-hooked, drifted along the bank edge — the documented high-water big-trout method",

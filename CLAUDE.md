@@ -42,6 +42,7 @@ WhiteRiverData/
 ├── fishing_report.py        # Flow-driven fishing report (Gaston's→Cranor's Island); standalone runner
 ├── formatters.py            # HTML and text output generation, chart embedding
 ├── chart_generator.py       # Matplotlib vertical dam→White Hole flow chart
+├── landmarks.py             # Pinned GPS coordinates → river miles for reach landmarks
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
 ├── run_white_hole.sh        # Production script: pulls code, runs main.py, commits and pushes output
 ├── index.html               # Redirect to white_hole_conditions.html for GitHub Pages root
@@ -53,6 +54,7 @@ WhiteRiverData/
 │   ├── test_forecast_fetcher.py   # SWPA schedule parsing and MW→CFS conversion
 │   ├── test_water_calculator.py   # Flow calculations, trend/state logic, timelines
 │   ├── test_fishing_report.py     # Bands, seasons, ETA math, spin/fly separation
+│   ├── test_landmarks.py          # GPS-derived river miles, haversine, ordering
 │   ├── test_formatters.py         # HTML/text output generation
 │   └── test_integration.py        # End-to-end scenarios, incl. timezone-aware data
 ```
@@ -107,7 +109,7 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 ### Key Calculations and Parameter Locations
 
 - **Flow selection** (`water_calculator.get_flow`): total_release with turbine_release fallback.
-- **Travel time** (`water_calculator.calculate_travel_time`): 7-mile distance (`distance = 7`), speed piecewise-linear between `SPEED_ANCHORS` — (band-midpoint CFS, mph) pairs at 3300 CFS per generator, 1.875–4.75 mph, clamped outside the anchored range. Sourced from His Place Resort's observational table; each band's average anchors at the band midpoint. Known modeling simplification: releases are treated as plugs that arrive whole — the source describes falling water as a gradual recession (~distance/2 hours for 85% fall-out), so partial cuts in generation actually recede more gradually than the step the model shows. A recession model is a candidate future enhancement.
+- **Travel time** (`water_calculator.calculate_travel_time`): 7-mile distance (`landmarks.WHITE_HOLE_MILE`), speed piecewise-linear between `SPEED_ANCHORS` — (band-midpoint CFS, mph) pairs at 3300 CFS per generator, 1.875–4.75 mph, clamped outside the anchored range. Sourced from His Place Resort's observational table; each band's average anchors at the band midpoint. Known modeling simplification: releases are treated as plugs that arrive whole — the source describes falling water as a gradual recession (~distance/2 hours for 85% fall-out), so partial cuts in generation actually recede more gradually than the step the model shows. A recession model is a candidate future enhancement.
 - **Water state** (`water_calculator.determine_water_state`): compares first vs last of the 3 most recent arrival-adjusted entries; significant = >20% change AND >500 CFS.
 - **Recent trend** (`water_calculator.get_recent_trend`): sorts the 6-hour window by time, compares earliest vs latest reading; 1.5×/1.2× + 500 CFS thresholds. Must stay direction-based — a previous spread-vs-average version reported steady declines as increases.
 - **Fishing conditions** (`water_calculator.get_fishing_condition`): CFS thresholds 2000 / 5000 / 10000.
@@ -115,7 +117,7 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 - **MW→CFS** (`forecast_fetcher.mw_to_cfs`): linear via `BSD_FULL_MW = 391`, `BSD_FULL_CFS = 26400` (validated ±5% against actuals), plus `BSD_MIN_FLOW_CFS = 250` base flow, floored at `BSD_MIN_TOTAL_CFS = 750` — the dam never runs below its minimum-flow release (~750 observed, ~850 per His Place). Entry `min_flow_cfs` is `cfs - generation_cfs` so the displayed breakdown always sums.
 - **Forecast validity** (`forecast_fetcher.get_swpa_forecast`): rejects the day-of-week page (returns `[]`) if its `<title>` date doesn't match today — a stale page must not be re-anchored to the current date.
 - **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
-- **Chart landmarks** (`chart_generator.py`): `points`/`point_labels` map river miles 0–7 to named locations.
+- **Landmarks** (`landmarks.py`): pinned GPS coordinates (Brian's in-river points beside each landmark) for the 8 dam→White Hole locations; river miles are cumulative haversine chord distances along the chain, scaled so The White Hole lands exactly on `WHITE_HOLE_MILE = 7.0` (the raw chord sum ~6.73 mi undercuts the meanders; scaling preserves the His Place calibration). `LANDMARK_MILES` drives the chart's `points`/`point_labels` and the fishing report's `REACH_SPOTS`/`SPOT_COORDS` (Gaston's ≈ mile 4.09). Cranor's Island stays at an estimated 9.5 — no GPS chain below White Hole.
 
 ### Fishing Report (`fishing_report.py`)
 
