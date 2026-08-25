@@ -1,8 +1,46 @@
 """Integration tests for the complete White Hole summary generation."""
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from main import generate_white_hole_summary
 from water_calculator import calculate_timeline, forecast_conditions
+
+
+class TestTimezoneAwareData:
+    """Production data carries Central-time (America/Chicago) timestamps."""
+
+    CENTRAL = ZoneInfo("America/Chicago")
+
+    def _entry(self, dt, cfs):
+        return {'date_time': dt, 'elevation': 657.0, 'tailwater': 450.0,
+                'generation': 100, 'turbine_release': cfs,
+                'spillway_release': 0, 'total_release': cfs}
+
+    def test_summary_with_aware_central_timestamps(self):
+        """The pipeline must handle timezone-aware data end to end."""
+        now = datetime(2026, 8, 24, 12, 0, tzinfo=self.CENTRAL)
+        data = [self._entry(now - timedelta(hours=h), 750) for h in range(6, 0, -1)]
+        text = generate_white_hole_summary(
+            output_format="text", data=data, current_time=now)
+        assert "WHITE HOLE" in text
+        assert "750" in text
+
+    def test_fresh_release_not_reported_as_arrived(self):
+        """Water released 30 minutes ago (2+ hour travel) is not at White Hole.
+
+        Regression for the Central-vs-Eastern skew, which shifted every
+        arrival an hour early.
+        """
+        now = datetime(2026, 8, 24, 12, 0, tzinfo=self.CENTRAL)
+        data = [
+            self._entry(now - timedelta(hours=4), 750),
+            self._entry(now - timedelta(minutes=30), 20000),
+        ]
+        timeline = calculate_timeline(data, now)
+        current = [e for e in timeline if e['status'] == 'current']
+        incoming = [e for e in timeline if e['status'] == 'incoming']
+        assert current and current[0]['cfs'] == 750
+        assert incoming and incoming[0]['cfs'] == 20000
 
 
 class TestWholeSystemIntegration:
@@ -82,8 +120,9 @@ class TestWholeSystemIntegration:
             current_time=base_time
         )
         assert html is not None
-        # Flood conditions should show very high CFS
-        assert "26400" in html or "26,400" in html
+        # Flood conditions should show total release (turbine + spillway),
+        # not just the turbine release
+        assert "31400" in html or "31,400" in html
 
     def test_generate_summary_fluctuating_conditions(self, fluctuating_conditions_data, base_time):
         """Test generating summary with fluctuating conditions."""

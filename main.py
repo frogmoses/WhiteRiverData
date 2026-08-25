@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
-from data_fetcher import get_bull_shoals_data
+from data_fetcher import get_bull_shoals_data, DAM_TIMEZONE
 from forecast_fetcher import get_swpa_forecast
 from water_calculator import (
     calculate_travel_time, determine_water_state, get_fishing_condition,
     get_recent_trend, forecast_conditions, calculate_timeline,
-    calculate_forecast_timeline
+    calculate_forecast_timeline, get_flow
 )
 from formatters import (
     generate_html_summary, generate_error_html, save_html_summary,
@@ -25,9 +25,10 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
     Returns:
         str: Summary in the requested format
     """
-    # Get current time
+    # Get current time in the dam's timezone (Central) so comparisons against
+    # the USACE/SWPA timestamps are correct regardless of the host's timezone
     if current_time is None:
-        current_time = datetime.now()
+        current_time = datetime.now(DAM_TIMEZONE)
 
     # Get Bull Shoals Dam data if not provided
     if data is None:
@@ -63,7 +64,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     # Find the most recent complete entry
     latest_entry = None
     for entry in reversed(data):
-        if entry['turbine_release'] is not None:
+        if get_flow(entry) is not None:
             latest_entry = entry
             break
 
@@ -73,8 +74,9 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     # Calculate which historical entry affects White Hole now
     relevant_entry = None
     for entry in reversed(data):
-        if entry['turbine_release'] is not None:
-            travel_time = calculate_travel_time(entry['turbine_release'])
+        flow = get_flow(entry)
+        if flow is not None:
+            travel_time = calculate_travel_time(flow)
             arrival_time = entry['date_time'] + timedelta(hours=travel_time)
 
             if arrival_time <= current_time:
@@ -82,10 +84,14 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
                 break
 
     if relevant_entry is None:
-        relevant_entry = data[0]  # Use the oldest entry if nothing else is available
+        # Nothing has arrived yet; fall back to the oldest complete entry
+        relevant_entry = next(
+            (entry for entry in data if get_flow(entry) is not None),
+            latest_entry
+        )
 
     # Calculate current conditions at White Hole
-    white_hole_cfs = relevant_entry['turbine_release']
+    white_hole_cfs = get_flow(relevant_entry)
     water_state = determine_water_state(data, current_time, white_hole_cfs)
     wading_condition, boating_condition = get_fishing_condition(white_hole_cfs)
     recent_trend = get_recent_trend(data, current_time)
@@ -96,14 +102,14 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     generators_equivalent = white_hole_cfs / 3300
 
     # Calculate travel time for the summary
-    travel_time = calculate_travel_time(relevant_entry['turbine_release'])
+    travel_time = calculate_travel_time(white_hole_cfs)
 
     # Get the last 12 hours of data for the details section
     twelve_hours_ago = current_time - timedelta(hours=12)
 
     recent_data = [entry for entry in data
                   if entry['date_time'] >= twelve_hours_ago
-                  and entry['turbine_release'] is not None]
+                  and get_flow(entry) is not None]
 
     recent_data.sort(key=lambda x: x['date_time'], reverse=True)
 

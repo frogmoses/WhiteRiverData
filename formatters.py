@@ -1,5 +1,5 @@
 from datetime import datetime
-from water_calculator import calculate_travel_time, format_generators, calculate_timeline, get_fishing_condition
+from water_calculator import calculate_travel_time, format_generators, calculate_timeline, get_fishing_condition, get_flow
 
 
 def include_chart_in_html(html_content, chart_path):
@@ -20,12 +20,13 @@ def generate_table_rows(data):
     """Generate HTML table rows for the dam readings."""
     rows = []
     for entry in data:
+        flow = get_flow(entry)
         row = f"""
                 <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 8px;">{entry['date_time'].strftime('%Y-%m-%d %H:%M')}</td>
-                    <td style="padding: 8px; text-align: right;">{entry['turbine_release']}</td>
-                    <td style="padding: 8px; text-align: right;">{entry['turbine_release']/3300:.1f}</td>
-                    <td style="padding: 8px; text-align: right;">{calculate_travel_time(entry['turbine_release']):.1f}</td>
+                    <td style="padding: 8px; text-align: right;">{flow}</td>
+                    <td style="padding: 8px; text-align: right;">{flow/3300:.1f}</td>
+                    <td style="padding: 8px; text-align: right;">{calculate_travel_time(flow):.1f}</td>
                 </tr>
                 """
         rows.append(row)
@@ -429,8 +430,8 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         </summary>
         <div style="padding: 15px;">
             <ul>
-                <li>Latest dam reading: {latest_entry['turbine_release']:,} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}</li>
-                <li>Travel time to White Hole: {calculate_travel_time(relevant_entry['turbine_release']):.1f} hours at current flow</li>
+                <li>Latest dam reading: {get_flow(latest_entry):,} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}</li>
+                <li>Travel time to White Hole: {calculate_travel_time(get_flow(relevant_entry)):.1f} hours at current flow</li>
                 <li>White Hole conditions based on dam reading from: {relevant_entry['date_time'].strftime('%Y-%m-%d %H:%M')}</li>
             </ul>
         </div>
@@ -519,7 +520,7 @@ def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, w
                          latest_entry, relevant_entry):
     """Generate a text version of the White Hole summary."""
     # Calculate travel time for the summary
-    travel_time = calculate_travel_time(relevant_entry['turbine_release'])
+    travel_time = calculate_travel_time(get_flow(relevant_entry))
     summary = f"""
 WHITE HOLE CURRENT CONDITIONS SUMMARY
 Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
@@ -534,7 +535,7 @@ Over the past 6 hours, dam releases have {recent_trend}.
 Looking ahead: {forecast.capitalize()}.
 
 CALCULATION DETAILS:
-- Latest dam reading: {latest_entry['turbine_release']} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}
+- Latest dam reading: {get_flow(latest_entry)} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}
 - Travel time to White Hole: {travel_time:.1f} hours at {white_hole_cfs} CFS
 - White Hole conditions based on dam reading from: {relevant_entry['date_time'].strftime('%Y-%m-%d %H:%M')}
 """
