@@ -127,16 +127,16 @@ BAND_CONTENT = {
                    "of line the whole Y is tied from — both legs; your main line stays as spooled.",
             "browns": [
                 "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
-                "Sculpin on a #1 drop-shot hook or large snelled Octopus, split shot a foot up, presented at the openings around the base of big rocks — THE trophy bait (catch your own flipping rocks; verify AGFC baitfish rules)",
-                "Whole inflated night crawler (hook first, then 4–5 air bubbles) — a floating, drifting big-fish bait",
+                "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook or large snelled Octopus, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait (catch your own flipping rocks; verify AGFC baitfish rules)",
+                "Whole inflated night crawler (hook first, then 4–5 air bubbles) on the White River rig — the long hook leg lets it float and drift",
                 "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
                 "Dawn, dusk, and into dark — big browns go nocturnal at dead low and they will see you at noon",
                 "Work structure, not drifts: undercut banks, root wads, the head of the White Hole",
             ],
             "rainbows": [
                 "Leader: 4 lb mono — this is 'the lighter the better' water, and the fish won't test it",
-                "PowerBait pink or white floating worm / Mice Tail riding ~a foot off bottom on a #4 light-wire Aberdeen (mono hook leg — fluoro sinks and kills the lift)",
-                "1½-in crawler or red-worm stubs; peeled shrimp chunks (survives current far better than dough); egg-bead rig (orange bead pegged above a bare #4)",
+                "PowerBait pink or white floating worm / Mice Tail on the White River rig: floats ~a foot off bottom from a #4 light-wire Aberdeen (keep the hook leg mono — fluoro sinks and kills the lift)",
+                "Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (survive current far better than dough), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg",
                 "Float rig — the highest-leverage method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
                 "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges",
                 "Fish the open drifts and gravel runs — rainbows feed through the day even at dead low",
@@ -184,14 +184,14 @@ BAND_CONTENT = {
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "Countdown jerkbaits (brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
-                "3-in minnow, lips-hooked, drifted naturally behind structure and along drop-offs — drift speed is the whole game",
-                "TWO whole night crawlers threaded on a #4, tails dangling, cast downstream from the tied boat and held",
+                "3-in minnow on the split-shot rig, lips-hooked, drifted naturally behind structure and along drop-offs — drift speed is the whole game",
+                "TWO whole night crawlers on the White River rig — threaded on a #4, tails dangling, cast downstream from the tied boat and held",
                 "The downstream hang with a spinner: let it swing dead below the boat and hold — the blade works on current alone",
                 "Marabou 'sculpin' jig along the bottom of the slots",
             ],
             "rainbows": [
                 "Leader: 4 lb mono",
-                "Crawler stubs, PowerBait, shrimp on the bottom rig through the seams",
+                "Crawler stubs, PowerBait, shrimp on the White River rig through the seams",
                 "1/4 oz spoons — Kastmaster chrome or chrome/blue, Little Cleo-class, gold w/ red accents. Gold in bright sun, silver/nickel under cloud",
                 "1/4 oz Rooster Tail (flame/chartreuse) or Mepps Aglia #3, quartering upstream, sink first, steady retrieve — the take comes on the swing (Black Fury #3 on dark days)",
                 "Float rig in the slower lanes, still effective to ~2 units",
@@ -239,13 +239,13 @@ BAND_CONTENT = {
                 "Leader: 8 lb fluorocarbon — the trophy window is open, fish accordingly",
                 "Jerkbait prime time (2–4 units): Countdowns and the suspending perch deep jerkbait, twitch-pause along the banks",
                 "Keitech Swing Impact FAT 3.3/3.8 on a Flashy Swimmer, or the 4 in white-pearl Tab Tail, swum along the bank edge — white is the named color for White River browns",
-                "TWO whole crawlers on a #4 or a #1 drop-shot hook, downstream and held in the soft lane",
-                "Walk the rig down: lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
+                "TWO whole crawlers on the White River rig (#4 or a #1 drop-shot hook), downstream and held in the soft lane",
+                "Walk the White River rig down: lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
             ],
             "rainbows": [
                 "Leader: 4 lb mono",
                 "Worms cast near the banks in the first hour of the rise — a documented, predictable pattern, not folklore",
-                "Bottom rig with crawler stubs or shrimp in the soft lanes off the main push",
+                "White River rig with crawler stubs or shrimp in the soft lanes off the main push",
                 "Float rig only in true slack edges at this flow",
                 "3/8 oz XPS spoon in the defined runs when the 1/4 oz won't stay down",
             ],
@@ -286,14 +286,14 @@ BAND_CONTENT = {
                    "'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 8 lb fluorocarbon — guide-class line for exactly this water",
-                "3-in minnow, lips-hooked, drifted along the bank edge — the documented high-water big-trout method",
+                "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted along the bank edge — the documented high-water big-trout method",
                 "Keitech FAT 3.8/4.3 on the 3/8 oz Flashy Swimmer swum along the bank",
                 "Suspending perch jerkbait with long pauses in eddies and seams",
-                "Two whole crawlers on a #1 drop-shot hook, downstream and held",
+                "Two whole crawlers on the White River rig (#1 drop-shot hook), downstream and held",
             ],
             "rainbows": [
                 "Leader: 4 lb mono",
-                "Soft-water soaks only: whole crawler or shrimp in eddies and slack lanes off the push",
+                "Soft-water soaks only: whole crawler or shrimp on the White River rig in eddies and slack lanes off the push",
                 "Honestly, this is a browns level — save the numbers game for the drop",
             ],
             "notes": [
@@ -330,11 +330,11 @@ BAND_CONTENT = {
                    "slack-water soaks only.",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
-                "4 in white Tab Tail or Keitech 4.3 pitched along slack margins for a hunting brown",
+                "4 in white Tab Tail or Keitech 4.3 on its swimbait head (tied direct), pitched along slack margins for a hunting brown",
             ],
             "rainbows": [
                 "Leader: 4 lb mono",
-                "Whole crawlers or shrimp soaked in true slack edges — that's the whole program",
+                "Whole crawlers or shrimp soaked on the White River rig in true slack edges — that's the whole program",
             ],
             "notes": [
                 "The honest play is timing, not tackle: fish the first hours after the cut, when the river drops back through the good bands",
@@ -362,7 +362,7 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "Soft craw/hellgrammite plastics and the Ned-head crawdad presentation earn their fall slot — soft-shell crawdads are a named top natural bait for browns",
+                "Soft craw/hellgrammite plastic on the Ned head (tied direct) — the crawdad presentation earns its fall slot; soft-shell crawdads are a named top natural bait for browns",
             ],
             "rainbows": [
                 "Orange scented-garlic PowerBait is the named fall color",
@@ -397,10 +397,10 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "On big spring water, white swimbaits/grubs imitate shad pulled through the dam — fish them on the banks",
+                "On big spring water, white swimbaits on their Flashy Swimmer heads (tied direct) imitate shad pulled through the dam — fish them along the banks",
             ],
             "rainbows": [
-                "Yellow and orange egg colors are the named March–April producers",
+                "Yellow and orange egg colors are the named March–April producers — run them as the egg-bead variant or Power Eggs on the White River rig",
             ],
         },
         "fly_add": {
@@ -467,6 +467,7 @@ RIGGING_REFERENCE = [
             "Tune it: faster water → shorten the hook leg to 18–24 in (a long leader lays flat); minimum flow → lengthen to 30–48 in; snaggy bottom → tie the sinker leg in lighter line so it breaks away, or attach the bell with a rubber band",
             "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7 · 3–5 units #6 · heavy #4 — then adjust one size by the calibration rule",
             "Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
+            "The livebait drift exception (sculpin, minnows) — skip the Y entirely: leader straight to the hook, split shot pinched ~a foot up (stack shot as the current demands). A pinched shot rides over what a hanging bell snags in, and the bait swims naturally",
         ],
     },
     {
