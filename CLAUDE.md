@@ -39,7 +39,7 @@ WhiteRiverData/
 ├── data_fetcher.py          # Scrapes USACE Bull Shoals page (Playwright); parse_table_content() is the testable parser
 ├── forecast_fetcher.py      # Fetches/parses SWPA generation schedule; MW→CFS conversion
 ├── water_calculator.py      # get_flow, travel time, water state, conditions, timelines
-├── fishing_report.py        # Flow-driven fishing report (Gaston's→Narrows); standalone runner
+├── fishing_report.py        # Flow-driven fishing report (Gaston's→Cranor's Island); standalone runner
 ├── formatters.py            # HTML and text output generation, chart embedding
 ├── chart_generator.py       # Matplotlib vertical dam→White Hole flow chart
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
@@ -119,7 +119,7 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 
 ### Fishing Report (`fishing_report.py`)
 
-A flow-driven fishing report for the Gaston's (mile 4) → Narrows (mile 9.5) reach,
+A flow-driven fishing report for the Gaston's (mile 4) → Cranor's Island (mile 9.5) reach,
 appended to the bottom of the HTML page. Design rules:
 
 - **The repo's flow model is the driver.** All arrival ETAs come from
@@ -137,6 +137,21 @@ appended to the bottom of the HTML page. Design rules:
   (spring) and September–October (fall); placeholder text otherwise.
 - **Spin and fly sections are strictly separate** — never merge their content;
   a test enforces vocabulary separation.
+- **Within each section, advice splits into two species programs** (Brian's
+  requested grouping, behaviorally validated): **browns** (trophy, all released,
+  big baits near structure, 6–10 lb fluoro leaders) vs **rainbows & others**
+  (numbers, keep 2 under 14 in, small baits in open drifts, 2–4 lb leaders;
+  cutthroat/brook/tiger fish like rainbows here). Every band's first bullet in
+  each program is its leader spec — keep it that way; tests assert it.
+- **Cranor's Island** (Brian's name for the island below Cranor's White River
+  Lodge, his downstream turnaround) is pinned at 36.333492497534266,
+  -92.56191314472997 in `SPOT_COORDS`, rendered as a map link. The research
+  brief called it "the Narrows" — that name found no corroboration and was
+  dropped.
+- **`RIGGING_REFERENCE`**: static how-to content (White River rig build, bait
+  prep, boat tying, tied-boat presentations, fly-from-boat, etiquette) rendered
+  as collapsible blocks after the gear check. Unchanged by flow/season; spin
+  and fly blocks tagged and kept separate; boat handling and etiquette shared.
 - **Standalone generation**: `uv run python fishing_report.py [--season fall|spring]
   [--cfs N] [--out file.html]` previews any band/season without live data.
 - Regulations (Feb 2026): 2 rainbows under 14 in only, single hooking point with

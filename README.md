@@ -51,7 +51,7 @@ Water released at Bull Shoals Dam takes roughly 1.5–4 hours (faster at higher 
 ## Fishing Report
 
 During trip windows (March–April and September–October) the page ends with a
-flow-driven fishing report for the Gaston's-to-Narrows reach: where to go, boat
+flow-driven fishing report for the Gaston's-to-Cranor's-Island reach: where to go, boat
 and anchoring strategy, timing around generation changes, and separate spin and
 fly sections keyed to the current flow band. Generate it standalone any time:
 

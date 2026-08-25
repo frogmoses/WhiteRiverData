@@ -73,16 +73,27 @@ class TestSpotArrivals:
         etas = [eta for _, eta in spot_arrival_times(OCTOBER, 6600)]
         assert etas == sorted(etas)
 
-    def test_narrows_beyond_white_hole(self):
+    def test_cranors_island_beyond_white_hole(self):
         etas = dict(spot_arrival_times(OCTOBER, 6600))
-        assert etas["The Narrows"] > etas["White Hole"]
+        assert etas["Cranor's Island"] > etas["White Hole"]
         assert etas["Gaston's"] < etas["White Hole"]
 
     def test_spot_miles(self):
         miles = dict(REACH_SPOTS)
         assert miles["Gaston's"] == 4.0
         assert miles["White Hole"] == WHITE_HOLE_MILE == 7.0
-        assert miles["The Narrows"] == 9.5
+        assert miles["Cranor's Island"] == 9.5
+
+    def test_cranors_island_pinned_coordinates(self):
+        from fishing_report import SPOT_COORDS
+        lat, lon = SPOT_COORDS["Cranor's Island"]
+        assert abs(lat - 36.333492497534266) < 1e-9
+        assert abs(lon - (-92.56191314472997)) < 1e-9
+
+    def test_map_link_rendered(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert "google.com/maps?q=36.333492497534266,-92.56191314472997" in html
+        assert "Cranor's Island" in html
 
 
 class TestReportStructure:
@@ -136,7 +147,151 @@ class TestSpinFlySeparation:
     def test_high_band_fly_rod_cased(self):
         report = generate_fishing_report(20000, OCTOBER)
         assert "cased" in report["fly"]["setup"]
-        assert report["fly"]["flies"] == []
+        assert report["fly"]["browns"] == []
+        assert report["fly"]["rainbows"] == []
+
+
+class TestSpeciesPrograms:
+    """Advice is split into a browns program and a rainbows/others program."""
+
+    ALL_BANDS_CFS = [750, 3300, 6600, 12000, 20000]
+
+    @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
+    def test_spin_has_both_programs(self, cfs):
+        report = generate_fishing_report(cfs, OCTOBER)
+        assert report["spin"]["browns"]
+        assert report["spin"]["rainbows"]
+
+    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000])
+    def test_fly_has_both_programs_below_heavy_water(self, cfs):
+        report = generate_fishing_report(cfs, OCTOBER)
+        assert report["fly"]["browns"]
+        assert report["fly"]["rainbows"]
+
+    @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
+    def test_leader_guidance_differs_by_species(self, cfs):
+        """The core of the split: browns get heavier leaders than rainbows."""
+        report = generate_fishing_report(cfs, OCTOBER)
+        browns_leader = report["spin"]["browns"][0]
+        rainbows_leader = report["spin"]["rainbows"][0]
+        assert browns_leader.startswith("Leader:")
+        assert rainbows_leader.startswith("Leader:")
+        assert "fluoro" in browns_leader.lower()
+        assert browns_leader != rainbows_leader
+
+    def test_species_bait_assignment(self):
+        """Sculpin/big baits belong to browns; PowerBait belongs to rainbows."""
+        report = generate_fishing_report(750, OCTOBER)
+        browns_text = " ".join(report["spin"]["browns"])
+        rainbows_text = " ".join(report["spin"]["rainbows"])
+        assert "culpin" in browns_text
+        assert "PowerBait" not in browns_text
+        assert "PowerBait" in rainbows_text
+        assert "culpin" not in rainbows_text
+
+    def test_fly_tippet_differs_by_species(self):
+        report = generate_fishing_report(750, OCTOBER)
+        browns_text = " ".join(report["fly"]["browns"])
+        rainbows_text = " ".join(report["fly"]["rainbows"])
+        assert "12 lb" in browns_text
+        assert "5X" in rainbows_text
+
+    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000])
+    def test_both_program_headers_render_in_each_section(self, cfs):
+        html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
+        assert html.count("trophy program") == 2   # once in spin, once in fly
+        assert html.count("numbers program") == 2
+
+    def test_gear_check_is_seasonal(self):
+        """Core packing list plus season-specific additions."""
+        fall = generate_fishing_report(750, OCTOBER)["gear_check"]
+        spring = generate_fishing_report(750, APRIL)["gear_check"]
+        # Core items appear in both seasons
+        assert any("8 lb fluorocarbon" in item for item in fall["spin"])
+        assert any("8 lb fluorocarbon" in item for item in spring["spin"])
+        # Season-specific items appear only in their season
+        assert any("hoppers" in item for item in fall["fly"])
+        assert not any("hoppers" in item for item in spring["fly"])
+        assert any("Elk Hair Caddis" in item for item in spring["fly"])
+        assert not any("Elk Hair Caddis" in item for item in fall["fly"])
+
+    def test_gear_check_separates_spin_from_fly(self):
+        """Spin gear and fly gear are separate lists — never mixed."""
+        for when in (OCTOBER, APRIL):
+            gear = generate_fishing_report(750, when)["gear_check"]
+            assert gear["spin"] and gear["fly"]
+            spin_text = " ".join(gear["spin"])
+            fly_text = " ".join(gear["fly"])
+            # Fly vocabulary stays out of the spin list
+            assert "tippet" not in spin_text
+            assert "VersiLeader" not in spin_text
+            assert "fly box" not in spin_text
+            # Spin vocabulary stays out of the fly list
+            assert "bell" not in fly_text.lower()
+            assert "mono" not in fly_text
+            assert "PowerBait" not in fly_text
+
+    def test_gear_check_renders_both_subsections(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert "Spin gear:" in html
+        assert "Fly gear:" in html
+
+
+class TestRiggingReference:
+    """Static rigging/techniques reference after the gear check."""
+
+    EXPECTED_TITLES = [
+        "Building the White River rig (spin)",
+        "Bait prep (spin)",
+        "Tying the boat",
+        "Presentations from a tied boat (spin)",
+        "Fly fishing from the tied boat (fly)",
+        "River etiquette",
+    ]
+
+    def test_all_reference_blocks_present(self):
+        report = generate_fishing_report(750, OCTOBER)
+        titles = [section["title"] for section in report["rigging"]]
+        assert titles == self.EXPECTED_TITLES
+
+    def test_static_across_bands_and_seasons(self):
+        a = generate_fishing_report(750, OCTOBER)["rigging"]
+        b = generate_fishing_report(20000, APRIL)["rigging"]
+        assert a == b
+
+    def test_renders_as_collapsibles_after_gear_check(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert "Rigging &amp; techniques" in html
+        assert html.index("Rigging &amp; techniques") > html.index("Gear check")
+        for title in self.EXPECTED_TITLES:
+            assert title in html
+
+    def test_rig_build_content(self):
+        report = generate_fishing_report(750, OCTOBER)
+        rig = next(s for s in report["rigging"]
+                   if s["title"].startswith("Building"))
+        text = " ".join(rig["items"])
+        assert "dropper loop" in text
+        assert "#10 = 1/8 oz" in text
+
+    def test_spin_fly_blocks_stay_separate(self):
+        report = generate_fishing_report(750, OCTOBER)
+        spin_blocks = " ".join(
+            " ".join(s["items"]) for s in report["rigging"] if "(spin)" in s["title"])
+        fly_block = " ".join(
+            " ".join(s["items"]) for s in report["rigging"] if "(fly)" in s["title"])
+        assert "roll cast" not in spin_blocks.lower()
+        assert "mend" not in spin_blocks.lower()
+        assert "sinker" not in fly_block.lower()
+        assert "PowerBait" not in fly_block
+
+    def test_season_adds_land_in_the_right_program(self):
+        fall = generate_fishing_report(750, OCTOBER)
+        assert any("crawdad" in item for item in fall["spin"]["browns"])
+        assert any("garlic" in item for item in fall["spin"]["rainbows"])
+        spring = generate_fishing_report(750, APRIL)
+        assert any("caddis pupa" in item for item in spring["fly"]["browns"])
+        assert any("Elk Hair Caddis" in item for item in spring["fly"]["rainbows"])
 
 
 class TestTiming:
