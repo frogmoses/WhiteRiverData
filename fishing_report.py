@@ -762,10 +762,9 @@ def render_fishing_report_html(report):
 
     return f'''
     <details class="timeline-box">
-        <summary style="cursor: pointer; list-style: none;">
+        <summary style="cursor: default; list-style: none;">
             <h3 style="display: inline;">🎣 Fishing Report — Gaston's to Cranor's Island</h3>
             <span style="color: #666; margin-left: 8px;">{report["band_label"]} · {report["cfs"]:,} CFS</span>
-            <span style="float: right; color: #2b6cb0; font-size: 0.9em;">tap to expand ▾</span>
         </summary>
         <p style="color: #666; margin: 12px 0 4px;">{report["season_label"]}</p>
         {preview_html}
