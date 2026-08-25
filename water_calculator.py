@@ -15,59 +15,48 @@ def get_flow(entry):
     return entry.get('turbine_release')
 
 
+# Speed anchors: (CFS at the midpoint of a generator band, average speed in mph).
+# Speeds are the midpoints of His Place Resort's observed ranges; the gap bands
+# (2-3, 4-5, 6-7 generators) and the >8-gen extension are interpolated values.
+# Anchoring each band's average at its midpoint keeps the model faithful to the
+# source ("3 to 4 generators ≈ 2.875 mph" applies mid-band, not at the top).
+SPEED_ANCHORS = [
+    (1650, 1.875),    # 0-1 gen
+    (4950, 2.375),    # 1-2 gen
+    (8250, 2.625),    # 2-3 gen (interpolated)
+    (11550, 2.875),   # 3-4 gen
+    (14850, 3.125),   # 4-5 gen (interpolated)
+    (18150, 3.375),   # 5-6 gen
+    (21450, 3.8125),  # 6-7 gen (interpolated)
+    (24750, 4.25),    # 7-8 gen
+    (28050, 4.75),    # >8 gen (extrapolated)
+]
+
+
 def calculate_travel_time(cfs):
     """
     Calculate travel time to White Hole based on flow rate (CFS), using
-    the generator bands and average speeds as described by His Place Resort.
+    the generator-band speeds described by His Place Resort (1 gen = 3300 CFS).
 
-    Generator bands (1 gen = 3300 CFS):
-        - 0 to 1 gen (0–3300): avg 1.875 mph
-        - 1 to 2 gen (3300–6600): avg 2.375 mph
-        - 3 to 4 gen (9900–13200): avg 2.875 mph
-        - 5 to 6 gen (16500–19800): avg 3.375 mph
-        - 7 to 8 gen (23100–26400+): avg 4.25 mph
-        - Between bands: interpolate between averages
+    Speed is piecewise-linear between band-midpoint anchors, clamped to the
+    first/last anchor speeds outside the anchored range.
 
     Returns travel time in hours for 7 miles.
     """
     distance = 7  # miles from dam to White Hole
 
-    # Define generator bands and average speeds
-    bands = [
-        (0, 3300, 1.875),      # 0–1 gen
-        (3300, 6600, 2.375),   # 1–2 gen
-        (6600, 9900, 2.625),   # 2–3 gen (interpolated)
-        (9900, 13200, 2.875),  # 3–4 gen
-        (13200, 16500, 3.125), # 4–5 gen (interpolated)
-        (16500, 19800, 3.375), # 5–6 gen
-        (19800, 23100, 3.8125),# 6–7 gen (interpolated)
-        (23100, 26400, 4.25),  # 7–8 gen
-        (26400, float('inf'), 4.75), # >8 gen, extrapolated
-    ]
-
-    # Find the band for the given cfs
-    for i, (low, high, avg_speed) in enumerate(bands):
-        if low <= cfs < high:
-            # If not the first band, interpolate between this and previous
-            if i > 0:
-                prev_low, prev_high, prev_speed = bands[i-1]
-                # Linear interpolation between prev_speed and avg_speed
-                band_range = high - low
-                if band_range > 0:
-                    interp = (cfs - low) / band_range
-                    speed = prev_speed + (avg_speed - prev_speed) * interp
-                else:
-                    speed = avg_speed
-            else:
-                speed = avg_speed
-            break
+    if cfs <= SPEED_ANCHORS[0][0]:
+        speed = SPEED_ANCHORS[0][1]
+    elif cfs >= SPEED_ANCHORS[-1][0]:
+        speed = SPEED_ANCHORS[-1][1]
     else:
-        # If above all bands, use the last avg_speed
-        speed = bands[-1][2]
+        for (lo_cfs, lo_speed), (hi_cfs, hi_speed) in zip(SPEED_ANCHORS, SPEED_ANCHORS[1:]):
+            if lo_cfs <= cfs <= hi_cfs:
+                fraction = (cfs - lo_cfs) / (hi_cfs - lo_cfs)
+                speed = lo_speed + (hi_speed - lo_speed) * fraction
+                break
 
-    # Calculate travel time in hours
-    travel_time = distance / speed
-    return travel_time
+    return distance / speed
 
 def determine_water_state(data, current_time, white_hole_cfs):
     """Determine if water is rising, falling, or stable at White Hole."""

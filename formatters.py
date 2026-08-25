@@ -35,7 +35,8 @@ def generate_table_rows(data):
 
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
-                           relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None):
+                           relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
+                           stale_hours=None):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -97,6 +98,14 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 
     # Format generators as integer range
     gen_display = format_generators(white_hole_cfs)
+
+    # Stale-data warning banner (shown when the USACE feed has stalled)
+    stale_banner_html = ""
+    if stale_hours is not None:
+        stale_banner_html = f'''
+    <div style="background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; font-weight: 500;">
+        ⚠️ DAM DATA DELAYED — The latest reading is {stale_hours:.1f} hours old. Conditions shown may not reflect the river right now.
+    </div>'''
 
     # Build unified water timeline (scheduled forecast + actual dam readings)
     water_timeline_html = ""
@@ -389,7 +398,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 <body>
     <h1>White Hole Current Conditions</h1>
     <p class="subtitle">{current_time.strftime('%A, %B %d, %Y at %I:%M %p')}</p>
-
+{stale_banner_html}
     <!-- HEADLINE BANNER -->
     <div class="headline-banner">
         <div class="main-status">{wading_icon} {wading_message}</div>
@@ -517,14 +526,17 @@ def save_html_summary(html_content, filename="white_hole_conditions.html"):
 
 def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                          wading_condition, boating_condition, recent_trend, forecast,
-                         latest_entry, relevant_entry):
+                         latest_entry, relevant_entry, stale_hours=None):
     """Generate a text version of the White Hole summary."""
     # Calculate travel time for the summary
     travel_time = calculate_travel_time(get_flow(relevant_entry))
+    stale_warning = ""
+    if stale_hours is not None:
+        stale_warning = f"\nWARNING: Dam data is delayed — latest reading is {stale_hours:.1f} hours old.\n"
     summary = f"""
 WHITE HOLE CURRENT CONDITIONS SUMMARY
 Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
-
+{stale_warning}
 Current Flow: Approximately {white_hole_cfs} CFS
 Equivalent Generators: {generators_equivalent:.1f} at full capacity
 Water State: {water_state.title()}

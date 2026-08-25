@@ -72,6 +72,32 @@ class TestCalculateTravelTime:
         travel_time = calculate_travel_time(30000)
         assert travel_time < 2.0  # Fastest travel time
 
+    def test_band_average_applies_at_band_midpoint(self):
+        """Source band averages anchor at band midpoints, not band tops.
+
+        The 3-4 generator band (9900-13200) averages 2.875 mph, so the
+        midpoint 11550 CFS should hit exactly that speed.
+        """
+        assert abs(calculate_travel_time(11550) - 7 / 2.875) < 1e-9
+
+    def test_one_generator_faster_than_dead_low(self):
+        """Regression: 3300 CFS (1 gen) used to get the dead-low 1.875 mph.
+
+        Between the 0-1 band midpoint (1650, 1.875) and the 1-2 band
+        midpoint (4950, 2.375), 3300 CFS interpolates to 2.125 mph.
+        """
+        assert abs(calculate_travel_time(3300) - 7 / 2.125) < 1e-9
+
+    def test_extrapolated_top_speed_is_reachable(self):
+        """Regression: the >8-gen 4.75 mph speed was previously unreachable."""
+        assert abs(calculate_travel_time(30000) - 7 / 4.75) < 1e-9
+
+    def test_travel_time_monotonically_decreases_with_flow(self):
+        """More water always moves at least as fast."""
+        flows = range(0, 32000, 250)
+        times = [calculate_travel_time(cfs) for cfs in flows]
+        assert all(t1 >= t2 for t1, t2 in zip(times, times[1:]))
+
 
 class TestDetermineWaterState:
     """Tests for determine_water_state function."""

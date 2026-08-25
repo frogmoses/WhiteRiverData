@@ -3,6 +3,15 @@ from datetime import datetime, timedelta
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def run_in_tmp_path(tmp_path, monkeypatch):
+    """
+    Run every test from a temporary directory so generated output files
+    (chart PNGs, HTML) never overwrite the committed ones in the repo root.
+    """
+    monkeypatch.chdir(tmp_path)
+
+
 @pytest.fixture
 def base_time():
     """Base time for test datasets."""

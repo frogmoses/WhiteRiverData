@@ -1,14 +1,17 @@
 """Tests for forecast_fetcher.py"""
 from datetime import datetime, timedelta
 import pytest
+import forecast_fetcher
 from forecast_fetcher import (
     mw_to_cfs,
     parse_schedule_html,
     get_swpa_schedule_url,
+    get_swpa_forecast,
     get_schedule_date_from_html,
     BSD_FULL_MW,
     BSD_FULL_CFS,
     BSD_MIN_FLOW_CFS,
+    BSD_MIN_TOTAL_CFS,
 )
 
 # Sample SWPA schedule HTML matching the real page format
@@ -70,23 +73,23 @@ class TestMwToCfs:
     def test_full_capacity_without_base_flow(self):
         assert mw_to_cfs(BSD_FULL_MW, include_base_flow=False) == BSD_FULL_CFS
 
-    def test_zero_with_base_flow(self):
-        assert mw_to_cfs(0) == BSD_MIN_FLOW_CFS
+    def test_zero_floored_at_minimum_flow(self):
+        """0 MW scheduled still means ~750 CFS in the river, not 250."""
+        assert mw_to_cfs(0) == BSD_MIN_TOTAL_CFS
 
     def test_zero_without_base_flow(self):
         assert mw_to_cfs(0, include_base_flow=False) == 0
 
-    def test_small_value(self):
-        cfs = mw_to_cfs(7)
-        expected = int(round((7 / 391) * 26400)) + BSD_MIN_FLOW_CFS
-        assert cfs == expected
+    def test_small_value_floored(self):
+        """7 MW (473 CFS + 250 base = 723) is below the minimum-flow floor."""
+        assert mw_to_cfs(7) == BSD_MIN_TOTAL_CFS
 
     def test_half_capacity(self):
         cfs = mw_to_cfs(195.5)
         assert cfs == int(round((195.5 / 391) * 26400)) + BSD_MIN_FLOW_CFS
 
-    def test_negative_returns_base_flow(self):
-        assert mw_to_cfs(-10) == BSD_MIN_FLOW_CFS
+    def test_negative_returns_minimum_flow(self):
+        assert mw_to_cfs(-10) == BSD_MIN_TOTAL_CFS
 
 
 class TestParseScheduleHtml:
@@ -104,13 +107,15 @@ class TestParseScheduleHtml:
         assert hours == list(range(1, 25))
 
     def test_bsd_low_generation(self):
-        """Most hours have 7 MW for BSD."""
+        """Most hours have 7 MW for BSD — below the minimum-flow floor."""
         target_date = datetime(2026, 4, 8)
         result = parse_schedule_html(SAMPLE_SCHEDULE_HTML, target_date)
         hour_1 = result[0]
         assert hour_1['mw'] == 7
         assert hour_1['generation_cfs'] == int(round((7 / 391) * 26400))
-        assert hour_1['cfs'] == hour_1['generation_cfs'] + BSD_MIN_FLOW_CFS
+        assert hour_1['cfs'] == BSD_MIN_TOTAL_CFS
+        # The generation + min-flow breakdown must sum to the total
+        assert hour_1['generation_cfs'] + hour_1['min_flow_cfs'] == hour_1['cfs']
 
     def test_bsd_high_generation(self):
         """Hour 20 has 40 MW for BSD."""
@@ -151,6 +156,36 @@ class TestParseScheduleHtml:
             assert 'min_flow_cfs' in entry
             assert 'start_time' in entry
             assert 'end_time' in entry
+
+
+class TestGetSwpaForecast:
+    """Tests for get_swpa_forecast date validation (network mocked)."""
+
+    class _FakeResponse:
+        def __init__(self, text):
+            self.text = text
+
+        def raise_for_status(self):
+            pass
+
+    def _mock_fetch(self, monkeypatch):
+        monkeypatch.setattr(
+            forecast_fetcher.requests, "get",
+            lambda url, timeout: self._FakeResponse(SAMPLE_SCHEDULE_HTML))
+
+    def test_stale_page_date_returns_empty(self, monkeypatch):
+        """A page dated other than today must be rejected, not re-anchored."""
+        self._mock_fetch(monkeypatch)
+        current_time = datetime(2026, 4, 9, 6, 0)  # page is dated April 8
+        assert get_swpa_forecast(current_time) == []
+
+    def test_matching_page_date_returns_future_hours(self, monkeypatch):
+        self._mock_fetch(monkeypatch)
+        current_time = datetime(2026, 4, 8, 6, 30)
+        result = get_swpa_forecast(current_time)
+        assert result
+        # Only hours that haven't ended yet (hour 7 = 06:00-07:00 onward)
+        assert all(entry['end_time'] > current_time for entry in result)
 
 
 class TestGetSwpaScheduleUrl:

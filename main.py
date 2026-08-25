@@ -12,6 +12,11 @@ from formatters import (
 )
 from chart_generator import generate_vertical_river_chart
 
+# Warn on the page when the newest dam reading is older than this many hours
+# (the USACE feed normally updates hourly but sometimes stalls)
+STALE_DATA_HOURS = 3
+
+
 def generate_white_hole_summary(output_format="text", data=None, dataset_name=None, current_time=None):
     """
     Generate a summary of current water conditions at White Hole.
@@ -70,6 +75,10 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
 
     if latest_entry is None:
         return "No valid data available for analysis."
+
+    # Flag stale data so the page doesn't present old readings as current
+    data_age_hours = (current_time - latest_entry['date_time']).total_seconds() / 3600
+    stale_hours = data_age_hours if data_age_hours > STALE_DATA_HOURS else None
 
     # Calculate which historical entry affects White Hole now
     relevant_entry = None
@@ -140,7 +149,8 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             relevant_entry=relevant_entry,
             recent_data=recent_data,
             timeline_data=timeline_data,
-            forecast_timeline=forecast_timeline
+            forecast_timeline=forecast_timeline,
+            stale_hours=stale_hours
         )
 
         chart_filename = f"vertical_flow_chart_{dataset_name}.png" if dataset_name else "vertical_flow_chart.png"
@@ -162,7 +172,8 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             recent_trend=recent_trend,
             forecast=forecast,
             latest_entry=latest_entry,
-            relevant_entry=relevant_entry
+            relevant_entry=relevant_entry,
+            stale_hours=stale_hours
         )
 
 if __name__ == "__main__":
