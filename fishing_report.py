@@ -130,8 +130,6 @@ BAND_CONTENT = {
                 "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook or large snelled Octopus, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait (catch your own flipping rocks; verify AGFC baitfish rules)",
                 "Whole inflated night crawler (hook first, then 4–5 air bubbles) on the White River rig — the long hook leg lets it float and drift",
                 "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
-                "Dawn, dusk, and into dark — big browns go nocturnal at dead low and they will see you at noon",
-                "Work structure, not drifts: undercut banks, root wads, the head of the White Hole",
             ],
             "rainbows": [
                 "Leader: 4 lb mono — this is 'the lighter the better' water, and the fish won't test it",
@@ -139,7 +137,6 @@ BAND_CONTENT = {
                 "Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (survive current far better than dough), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg",
                 "Float rig — the highest-leverage method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
                 "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges",
-                "Fish the open drifts and gravel runs — rainbows feed through the day even at dead low",
             ],
             "notes": [
                 "One rod per angler in the water (regulation) — keep the other program's rod rigged and ready to swap, not fishing",
