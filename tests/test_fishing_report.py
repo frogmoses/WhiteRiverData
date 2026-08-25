@@ -459,3 +459,17 @@ class TestRigClarity:
                 text = item.lower()
                 if ("crawler" in text or "shrimp" in text) and "split-shot" not in text:
                     assert "white river rig" in text, item
+
+
+class TestQuietSummary:
+    """The collapsed header must not advertise that it expands."""
+
+    def test_no_expand_hint(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        summary = html.split("</summary>", 1)[0]
+        assert "expand" not in summary.lower()
+        assert "tap" not in summary.lower()
+        assert "click" not in summary.lower()
+        # No pointer cursor and no disclosure marker inviting interaction
+        assert "cursor: default" in summary
+        assert "list-style: none" in summary
