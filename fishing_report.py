@@ -187,7 +187,7 @@ BAND_CONTENT = {
         "boat": [
             "Tie from the BOW, bow pointed upstream, slip knot at the cleat, knife within reach",
             "Rotate spots every 45–60 minutes: untie, drop 100 yards, retie",
-            "Anchoring still reasonable at this level — but rig it to slip free",
+            "Drifting works well at this level: drift the seams, motor back up, repeat — the driver's on the tiller and sits out, so rotate who drives",
         ],
         "spin": {
             "rig": "White River rig both programs: 1/4 oz bell (#8), hook leg 24–36 in, size 10 swivel. "
@@ -195,7 +195,7 @@ BAND_CONTENT = {
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "Countdown jerkbaits (brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
-                "3-in minnow on the split-shot rig, lips-hooked, drifted naturally behind structure and along drop-offs — drift speed is the whole game",
+                "3-in minnow on the split-shot rig, lips-hooked: cast quartering upstream and drift it naturally past structure and drop-offs, feeding line to stretch the drift — drift speed is the whole game",
                 "TWO whole night crawlers on the White River rig — threaded on a #4, tails dangling, cast downstream from the tied boat and held",
                 "The downstream hang with a spinner: let it swing dead below the boat and hold — the blade works on current alone",
                 "Marabou 'sculpin' jig along the bottom of the slots",
@@ -239,8 +239,9 @@ BAND_CONTENT = {
             "Foam lines and defined runs in 4–5 ft along the banks",
         ],
         "boat": [
-            "Anchor only with a plan — a bump in generation reaches this reach fast; tie high to a tree instead",
+            "Tie high to a tree, not the anchor — a bump in generation reaches this reach fast",
             "Tie from the BOW with slack, re-tend the rope every 20–30 minutes on rising water",
+            "Bank-lane drifts are the coverage alternative to tying — trade the driver's rod for water covered",
             "Know what's downstream before committing to a spot; there is no warning siren on this river",
         ],
         "spin": {
@@ -288,6 +289,7 @@ BAND_CONTENT = {
         "boat": [
             "Do NOT anchor in current — this is how people drown on this river. Drag chain (legal on the White) or tie high in a genuine eddy",
             "Bow upstream, slip knot, knife in reach, re-tend the rope constantly",
+            "Drifting the soft bank lane covers the minnow/swimbait water a tied boat can't reach — driver on the tiller, everyone else fishes",
             "Debris starts moving at these flows; keep watch upstream",
         ],
         "spin": {
@@ -296,7 +298,7 @@ BAND_CONTENT = {
                    "'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 8 lb fluorocarbon — guide-class line for exactly this water",
-                "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted along the bank edge — the documented high-water big-trout method",
+                "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted down the bank edge — from a tied boat, work the lane flowing past you with a quartering-upstream cast and fed line; on a boat drift, cover the whole bank. The documented high-water big-trout method",
                 "Keitech FAT 3.8/4.3 on the 3/8 oz Flashy Swimmer swum along the bank",
                 "Suspending perch jerkbait with long pauses in eddies and seams",
                 "Two whole crawlers on the White River rig (#1 drop-shot hook), downstream and held",
@@ -494,16 +496,17 @@ RIGGING_REFERENCE = [
         ],
     },
     {
-        "title": "Tying the boat",
-        "intro": "Most drownings on this river involve an anchor thrown during generation. "
-                 "The tie-up is the safe method — done right.",
+        "title": "Boat strategy — tie, drift, or anchor",
+        "intro": "Tying to the bank is the default. Drifting and anchoring are both real "
+                 "options with their places — and one hard rule: most drownings on this "
+                 "river involve an anchor thrown during generation.",
         "items": [
-            "Tie from the BOW, bow pointed upstream — a stern- or side-tied boat in current gets rolled or swamped",
-            "Slip knot / quick-release at the cleat, and keep a sharp fixed-blade knife in a sheath within arm's reach",
+            "TIE (the default): from the BOW, bow pointed upstream — a stern- or side-tied boat in current gets rolled or swamped. Slip knot / quick-release at the cleat, sharp fixed-blade knife in a sheath within arm's reach",
             "Tie HIGH to a tree and leave slack; re-tend the rope every 20–30 minutes once water is coming — a tight, low rope on a rising river pulls a gunwale under",
-            "Tie in the slack or eddy and cast to the seam where slow meets fast — put the boat by the fast water, fish the slower water",
-            "Rotate every 45–60 minutes: untie, drop 100 yards, retie",
-            "Drag chains are legal on the White (banned on the Norfork) — the high-water alternative to anchoring",
+            "Tie in the slack or eddy and cast to the seam where slow meets fast — put the boat by the fast water, fish the slower water. Rotate every 45–60 minutes: untie, drop 100 yards, retie",
+            "DRIFT (the coverage option): set up at the head of a run, drift the bank lane at current speed, motor back up, repeat. The cost is a rod — the driver is on the tiller and mostly can't fish, so rotate who drives. Earns its keep from 1 unit up, where a tied boat's lanes get thin",
+            "On the drift, drop one bell size — a boat moving with the current needs less weight to tick bottom than a tied one",
+            "ANCHOR (very low water only): safe at minimum flow. From real current up, NEVER anchor — tie high or run a drag chain instead (legal on the White, banned on the Norfork)",
             "Know what's downstream before committing to a spot — there is no warning siren below the dam",
         ],
     },
