@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timedelta
-from water_calculator import calculate_travel_time, format_generators
+from water_calculator import calculate_travel_time, format_generators, get_flow
 
 
 def generate_vertical_river_chart(data, current_time, filename="vertical_flow_chart.png"):
@@ -13,7 +13,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
     point with release time and generator count.
     """
     sorted_data = sorted(data, key=lambda x: x['date_time'])
-    valid_data = [entry for entry in sorted_data if entry['turbine_release'] is not None]
+    valid_data = [entry for entry in sorted_data if get_flow(entry) is not None]
     if not valid_data:
         print("No valid data found for vertical chart generation")
         return None
@@ -40,7 +40,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
                 relevant_release_time = entry['date_time']
                 break
             else:
-                travel_time_hours = calculate_travel_time(entry['turbine_release']) * (mile / 7)
+                travel_time_hours = calculate_travel_time(get_flow(entry)) * (mile / 7)
                 arrival_time = entry['date_time'] + timedelta(hours=travel_time_hours)
                 if arrival_time <= current_time:
                     relevant_entry = entry
@@ -48,7 +48,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
                     break
 
         if relevant_entry:
-            flows_at_points.append(relevant_entry['turbine_release'])
+            flows_at_points.append(get_flow(relevant_entry))
             release_times.append(relevant_release_time)
             hours_ago = (current_time - relevant_release_time).total_seconds() / 3600
             release_hours_ago.append(hours_ago)

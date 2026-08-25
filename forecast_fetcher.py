@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 import re
 
 import requests
 from bs4 import BeautifulSoup
+
+# SWPA generation schedules are published in Central time
+SWPA_TIMEZONE = ZoneInfo("America/Chicago")
 
 # Bull Shoals Dam reference data from SWPA project table
 BSD_FULL_MW = 391
@@ -39,9 +43,9 @@ def mw_to_cfs(mw, include_base_flow=True):
 
 
 def get_swpa_schedule_url(target_date=None):
-    """Get the SWPA schedule URL for the given date (defaults to today)."""
+    """Get the SWPA schedule URL for the given date (defaults to today, Central time)."""
     if target_date is None:
-        target_date = datetime.now()
+        target_date = datetime.now(SWPA_TIMEZONE)
     slug = DAY_SLUGS[target_date.weekday()]
     return f"{SWPA_BASE_URL}/{slug}.htm"
 
@@ -57,10 +61,11 @@ def parse_schedule_html(html_content, target_date=None):
 
     Hours are in "hour ending" format: hour 1 = 00:00-01:00, hour 14 = 13:00-14:00.
 
-    Returns a list of dicts with keys: hour, mw, cfs, start_time, end_time
+    Returns a list of dicts with keys: hour, mw, cfs, start_time, end_time.
+    Times carry the timezone of target_date (Central in production).
     """
     if target_date is None:
-        target_date = datetime.now()
+        target_date = datetime.now(SWPA_TIMEZONE)
 
     soup = BeautifulSoup(html_content, 'html.parser')
     pre = soup.find('pre')
@@ -147,7 +152,7 @@ def get_swpa_forecast(current_time=None):
     Returns an empty list if the fetch fails.
     """
     if current_time is None:
-        current_time = datetime.now()
+        current_time = datetime.now(SWPA_TIMEZONE)
 
     url = get_swpa_schedule_url(current_time)
 

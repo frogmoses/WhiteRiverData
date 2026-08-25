@@ -9,8 +9,33 @@ from water_calculator import (
     forecast_conditions,
     format_generators,
     calculate_timeline,
-    calculate_forecast_timeline
+    calculate_forecast_timeline,
+    get_flow
 )
+
+
+class TestGetFlow:
+    """Tests for get_flow: spillway water must count toward downstream flow."""
+
+    def test_uses_total_release_when_spillway_open(self):
+        entry = {'turbine_release': 26400, 'spillway_release': 5000,
+                 'total_release': 31400}
+        assert get_flow(entry) == 31400
+
+    def test_falls_back_to_turbine_release(self):
+        entry = {'turbine_release': 6600}
+        assert get_flow(entry) == 6600
+
+    def test_timeline_counts_spillway_water(self, base_time):
+        """A non-power (spillway-only) release must appear in the timeline."""
+        data = [
+            {'date_time': base_time - timedelta(hours=3),
+             'turbine_release': 0, 'spillway_release': 12000,
+             'total_release': 12000},
+        ]
+        timeline = calculate_timeline(data, base_time)
+        assert len(timeline) == 1
+        assert timeline[0]['cfs'] == 12000
 
 
 class TestCalculateTravelTime:
@@ -173,11 +198,6 @@ class TestGetRecentTrend:
     def test_decreasing_trend(self, base_time):
         """Test detection of decreasing trend."""
         from datetime import timedelta
-        # Create data where min < avg * 0.8 but max is not > avg * 1.2
-        # 7000, 7000, 7000, 6000, 3000
-        # avg = 6000, min = 3000, max = 7000
-        # min (3000) < avg (6000) * 0.8 (4800)? Yes
-        # max (7000) > avg (6000) * 1.2 (7200)? No
         data = [
             {'date_time': base_time - timedelta(hours=5),
              'turbine_release': 7000},
@@ -189,6 +209,39 @@ class TestGetRecentTrend:
              'turbine_release': 6000},
             {'date_time': base_time - timedelta(hours=1),
              'turbine_release': 3000},
+        ]
+        trend = get_recent_trend(data, base_time)
+        assert "decreased" in trend.lower()
+
+    def test_steady_decline_reports_decreased(self, base_time):
+        """Regression: a monotonic decline must never report an increase.
+
+        The old spread-vs-average logic reported 10000->2000 as
+        "significantly increased".
+        """
+        data = [
+            {'date_time': base_time - timedelta(hours=5 - i),
+             'turbine_release': cfs}
+            for i, cfs in enumerate([10000, 8000, 6000, 4000, 2000])
+        ]
+        trend = get_recent_trend(data, base_time)
+        assert "decreased" in trend.lower()
+
+    def test_steady_rise_reports_increased(self, base_time):
+        data = [
+            {'date_time': base_time - timedelta(hours=5 - i),
+             'turbine_release': cfs}
+            for i, cfs in enumerate([2000, 4000, 6000, 8000, 10000])
+        ]
+        trend = get_recent_trend(data, base_time)
+        assert "increased" in trend.lower()
+
+    def test_trend_ignores_unsorted_input_order(self, base_time):
+        """Trend must compare earliest vs latest reading, not list order."""
+        data = [
+            {'date_time': base_time - timedelta(hours=1), 'turbine_release': 2000},
+            {'date_time': base_time - timedelta(hours=5), 'turbine_release': 10000},
+            {'date_time': base_time - timedelta(hours=3), 'turbine_release': 6000},
         ]
         trend = get_recent_trend(data, base_time)
         assert "decreased" in trend.lower()

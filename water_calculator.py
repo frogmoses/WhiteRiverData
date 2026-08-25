@@ -1,5 +1,20 @@
 from datetime import datetime, timedelta
 
+
+def get_flow(entry):
+    """
+    Return the total flow (CFS) moving downriver for a data entry.
+
+    Uses total_release (turbine + spillway) so that flood-gate and other
+    non-power releases are counted; falls back to turbine_release for
+    entries where the total is unavailable.
+    """
+    total = entry.get('total_release')
+    if total is not None:
+        return total
+    return entry.get('turbine_release')
+
+
 def calculate_travel_time(cfs):
     """
     Calculate travel time to White Hole based on flow rate (CFS), using
@@ -58,18 +73,19 @@ def determine_water_state(data, current_time, white_hole_cfs):
     """Determine if water is rising, falling, or stable at White Hole."""
     # Get the most recent entries that would affect White Hole
     relevant_entries = []
-    
+
     for entry in data:
-        if entry['date_time'] <= current_time and entry['turbine_release'] is not None:
-            travel_time = calculate_travel_time(entry['turbine_release'])
+        flow = get_flow(entry)
+        if entry['date_time'] <= current_time and flow is not None:
+            travel_time = calculate_travel_time(flow)
             arrival_time = entry['date_time'] + timedelta(hours=travel_time)
-            
+
             # If this water has already reached White Hole
             if arrival_time <= current_time:
                 relevant_entries.append({
                     'date_time': entry['date_time'],
                     'arrival_time': arrival_time,
-                    'turbine_release': entry['turbine_release']
+                    'turbine_release': flow
                 })
     
     # Sort by arrival time
@@ -103,31 +119,37 @@ def get_fishing_condition(cfs):
         return ("no wading", "high water")
 
 def get_recent_trend(data, current_time, hours_back=6):
-    """Analyze the trend over the past few hours."""
+    """
+    Analyze the trend of dam releases over the past few hours.
+
+    Compares the earliest and latest readings in the window so the reported
+    direction matches reality (a spread-vs-average comparison previously
+    reported steady declines as increases).
+    """
     # Filter to entries within the specified time window
     cutoff_time = current_time - timedelta(hours=hours_back)
     recent_data = [entry for entry in data if entry['date_time'] >= cutoff_time and entry['date_time'] <= current_time]
-    
+
     if not recent_data:
         return "unknown"
-    
-    # Calculate average and look for significant changes
-    cfs_values = [entry['turbine_release'] for entry in recent_data if entry['turbine_release'] is not None]
+
+    recent_data.sort(key=lambda x: x['date_time'])
+    cfs_values = [get_flow(entry) for entry in recent_data if get_flow(entry) is not None]
     if not cfs_values:
         return "unknown"
-    
-    avg_cfs = sum(cfs_values) / len(cfs_values)
-    max_cfs = max(cfs_values)
-    min_cfs = min(cfs_values)
-    
-    # Determine trend
-    if max_cfs > avg_cfs * 1.5:
+
+    first_cfs = cfs_values[0]
+    last_cfs = cfs_values[-1]
+
+    # Significant change requires both a relative and an absolute difference,
+    # matching the thresholds used by determine_water_state.
+    if last_cfs > first_cfs * 1.5 and last_cfs - first_cfs > 500:
         return "significantly increased"
-    elif min_cfs < avg_cfs * 0.5:
+    elif first_cfs > last_cfs * 1.5 and first_cfs - last_cfs > 500:
         return "significantly decreased"
-    elif max_cfs > avg_cfs * 1.2:
+    elif last_cfs > first_cfs * 1.2 and last_cfs - first_cfs > 500:
         return "moderately increased"
-    elif min_cfs < avg_cfs * 0.8:
+    elif first_cfs > last_cfs * 1.2 and first_cfs - last_cfs > 500:
         return "moderately decreased"
     else:
         return "remained relatively steady"
@@ -143,24 +165,25 @@ def forecast_conditions(data, current_time):
     latest_entry = recent_entries[0]
     
     # Check if there are entries that haven't reached White Hole yet
-    latest_cfs = latest_entry['turbine_release']
+    latest_cfs = get_flow(latest_entry)
     if latest_cfs is None:
         return "unknown"
-    
+
     travel_time = calculate_travel_time(latest_cfs)
     latest_impact_time = latest_entry['date_time'] + timedelta(hours=travel_time)
-    
+
     # If the latest release hasn't reached White Hole yet
     if latest_impact_time > current_time:
         # Find the entry that's currently affecting White Hole
         # recent_entries is already sorted newest to oldest, so iterate without reversing
         for entry in recent_entries:
-            if entry['turbine_release'] is not None:
-                entry_travel_time = calculate_travel_time(entry['turbine_release'])
+            entry_flow = get_flow(entry)
+            if entry_flow is not None:
+                entry_travel_time = calculate_travel_time(entry_flow)
                 entry_impact_time = entry['date_time'] + timedelta(hours=entry_travel_time)
 
                 if entry_impact_time <= current_time:
-                    current_cfs = entry['turbine_release']
+                    current_cfs = entry_flow
 
                     # Compare to forecast what's coming
                     if latest_cfs > current_cfs * 1.2 and latest_cfs - current_cfs > 500:
@@ -208,7 +231,7 @@ def calculate_timeline(data, current_time):
     """
     recent_entries = [entry for entry in data
                       if entry['date_time'] <= current_time
-                      and entry['turbine_release'] is not None]
+                      and get_flow(entry) is not None]
 
     if not recent_entries:
         return []
@@ -219,7 +242,7 @@ def calculate_timeline(data, current_time):
     current_found = False
 
     for entry in recent_entries[:6]:  # Look at last 6 entries
-        cfs = entry['turbine_release']
+        cfs = get_flow(entry)
         travel_time = calculate_travel_time(cfs)
         arrival_time = entry['date_time'] + timedelta(hours=travel_time)
 
