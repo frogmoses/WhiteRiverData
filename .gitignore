@@ -15,3 +15,6 @@ htmlcov/
 # Test-generated HTML and charts (keep production output files)
 white_hole_conditions_*.html
 vertical_flow_chart_*.png
+
+# Standalone fishing report previews
+fishing_report.html

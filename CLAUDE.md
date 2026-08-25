@@ -39,6 +39,7 @@ WhiteRiverData/
 ├── data_fetcher.py          # Scrapes USACE Bull Shoals page (Playwright); parse_table_content() is the testable parser
 ├── forecast_fetcher.py      # Fetches/parses SWPA generation schedule; MW→CFS conversion
 ├── water_calculator.py      # get_flow, travel time, water state, conditions, timelines
+├── fishing_report.py        # Flow-driven fishing report (Gaston's→Narrows); standalone runner
 ├── formatters.py            # HTML and text output generation, chart embedding
 ├── chart_generator.py       # Matplotlib vertical dam→White Hole flow chart
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
@@ -51,6 +52,7 @@ WhiteRiverData/
 │   ├── test_data_fetcher.py       # USACE parsing: timezone stamping, 2400 midnight rows, spillway columns
 │   ├── test_forecast_fetcher.py   # SWPA schedule parsing and MW→CFS conversion
 │   ├── test_water_calculator.py   # Flow calculations, trend/state logic, timelines
+│   ├── test_fishing_report.py     # Bands, seasons, ETA math, spin/fly separation
 │   ├── test_formatters.py         # HTML/text output generation
 │   └── test_integration.py        # End-to-end scenarios, incl. timezone-aware data
 ```
@@ -114,6 +116,31 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 - **Forecast validity** (`forecast_fetcher.get_swpa_forecast`): rejects the day-of-week page (returns `[]`) if its `<title>` date doesn't match today — a stale page must not be re-anchored to the current date.
 - **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
 - **Chart landmarks** (`chart_generator.py`): `points`/`point_labels` map river miles 0–7 to named locations.
+
+### Fishing Report (`fishing_report.py`)
+
+A flow-driven fishing report for the Gaston's (mile 4) → Narrows (mile 9.5) reach,
+appended to the bottom of the HTML page. Design rules:
+
+- **The repo's flow model is the driver.** All arrival ETAs come from
+  `calculate_travel_time` scaled by river mile (`spot_arrival_times`); flow bands
+  (`FLOW_BANDS`) align with `get_fishing_condition` thresholds (2000/5000/10000)
+  plus a 16,500 split. The research brief's surge-front arrival table was
+  deliberately discarded as conflicting.
+- **Content source**: a Claude Cowork research brief (now deleted; its
+  field-reference artifact is linked in Brian's memory) — fishing knowledge only:
+  spots, rigs, baits, presentations, regulations. Gear recommendations are
+  restricted to Brian's owned tackle
+  (`~/CodeProjects/new-croton-fishing/reference/tackle-inventory.md`) plus cheap
+  consumables.
+- **Trip-window gating** (`SEASON_MONTHS`): full playbook only in March–April
+  (spring) and September–October (fall); placeholder text otherwise.
+- **Spin and fly sections are strictly separate** — never merge their content;
+  a test enforces vocabulary separation.
+- **Standalone generation**: `uv run python fishing_report.py [--season fall|spring]
+  [--cfs N] [--out file.html]` previews any band/season without live data.
+- Regulations (Feb 2026): 2 rainbows under 14 in only, single hooking point with
+  bait, one attended rod. Verified against AGFC Aug 2026; re-verify before edits.
 
 ### Data Sources
 
