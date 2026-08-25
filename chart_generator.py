@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timedelta
 from water_calculator import calculate_travel_time, format_generators, get_flow
+from landmarks import LANDMARK_MILES, WHITE_HOLE_MILE
 
 
 def generate_vertical_river_chart(data, current_time, filename="vertical_flow_chart.png"):
@@ -18,10 +19,9 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
         print("No valid data found for vertical chart generation")
         return None
 
-    # Define the points (miles from dam)
-    points = [0, 1, 2, 3, 4, 5, 6, 7]
-    point_labels = ["Bull Shoals Dam", "White River State Park", "Copper John's", "Cane Island",
-                    "Gaston's", "The Honey Hole", "Big Island", "The White Hole"]
+    # Landmark points (miles from dam), derived from pinned GPS coordinates
+    point_labels = [name for name, _ in LANDMARK_MILES]
+    points = [mile for _, mile in LANDMARK_MILES]
 
     # For each point, find which release's water is currently there
     flows_at_points = []
@@ -40,7 +40,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
                 relevant_release_time = entry['date_time']
                 break
             else:
-                travel_time_hours = calculate_travel_time(get_flow(entry)) * (mile / 7)
+                travel_time_hours = calculate_travel_time(get_flow(entry)) * (mile / WHITE_HOLE_MILE)
                 arrival_time = entry['date_time'] + timedelta(hours=travel_time_hours)
                 if arrival_time <= current_time:
                     relevant_entry = entry

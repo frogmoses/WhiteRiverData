@@ -79,8 +79,9 @@ class TestSpotArrivals:
         assert etas["Gaston's"] < etas["White Hole"]
 
     def test_spot_miles(self):
+        from landmarks import GASTONS_MILE
         miles = dict(REACH_SPOTS)
-        assert miles["Gaston's"] == 4.0
+        assert miles["Gaston's"] == GASTONS_MILE == pytest.approx(4.09)
         assert miles["White Hole"] == WHITE_HOLE_MILE == 7.0
         assert miles["Cranor's Island"] == 9.5
 
@@ -89,6 +90,10 @@ class TestSpotArrivals:
         lat, lon = SPOT_COORDS["Cranor's Island"]
         assert abs(lat - 36.333492497534266) < 1e-9
         assert abs(lon - (-92.56191314472997)) < 1e-9
+
+    def test_reach_spots_have_pinned_coordinates(self):
+        from fishing_report import SPOT_COORDS
+        assert set(SPOT_COORDS) == {"Gaston's", "White Hole", "Cranor's Island"}
 
     def test_map_link_rendered(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))

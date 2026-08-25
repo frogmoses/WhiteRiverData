@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+from landmarks import WHITE_HOLE_MILE
+
 
 def get_flow(entry):
     """
@@ -43,7 +45,7 @@ def calculate_travel_time(cfs):
 
     Returns travel time in hours for 7 miles.
     """
-    distance = 7  # miles from dam to White Hole
+    distance = WHITE_HOLE_MILE  # miles from dam to White Hole (landmarks.py)
 
     if cfs <= SPEED_ANCHORS[0][0]:
         speed = SPEED_ANCHORS[0][1]
