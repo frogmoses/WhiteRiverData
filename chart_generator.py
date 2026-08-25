@@ -21,7 +21,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
     # Define the points (miles from dam)
     points = [0, 1, 2, 3, 4, 5, 6, 7]
     point_labels = ["Bull Shoals Dam", "White River State Park", "Copper John's", "Cane Island",
-                    "Gaston's", "The Honey Hole", "a big island", "The White Hole"]
+                    "Gaston's", "The Honey Hole", "Big Island", "The White Hole"]
 
     # For each point, find which release's water is currently there
     flows_at_points = []
@@ -94,8 +94,12 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
     ax.invert_yaxis()
 
     ax.set_xlabel('Flow (CFS)', fontsize=12)
+    # Scale the axis to the data (with headroom for the annotation boxes and
+    # a floor so tiny min-flow days don't over-zoom) instead of always
+    # spanning to 8+ generators, which rendered typical low-flow days as
+    # unreadable slivers
     max_flow = max(flows_at_points) if flows_at_points else 26400
-    ax.set_xlim(0, max(26400, max_flow) * 1.35)
+    ax.set_xlim(0, max(max_flow * 1.5, 5000))
     ax.grid(True, axis='x', linestyle='--', alpha=0.5)
 
     # Title
@@ -134,7 +138,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
     # Footer
     fig.text(0.5, 0.01,
              "Each bar shows the flow rate of water currently at that location.\n"
-             "Water takes 2-4 hours to travel from dam to White Hole depending on flow rate.",
+             "Water takes about 1.5-4 hours to travel from dam to White Hole depending on flow rate.",
              ha="center", fontsize=9, style='italic')
 
     plt.tight_layout(rect=[0, 0.04, 1, 0.97])

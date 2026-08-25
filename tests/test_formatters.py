@@ -479,3 +479,51 @@ class TestWaterTimelineRendering:
         html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline, white_hole_cfs=10000, wading_condition="no wading")
         assert 'HIGH WATER SCHEDULED' not in html
         assert 'HIGHER WATER SCHEDULED' not in html
+
+    def test_alert_prefers_high_water_over_earlier_moderate_hour(self, base_time, normal_conditions_data):
+        """Regression: an early >=2000 CFS hour must not mask a later >=5000
+        CFS hour — the banner should show the most severe scheduled level."""
+        def hour(h, cfs):
+            return {
+                'scheduled_time': base_time + timedelta(hours=h),
+                'hour': h, 'mw': 40, 'cfs': cfs,
+                'generation_cfs': cfs - 250, 'min_flow_cfs': 250,
+                'generators': '1-2 generators',
+                'arrival_time': base_time + timedelta(hours=h + 3),
+                'wading': 'still wadable', 'boating': 'ideal boating',
+            }
+        forecast_timeline = [hour(1, 2500), hour(3, 8000)]
+        html = self._make_html(base_time, normal_conditions_data,
+                               forecast_timeline=forecast_timeline,
+                               white_hole_cfs=1500,
+                               wading_condition="excellent wading")
+        assert 'HIGH WATER SCHEDULED' in html
+        assert 'HIGHER WATER SCHEDULED' not in html
+
+    def test_rising_banner_handles_zero_minutes_until(self, base_time, normal_conditions_data):
+        """Regression: minutes_until == 0 (arriving now) is real data, not
+        a missing value — the banner should show it, not fall back."""
+        timeline_data = [
+            {
+                'release_time': base_time - timedelta(hours=2),
+                'cfs': 10000, 'generators': '3 generators',
+                'arrival_time': base_time,
+                'status': 'incoming', 'minutes_until': 0
+            }
+        ]
+        html = generate_html_summary(
+            current_time=base_time,
+            white_hole_cfs=1500,
+            generators_equivalent=1500 / 3300,
+            water_state="rising",
+            wading_condition="excellent wading",
+            boating_condition="low for boating",
+            recent_trend="steady",
+            forecast="rising water expected soon",
+            latest_entry=normal_conditions_data[0],
+            relevant_entry=normal_conditions_data[0],
+            recent_data=normal_conditions_data,
+            timeline_data=timeline_data,
+            forecast_timeline=None,
+        )
+        assert 'RISING WATER arriving in ~0 minutes' in html

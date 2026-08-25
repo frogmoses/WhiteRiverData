@@ -101,7 +101,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
 
     # Calculate current conditions at White Hole
     white_hole_cfs = get_flow(relevant_entry)
-    water_state = determine_water_state(data, current_time, white_hole_cfs)
+    water_state = determine_water_state(data, current_time)
     wading_condition, boating_condition = get_fishing_condition(white_hole_cfs)
     recent_trend = get_recent_trend(data, current_time)
     forecast = forecast_conditions(data, current_time)

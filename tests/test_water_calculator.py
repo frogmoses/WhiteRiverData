@@ -114,7 +114,7 @@ class TestDetermineWaterState:
             {'date_time': base_time - timedelta(hours=4),
              'turbine_release': 7500},
         ]
-        state = determine_water_state(data, base_time, 7500)
+        state = determine_water_state(data, base_time)
         assert state == "rising"
 
     def test_falling_water(self, base_time):
@@ -129,19 +129,19 @@ class TestDetermineWaterState:
             {'date_time': base_time - timedelta(hours=4),
              'turbine_release': 6000},
         ]
-        state = determine_water_state(data, base_time, 6000)
+        state = determine_water_state(data, base_time)
         assert state == "falling"
 
     def test_stable_water(self, normal_conditions_data, base_time):
         """Test that stable water is detected correctly."""
-        state = determine_water_state(normal_conditions_data, base_time, 6600)
+        state = determine_water_state(normal_conditions_data, base_time)
         assert state == "stable"
 
     def test_insufficient_data(self):
         """Test handling of insufficient data."""
         # Only one entry
         data = [{'date_time': datetime.now(), 'turbine_release': 6600}]
-        state = determine_water_state(data, datetime.now(), 6600)
+        state = determine_water_state(data, datetime.now())
         assert state == "stable"  # Default to stable
 
 
@@ -308,6 +308,18 @@ class TestForecastConditions:
         """Test forecast for stable conditions."""
         forecast = forecast_conditions(normal_conditions_data, base_time)
         assert "stable" in forecast.lower() or "similar" in forecast.lower()
+
+    def test_forecast_when_nothing_has_arrived_yet(self, base_time):
+        """When all readings are too fresh to have arrived, compare the
+        latest release against the oldest instead of claiming similarity."""
+        data = [
+            {'date_time': base_time - timedelta(minutes=40),
+             'turbine_release': 2000},
+            {'date_time': base_time - timedelta(minutes=20),
+             'turbine_release': 10000},
+        ]
+        forecast = forecast_conditions(data, base_time)
+        assert "rising" in forecast.lower()
 
     def test_forecast_with_bug_scenario(self, falling_water_scenario_data, base_time):
         """Test the specific bug scenario: 10,647 CFS dropping to 6,187 CFS."""

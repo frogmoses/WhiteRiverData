@@ -105,13 +105,13 @@ def get_bull_shoals_data():
         if data:
             return data
         else:
-            return get_sample_data()
+            return get_error_data()
 
     except Exception as e:
         print(f"Error fetching data: {e}")
-        return get_sample_data()
+        return get_error_data()
 
-def get_sample_data():
+def get_error_data():
     """Return error data when web scraping fails."""
     # Return a minimal dataset with just the current time and an error indicator
     current_time = datetime.now(DAM_TIMEZONE)
