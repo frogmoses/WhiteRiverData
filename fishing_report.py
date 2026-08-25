@@ -517,6 +517,7 @@ RIGGING_REFERENCE = [
             "Float rig: set the bait 1–3 ft off bottom, cast up, feed the float 40–80 ft downstream under control, reel back, repeat",
             "Spinners by the clock: quartering upstream (10–11 o'clock) is primary — sink first, steady retrieve, the take comes on the swing. Then straight across at 9 o'clock. Then the downstream hang — the blade turns on current alone, a free presentation only a stationary boat gets. Feed line in 3–6 ft steps to walk it downstream",
             "Snag avoidance: get the bait up off the rock, run a lighter sacrificial sinker leg, prefer bell over egg sinkers in rock, and don't over-weight — a planted sinker is a snagged sinker",
+            "Three-up lane discipline (bow tied upstream): stern fishes the long straight-downstream hold in the boat's own lane, middle fishes short on the near seam, bow works upstream-and-across to the far seam — three static lines that never cross. The bow seat also owns the rope: re-tend it and pull the quick-release. Two-up with a driver: the stern/driver inherits the downstream lanes — the two-crawler hold and the spinner hang, the trophy water",
         ],
     },
     {
@@ -530,7 +531,7 @@ RIGGING_REFERENCE = [
             "Keep casts compact: roll cast, side-arm, or a Belgian/oval cast — a 9-ft rod and a beaded nymph at eye level with someone seated behind you is a real injury risk",
             "Strip into a five-gallon bucket with a couple inches of water in it — the line stays put and out from underfoot",
             "The boat makes its own soft water — a drag-free lane to fish when nothing else is reachable from the tie-up",
-            "Two anglers, two methods: the other rod fishes straight downstream from the stern in the boat's own lane; the fly angler sits forward, casting up-and-across to the OPPOSITE side. Different quadrants — the lines never cross",
+            "Fly casting needs a two-man boat: fly angler forward, the other rod fishing straight downstream from the stern in the boat's own lane — different quadrants, the lines never cross. Three aboard, the fly rod stays cased: a 9-ft rod and a beaded fly at eye level with two seated people behind you is a real injury risk",
             "One rod per angler, attended, is the law — no propping a second rod in a holder while casting",
         ],
     },
