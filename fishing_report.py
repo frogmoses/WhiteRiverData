@@ -434,6 +434,7 @@ GEAR_CHECK = {
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
         "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
+        "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
     ],
     "fly": [
         "Rainbow program tippet: 4 lb-class fluoro (5X), likely already owned",
@@ -475,6 +476,7 @@ RIGGING_REFERENCE = [
             "Keep mono on the hook leg of any floating rig — fluoro sinks and kills the lift",
             "Calibrate weight on the water: cast quartering upstream and let it settle. Right weight holds, then slips a few inches and re-grabs when you lift the tip. Never moves = too heavy; never stops = too light",
             "Catching sculpin — verified legal: banded and Ozark sculpin (the species in this tailwater) are named legal baitfish, and a hand dip net (1 in mesh or finer) is legal for personal use while sport fishing, day or night (AGFC Code 32.04). Flip rocks on shallow cobble and gravel shoal margins at minimum flow with the net held tight downstream — easiest after dark, when they sit out exposed. Keep only sculpin and return every other species immediately; never collect within 100 yards of the dam (32.05); never take them across the state line (32.03)",
+            "Minnow traps for sculpin are the slow backup, not the plan: an overnight soak (oily bait, trap flush on the bottom in cobble, or off the dock) yields a handful at best — the dip net outproduces it in 20 minutes. Arkansas wrinkle: traps are limited to 1 gallon capacity with a 1.5 in throat (32.04.D) — a standard Gee torpedo trap is oversized and illegal here",
         ],
     },
     {
