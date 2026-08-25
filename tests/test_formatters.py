@@ -527,3 +527,25 @@ class TestWaterTimelineRendering:
             forecast_timeline=None,
         )
         assert 'RISING WATER arriving in ~0 minutes' in html
+
+
+class TestLandmarkMapLinks:
+    """The flow page's chart section links every landmark to its map pin."""
+
+    def test_all_landmarks_linked(self, base_time, normal_conditions_data):
+        from landmarks import LANDMARK_COORDS
+        html = generate_html_summary(
+            current_time=base_time,
+            white_hole_cfs=6600,
+            generators_equivalent=2.0,
+            water_state="stable",
+            wading_condition="no wading",
+            boating_condition="ideal boating",
+            recent_trend="steady",
+            forecast="stable conditions expected",
+            latest_entry=normal_conditions_data[0],
+            relevant_entry=normal_conditions_data[0],
+        )
+        for name, (lat, lon) in LANDMARK_COORDS:
+            assert f"https://www.google.com/maps?q={lat},{lon}" in html
+        assert html.count("google.com/maps?q=") == len(LANDMARK_COORDS)
