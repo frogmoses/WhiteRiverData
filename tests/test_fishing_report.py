@@ -309,7 +309,7 @@ class TestRiggingReference:
     EXPECTED_TITLES = [
         "Building the White River rig (spin)",
         "Bait prep (spin)",
-        "Tying the boat",
+        "Boat strategy — tie, drift, or anchor",
         "Presentations from a tied boat (spin)",
         "Fly fishing from the tied boat (fly)",
         "River etiquette",
