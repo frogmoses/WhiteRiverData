@@ -432,7 +432,7 @@ GEAR_CHECK = {
         "Rainbow program leader: 4 lb clear/green mono (~$4) — the owned 20/30 lb fluoro is rope in this water",
         "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; local guides run 8–10 lb for exactly this fish",
         "Verify the bell-sinker assortment actually covers 1/8–1/2 oz before the trip",
-        "Rubber-core sinkers are the sleeper: change weight without re-tying as generation changes",
+        "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
     ],
     "fly": [
