@@ -401,3 +401,33 @@ class TestPageIntegration:
         assert "Fishing Report" in html
         assert "trip windows" in html
         assert "Spin Fishing" not in html
+
+
+class TestRigClarity:
+    """Every bottom-bait bullet names its rig; no vague 'bottom rig' term."""
+
+    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
+    @pytest.mark.parametrize("when", [OCTOBER, APRIL])
+    def test_no_vague_bottom_rig_term(self, cfs, when):
+        html = render_fishing_report_html(generate_fishing_report(cfs, when))
+        assert "bottom rig" not in html.lower()
+
+    def test_livebait_drifts_name_the_split_shot_rig(self):
+        """Sculpin (minimum) and minnows (1 unit, 3-5 units) use the
+        split-shot rig, explicitly."""
+        minimum = generate_fishing_report(750, OCTOBER)["spin"]["browns"]
+        assert any("split-shot rig" in item and "culpin" in item for item in minimum)
+        one_unit = generate_fishing_report(3300, OCTOBER)["spin"]["browns"]
+        assert any("split-shot rig" in item and "minnow" in item for item in one_unit)
+        mid = generate_fishing_report(12000, OCTOBER)["spin"]["browns"]
+        assert any("split-shot rig" in item and "minnow" in item for item in mid)
+
+    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
+    def test_crawler_and_shrimp_baits_name_the_y(self, cfs):
+        """Every crawler/shrimp soak or hold references the White River rig."""
+        report = generate_fishing_report(cfs, OCTOBER)
+        for program in ("browns", "rainbows"):
+            for item in report["spin"][program]:
+                text = item.lower()
+                if ("crawler" in text or "shrimp" in text) and "split-shot" not in text:
+                    assert "white river rig" in text, item
