@@ -1,5 +1,17 @@
 from datetime import datetime
 from water_calculator import calculate_travel_time, format_generators, calculate_timeline, get_fishing_condition, get_flow
+from landmarks import LANDMARK_COORDS
+
+
+def generate_landmark_map_links():
+    """Clickable map pins for the chart's landmarks, dam to White Hole."""
+    links = " · ".join(
+        f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" '
+        f'style="color: #2b6cb0; text-decoration: none;">{name}</a>'
+        for name, (lat, lon) in LANDMARK_COORDS
+    )
+    return (f'<p style="color: #666; font-size: 0.85em; margin-top: 10px;">'
+            f'📍 Tap a landmark for its map pin: {links}</p>')
 
 
 def include_chart_in_html(html_content, chart_path):
@@ -433,6 +445,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         <div id="chart-container" style="text-align: center; margin: 20px 0;">
             <!-- Chart will be inserted here -->
         </div>
+        {generate_landmark_map_links()}
     </div>
 
     <!-- COLLAPSIBLE DETAILS -->
