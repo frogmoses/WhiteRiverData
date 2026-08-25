@@ -135,8 +135,12 @@ appended to the bottom of the HTML page. Design rules:
   restricted to Brian's owned tackle
   (`~/CodeProjects/new-croton-fishing/reference/tackle-inventory.md`) plus cheap
   consumables.
-- **Trip-window gating** (`SEASON_MONTHS`): full playbook only in March–April
-  (spring) and September–October (fall); placeholder text otherwise.
+- **Year-round, collapsed by default**: the whole report is a `<details>`
+  block (no `open` attribute; band + CFS shown in the summary line). During
+  trip windows (`SEASON_MONTHS`: Mar–Apr spring, Sep–Oct fall) it shows that
+  window's playbook; other months `get_effective_season` previews the
+  upcoming window's playbook against current flow, labeled "Off-season
+  preview". The standalone runner renders it expanded.
 - **Spin and fly sections are strictly separate** — never merge their content;
   a test enforces vocabulary separation.
 - **Within each section, advice splits into two species programs** (Brian's
