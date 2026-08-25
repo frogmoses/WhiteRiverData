@@ -122,11 +122,11 @@ BAND_CONTENT = {
         ],
         "spin": {
             "rig": "White River rig both programs: dropper-loop Y, 6–10 in sinker leg with a "
-                   "1/8–3/16 oz bell (#10–#9), size 10 barrel swivel up top, hook leg long "
+                   "1/8 oz bell (#10), size 10 barrel swivel up top, hook leg long "
                    "at this flow (30–48 in). Each program's 'Leader' below is the single piece "
                    "of line the whole Y is tied from — both legs; your main line stays as spooled.",
             "browns": [
-                "Leader: 6 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 2–4 lb around wood; fish lower light instead of lighter line",
+                "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
                 "Sculpin on a #1 drop-shot hook or large snelled Octopus, split shot a foot up, presented at the openings around the base of big rocks — THE trophy bait (catch your own flipping rocks; verify AGFC baitfish rules)",
                 "Whole inflated night crawler (hook first, then 4–5 air bubbles) — a floating, drifting big-fish bait",
                 "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
@@ -147,16 +147,16 @@ BAND_CONTENT = {
         },
         "fly": {
             "setup": "9 ft 5-wt (Recon). Mechanics are shared: tightline the near seam with a 10–12 ft "
-                     "thin leader (or 5 ft 20 lb + 3 ft 12 lb + tippet ring + tippet), or swing on a "
+                     "thin leader (the owned 20 lb fluoro makes the butt, down to a tippet ring), or swing on a "
                      "shortened 6–7½ ft leader. Species decide the tippet and the fly.",
             "browns": [
-                "Tippet: 4X to the nymphs; 12 lb fluoro when swinging the streamer",
+                "Tippet: 8 lb fluoro — nymphs and the streamer swing alike",
                 "Olive Woolly Bugger #8–10 or black Girdle Bug #8–10 swung at first and last light",
                 "Sunday Special #12 tungsten dredged through the deep slots where the big fish hold",
                 "Swing the soft hackle through shoal tails and hang it 6–10 seconds at the dangle — a trophy-finding presentation",
             ],
             "rainbows": [
-                "Tippet: 5X–4X fluoro (~4.75–6 lb)",
+                "Tippet: 4 lb-class fluoro (5X)",
                 "Gray sowbug #14–16 point + Zebra/Ruby Midge #16–18 dropper 18 in above, tightlined on the near seam",
                 "Short indicator drift, 20–25 ft max, indicator ~1.5× depth; stick-on indicators hold on fine tippet at this flow",
                 "Pink San Juan worm or peach/orange egg the moment any water starts moving up",
@@ -182,7 +182,7 @@ BAND_CONTENT = {
             "rig": "White River rig both programs: 1/4 oz bell (#8), hook leg 24–36 in, size 10 swivel. "
                    "'Leader' below = the line the whole Y is tied from.",
             "browns": [
-                "Leader: 6–8 lb fluorocarbon",
+                "Leader: 8 lb fluorocarbon",
                 "Countdown jerkbaits (brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
                 "3-in minnow, lips-hooked, drifted naturally behind structure and along drop-offs — drift speed is the whole game",
                 "TWO whole night crawlers threaded on a #4, tails dangling, cast downstream from the tied boat and held",
@@ -205,12 +205,12 @@ BAND_CONTENT = {
                      "or the streamer sink-leader: fast-sinking VersiLeader/polyleader looped on the "
                      "floating line ('insta-sink-tip', ~$15).",
             "browns": [
-                "Tippet: 12–16 lb fluoro on the sink leader; 4X if nymphing the slots",
+                "Tippet: 8 lb fluoro on the sink leader; the same spool if nymphing the slots",
                 "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10, swung — not stripped — through bank seams and shoal tails",
                 "Sunday Special #12 tungsten deep in the slots",
             ],
             "rainbows": [
-                "Tippet: 5X–4X",
+                "Tippet: 4 lb-class fluoro (5X)",
                 "Sowbug/midge pair under the indicator through the seams; lengthen the drift by feeding line",
                 "Swing soft hackles, covering water by lengthening 20, 25, 30, 35 ft",
                 "Egg and pink San Juan worm near the banks whenever the water is moving up",
@@ -243,7 +243,7 @@ BAND_CONTENT = {
                 "Walk the rig down: lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
             ],
             "rainbows": [
-                "Leader: 4–6 lb",
+                "Leader: 4 lb mono",
                 "Worms cast near the banks in the first hour of the rise — a documented, predictable pattern, not folklore",
                 "Bottom rig with crawler stubs or shrimp in the soft lanes off the main push",
                 "Float rig only in true slack edges at this flow",
@@ -255,12 +255,12 @@ BAND_CONTENT = {
             "setup": "Streamer water: fast-sinking polyleader, weighted #6–10 flies, swung not stripped. "
                      "Nymphing gets hard at 3+ units from a seat.",
             "browns": [
-                "Tippet: 12–16 lb fluoro on the sink leader",
+                "Tippet: 8 lb fluoro on the sink leader",
                 "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10 swung through the bank seams — this is the program now",
                 "Hang every swing at the dangle before recasting",
             ],
             "rainbows": [
-                "Tippet: 4X",
+                "Tippet: 4 lb-class fluoro (5X)",
                 "Pink San Juan worm or egg dead-drifted tight to the flooded grass on the rise",
                 "Fish the soft water the boat itself creates when nothing else is reachable",
             ],
@@ -281,18 +281,18 @@ BAND_CONTENT = {
             "Debris starts moving at these flows; keep watch upstream",
         ],
         "spin": {
-            "rig": "White River rig: 1/2 oz bell (#6) or a bank sinker, hook leg 18–24 in. "
+            "rig": "White River rig: 1/2 oz bell (#6), hook leg 18–24 in. "
                    "A tied boat needs roughly double the drift-chart weight to hold bottom. "
                    "'Leader' below = the line the whole Y is tied from.",
             "browns": [
-                "Leader: 8–10 lb fluorocarbon — the local guide spec for exactly this water",
+                "Leader: 8 lb fluorocarbon — guide-class line for exactly this water",
                 "3-in minnow, lips-hooked, drifted along the bank edge — the documented high-water big-trout method",
-                "Keitech FAT 3.8/4.3 on a 1/4–3/8 oz Flashy Swimmer swum along the bank",
+                "Keitech FAT 3.8/4.3 on the 3/8 oz Flashy Swimmer swum along the bank",
                 "Suspending perch jerkbait with long pauses in eddies and seams",
                 "Two whole crawlers on a #1 drop-shot hook, downstream and held",
             ],
             "rainbows": [
-                "Leader: 6 lb",
+                "Leader: 4 lb mono",
                 "Soft-water soaks only: whole crawler or shrimp in eddies and slack lanes off the push",
                 "Honestly, this is a browns level — save the numbers game for the drop",
             ],
@@ -304,7 +304,7 @@ BAND_CONTENT = {
             "setup": "Honestly limited water for a floating-line 5-wt. If you fish it: the sink-leader "
                      "swing from a boat tied in a true eddy, or park the fly rod until the drop.",
             "browns": [
-                "Tippet: 16 lb fluoro on the sink leader",
+                "Tippet: 8 lb fluoro on the sink leader",
                 "Olive Woolly Bugger / black Girdle Bug #8 swung slow and deep through eddy seams",
                 "The first hour of falling water is the best fly window of the day — be rigged for it",
             ],
@@ -326,14 +326,14 @@ BAND_CONTENT = {
             "Re-check the schedule and the ramp before committing — this level with a rental jon is a risk decision, not a tactics decision",
         ],
         "spin": {
-            "rig": "Heaviest bottom rig you can hold with owned bells/bank sinkers (3/4–1 oz class), "
-                   "short leg — slack-water soaks only.",
+            "rig": "White River rig: 1 oz bell (#4) or bank sinker, short leg — "
+                   "slack-water soaks only.",
             "browns": [
-                "Leader: 10 lb fluorocarbon",
+                "Leader: 8 lb fluorocarbon",
                 "4 in white Tab Tail or Keitech 4.3 pitched along slack margins for a hunting brown",
             ],
             "rainbows": [
-                "Leader: 6 lb",
+                "Leader: 4 lb mono",
                 "Whole crawlers or shrimp soaked in true slack edges — that's the whole program",
             ],
             "notes": [
@@ -435,15 +435,15 @@ REGULATIONS = [
 GEAR_CHECK = {
     "spin": [
         "Rainbow program leader: 4 lb clear/green mono (~$4) — the owned 20/30 lb fluoro is rope in this water",
-        "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; local guides run 8–10 lb for exactly this fish",
-        "Verify the bell-sinker assortment actually covers 1/8–1/2 oz before the trip",
+        "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
+        "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
         "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
     ],
     "fly": [
-        "4X–5X fluoro tippet spools for the rainbow program (likely already owned)",
+        "Rainbow program tippet: 4 lb-class fluoro (5X), likely already owned",
         "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
-        "3–4 ft of 12–16 lb fluoro for the streamer swing (the owned 20 lb will do in a pinch)",
+        "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
     ],
 }
 
@@ -465,7 +465,7 @@ RIGGING_REFERENCE = [
             "Short leg (6–10 in): bell sinker. Long leg (18–36 in): hook",
             "Top end to the main line with a size 10–12 barrel swivel — or tie direct for bigger, spookier fish",
             "Tune it: faster water → shorten the hook leg to 18–24 in (a long leader lays flat); minimum flow → lengthen to 30–48 in; snaggy bottom → tie the sinker leg in lighter line so it breaks away, or attach the bell with a rubber band",
-            "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz",
+            "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7 · 3–5 units #6 · heavy #4 — then adjust one size by the calibration rule",
             "Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
         ],
     },

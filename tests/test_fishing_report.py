@@ -198,8 +198,42 @@ class TestSpeciesPrograms:
         report = generate_fishing_report(750, OCTOBER)
         browns_text = " ".join(report["fly"]["browns"])
         rainbows_text = " ".join(report["fly"]["rainbows"])
-        assert "12 lb" in browns_text
-        assert "5X" in rainbows_text
+        assert "8 lb" in browns_text
+        assert "4 lb" in rainbows_text
+
+    @pytest.mark.parametrize("when", [OCTOBER, APRIL])
+    @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
+    def test_only_two_line_weights_prescribed(self, cfs, when):
+        """The report runs on exactly two spools: 4 lb (rainbows), 8 lb (browns).
+
+        20/30 lb appear only as inventory/butt-section references. Any other
+        pound-test (6, 10, 12, 16, ranges like 6-8 or 8-10...) is drift.
+        """
+        import re
+        html = render_fishing_report_html(generate_fishing_report(cfs, when))
+        weights = set(re.findall(r"(\d+(?:–\d+)?) lb", html))
+        assert weights <= {"4", "8", "20", "30"}, f"nonconforming weights: {weights}"
+
+    BAND_SINKERS = {
+        750: "1/8 oz bell (#10)",
+        3300: "1/4 oz bell (#8)",
+        6600: "3/8 oz bell (#7)",
+        12000: "1/2 oz bell (#6)",
+        20000: "1 oz bell (#4)",
+    }
+
+    @pytest.mark.parametrize("cfs,sinker", list(BAND_SINKERS.items()))
+    def test_one_fixed_sinker_weight_per_band(self, cfs, sinker):
+        """Each band prescribes a single starting sinker, no ranges.
+
+        Within-band variation is handled by the on-water calibration rule,
+        not by making the reader choose from a range at the bench.
+        """
+        import re
+        report = generate_fishing_report(cfs, OCTOBER)
+        assert sinker in report["spin"]["rig"]
+        html = render_fishing_report_html(report)
+        assert re.findall(r"[\d/]+–[\d/]+ oz", html) == []
 
     @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000])
     def test_both_program_headers_render_in_each_section(self, cfs):
