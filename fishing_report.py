@@ -127,7 +127,7 @@ BAND_CONTENT = {
                    "of line the whole Y is tied from — both legs; your main line stays as spooled.",
             "browns": [
                 "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
-                "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook or large snelled Octopus, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait (catch your own flipping rocks; verify AGFC baitfish rules)",
+                "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook or large snelled Octopus, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
                 "Whole inflated night crawler (hook first, then 4–5 air bubbles) on the White River rig — the long hook leg lets it float and drift",
                 "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
             ],
@@ -474,6 +474,7 @@ RIGGING_REFERENCE = [
             "No floating bait? Thread a mini marshmallow up the hook shank — the other documented flotation method on this river",
             "Keep mono on the hook leg of any floating rig — fluoro sinks and kills the lift",
             "Calibrate weight on the water: cast quartering upstream and let it settle. Right weight holds, then slips a few inches and re-grabs when you lift the tip. Never moves = too heavy; never stops = too light",
+            "Catching sculpin — verified legal: banded and Ozark sculpin (the species in this tailwater) are named legal baitfish, and a hand dip net (1 in mesh or finer) is legal for personal use while sport fishing, day or night (AGFC Code 32.04). Flip rocks on shallow cobble and gravel shoal margins at minimum flow with the net held tight downstream — easiest after dark, when they sit out exposed. Keep only sculpin and return every other species immediately; never collect within 100 yards of the dam (32.05); never take them across the state line (32.03)",
         ],
     },
     {
