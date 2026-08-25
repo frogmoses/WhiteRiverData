@@ -259,7 +259,6 @@ BAND_CONTENT = {
             "rainbows": [
                 "Tippet: 4 lb-class fluoro (5X)",
                 "Pink San Juan worm or egg dead-drifted tight to the flooded grass on the rise",
-                "Fish the soft water the boat itself creates when nothing else is reachable",
             ],
         },
     },
@@ -303,7 +302,6 @@ BAND_CONTENT = {
             "browns": [
                 "Tippet: 8 lb fluoro on the sink leader",
                 "Olive Woolly Bugger / black Girdle Bug #8 swung slow and deep through eddy seams",
-                "The first hour of falling water is the best fly window of the day — be rigged for it",
             ],
             "rainbows": [
                 "Sit this level out, or dredge a worm/egg under a heavily weighted indicator in true slack only",
@@ -514,6 +512,7 @@ RIGGING_REFERENCE = [
             "Swing sequence: cast across and slightly down, one upstream mend, let it come tight, swing, then hang and pulse 6–10 seconds at the dangle. Cover water by lengthening 20, 25, 30, 35 ft — don't strike at the grab, let it come tight",
             "Keep casts compact: roll cast, side-arm, or a Belgian/oval cast — a 9-ft rod and a beaded nymph at eye level with someone seated behind you is a real injury risk",
             "Strip into a five-gallon bucket with a couple inches of water in it — the line stays put and out from underfoot",
+            "The boat makes its own soft water — a drag-free lane to fish when nothing else is reachable from the tie-up",
             "Two anglers, two methods: the other rod fishes straight downstream from the stern in the boat's own lane; the fly angler sits forward, casting up-and-across to the OPPOSITE side. Different quadrants — the lines never cross",
             "One rod per angler, attended, is the law — no propping a second rod in a holder while casting",
         ],
