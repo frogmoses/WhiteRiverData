@@ -36,7 +36,7 @@ def generate_table_rows(data):
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
-                           stale_hours=None):
+                           stale_hours=None, fishing_report_html=""):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -450,6 +450,9 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     </details>
 
     {details_html}
+
+    <!-- FISHING REPORT -->
+    {fishing_report_html}
 
     <div class="timestamp">
         Data retrieved and processed on {current_time.strftime('%Y-%m-%d %H:%M:%S')} (Central time)<br>

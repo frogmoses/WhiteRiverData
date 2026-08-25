@@ -48,6 +48,19 @@ Water released at Bull Shoals Dam takes roughly 1.5–4 hours (faster at higher 
 | 5,000 - 10,000 | No wading | Ideal |
 | > 10,000 | No wading | High water |
 
+## Fishing Report
+
+During trip windows (March–April and September–October) the page ends with a
+flow-driven fishing report for the Gaston's-to-Narrows reach: where to go, boat
+and anchoring strategy, timing around generation changes, and separate spin and
+fly sections keyed to the current flow band. Generate it standalone any time:
+
+```bash
+uv run python fishing_report.py --season fall --cfs 750
+```
+
+Omit the flags to use live dam data and today's date (writes `fishing_report.html`).
+
 Travel-time speeds come from [His Place Resort's White River guide](https://www.hisplaceresort.net/white-river-info), which cautions that they are observational estimates — don't rely on this report alone to judge safe wading.
 
 ## Running Tests

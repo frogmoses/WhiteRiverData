@@ -11,6 +11,7 @@ from formatters import (
     generate_text_summary, include_chart_in_html
 )
 from chart_generator import generate_vertical_river_chart
+from fishing_report import generate_fishing_report, render_fishing_report_html
 
 # Warn on the page when the newest dam reading is older than this many hours
 # (the USACE feed normally updates hourly but sometimes stalls)
@@ -134,6 +135,12 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     except Exception as e:
         print(f"Warning: Could not fetch SWPA forecast: {e}")
 
+    # Build the fishing report (full content during trip windows,
+    # placeholder otherwise) driven by the flow at White Hole
+    fishing_report = generate_fishing_report(
+        white_hole_cfs, current_time, timeline_data, forecast_timeline)
+    fishing_report_html = render_fishing_report_html(fishing_report)
+
     # Format the summary based on requested output format
     if output_format == "html":
         html_content = generate_html_summary(
@@ -150,7 +157,8 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             recent_data=recent_data,
             timeline_data=timeline_data,
             forecast_timeline=forecast_timeline,
-            stale_hours=stale_hours
+            stale_hours=stale_hours,
+            fishing_report_html=fishing_report_html
         )
 
         chart_filename = f"vertical_flow_chart_{dataset_name}.png" if dataset_name else "vertical_flow_chart.png"
