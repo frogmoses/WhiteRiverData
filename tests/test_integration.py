@@ -43,6 +43,35 @@ class TestTimezoneAwareData:
         assert incoming and incoming[0]['cfs'] == 20000
 
 
+class TestStaleDataWarning:
+    """The page must warn when the USACE feed has stalled."""
+
+    def _entry(self, dt, cfs):
+        return {'date_time': dt, 'elevation': 657.0, 'tailwater': 450.0,
+                'generation': 100, 'turbine_release': cfs,
+                'spillway_release': 0, 'total_release': cfs}
+
+    def test_stale_data_shows_warning(self, base_time):
+        data = [self._entry(base_time - timedelta(hours=h), 750)
+                for h in range(10, 5, -1)]  # newest reading is 6 hours old
+        text = generate_white_hole_summary(
+            output_format="text", data=data, current_time=base_time)
+        assert "delayed" in text.lower()
+
+        html = generate_white_hole_summary(
+            output_format="html", data=data, current_time=base_time)
+        assert "DAM DATA DELAYED" in html
+
+    def test_fresh_data_has_no_warning(self, normal_conditions_data, base_time):
+        text = generate_white_hole_summary(
+            output_format="text", data=normal_conditions_data, current_time=base_time)
+        assert "delayed" not in text.lower()
+
+        html = generate_white_hole_summary(
+            output_format="html", data=normal_conditions_data, current_time=base_time)
+        assert "DAM DATA DELAYED" not in html
+
+
 class TestWholeSystemIntegration:
     """Integration tests that test the complete system end-to-end."""
 

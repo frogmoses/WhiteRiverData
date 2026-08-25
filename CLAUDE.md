@@ -105,12 +105,14 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 ### Key Calculations and Parameter Locations
 
 - **Flow selection** (`water_calculator.get_flow`): total_release with turbine_release fallback.
-- **Travel time** (`water_calculator.calculate_travel_time`): 7-mile distance (`distance = 7`), speed from the `bands` list (9 generator bands at 3300 CFS each, speeds 1.875–4.75 mph, interpolated within bands). Sourced from His Place Resort's observational table — its band averages are midpoints of published ranges. Known limitation: interpolation reaches each band's average only at the band top (roughly a half-band conservative bias), and the >8-gen 4.75 speed is unreachable.
+- **Travel time** (`water_calculator.calculate_travel_time`): 7-mile distance (`distance = 7`), speed piecewise-linear between `SPEED_ANCHORS` — (band-midpoint CFS, mph) pairs at 3300 CFS per generator, 1.875–4.75 mph, clamped outside the anchored range. Sourced from His Place Resort's observational table; each band's average anchors at the band midpoint. Known modeling simplification: releases are treated as plugs that arrive whole — the source describes falling water as a gradual recession (~distance/2 hours for 85% fall-out), so partial cuts in generation actually recede more gradually than the step the model shows. A recession model is a candidate future enhancement.
 - **Water state** (`water_calculator.determine_water_state`): compares first vs last of the 3 most recent arrival-adjusted entries; significant = >20% change AND >500 CFS.
 - **Recent trend** (`water_calculator.get_recent_trend`): sorts the 6-hour window by time, compares earliest vs latest reading; 1.5×/1.2× + 500 CFS thresholds. Must stay direction-based — a previous spread-vs-average version reported steady declines as increases.
 - **Fishing conditions** (`water_calculator.get_fishing_condition`): CFS thresholds 2000 / 5000 / 10000.
 - **Timeline** (`water_calculator.calculate_timeline`): up to 4 entries, statuses current/incoming/arrived.
-- **MW→CFS** (`forecast_fetcher.mw_to_cfs`): linear via `BSD_FULL_MW = 391`, `BSD_FULL_CFS = 26400` (validated ±5% against actuals), plus `BSD_MIN_FLOW_CFS = 250` base flow. Note: real observed minimum flow is ~700–850 CFS; the constant works because SWPA schedules the min-flow unit as ~7 MW.
+- **MW→CFS** (`forecast_fetcher.mw_to_cfs`): linear via `BSD_FULL_MW = 391`, `BSD_FULL_CFS = 26400` (validated ±5% against actuals), plus `BSD_MIN_FLOW_CFS = 250` base flow, floored at `BSD_MIN_TOTAL_CFS = 750` — the dam never runs below its minimum-flow release (~750 observed, ~850 per His Place). Entry `min_flow_cfs` is `cfs - generation_cfs` so the displayed breakdown always sums.
+- **Forecast validity** (`forecast_fetcher.get_swpa_forecast`): rejects the day-of-week page (returns `[]`) if its `<title>` date doesn't match today — a stale page must not be re-anchored to the current date.
+- **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
 - **Chart landmarks** (`chart_generator.py`): `points`/`point_labels` map river miles 0–7 to named locations.
 
 ### Data Sources
@@ -142,7 +144,7 @@ uv run pytest -m integration                   # Only integration tests
 
 ### Pitfalls
 
-- **Integration tests write chart PNGs into the repo root**, including overwriting the committed `vertical_flow_chart.png`. After running tests, restore with `git checkout -- vertical_flow_chart.png` and delete stray `vertical_flow_chart_*.png` before committing.
+- Tests run from a temporary directory (autouse `run_in_tmp_path` fixture in `conftest.py`), so generated charts/HTML stay out of the repo root. Running `main.py` or `generate_test_html.py` directly, however, does write into the repo root — restore `vertical_flow_chart.png` and `white_hole_conditions.html` with `git checkout` if the run wasn't meant to be committed.
 - Never mix naive and aware datetimes in one dataset/call (comparison raises `TypeError`).
 - The remote `master` advances hourly (Pi output commits) — use `git pull --rebase` before pushing.
 - `data_fetcher.get_sample_data()` returns an error sentinel (single entry with `error: True`), not usable sample data.

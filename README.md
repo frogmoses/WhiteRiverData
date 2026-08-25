@@ -56,5 +56,3 @@ Travel-time speeds come from [His Place Resort's White River guide](https://www.
 uv run pytest              # run all tests
 uv run pytest --cov        # with coverage report
 ```
-
-Note: the test suite regenerates chart files in the repo root; discard them afterward with `git checkout -- vertical_flow_chart.png`.

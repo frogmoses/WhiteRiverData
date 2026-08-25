@@ -11,8 +11,10 @@ SWPA_TIMEZONE = ZoneInfo("America/Chicago")
 # Bull Shoals Dam reference data from SWPA project table
 BSD_FULL_MW = 391
 BSD_FULL_CFS = 26400
-BSD_MIN_FLOW_CFS = 250  # Approximate minimum base flow always released at the dam
-BSD_COLUMN_INDEX = 12  # 0-based index in the data columns (column 13 in the table)
+BSD_MIN_FLOW_CFS = 250  # Base flow added on top of scheduled generation
+# The dam never runs below its minimum-flow release (~750 CFS observed;
+# His Place cites ~850 at dead-low), even when the schedule shows 0 MW.
+BSD_MIN_TOTAL_CFS = 750
 
 # Day-of-week to URL slug mapping
 DAY_SLUGS = {
@@ -33,12 +35,12 @@ def mw_to_cfs(mw, include_base_flow=True):
 
     Args:
         mw: Megawatts of generation
-        include_base_flow: If True, adds the minimum base flow that the dam
-            always releases regardless of generation.
+        include_base_flow: If True, adds the minimum base flow and floors the
+            result at the dam's minimum-flow release (BSD_MIN_TOTAL_CFS).
     """
     generation_cfs = int(round((mw / BSD_FULL_MW) * BSD_FULL_CFS)) if mw > 0 else 0
     if include_base_flow:
-        return generation_cfs + BSD_MIN_FLOW_CFS
+        return max(generation_cfs + BSD_MIN_FLOW_CFS, BSD_MIN_TOTAL_CFS)
     return generation_cfs
 
 
@@ -125,7 +127,7 @@ def parse_schedule_html(html_content, target_date=None):
             continue
 
         generation_cfs = mw_to_cfs(mw, include_base_flow=False)
-        total_cfs = generation_cfs + BSD_MIN_FLOW_CFS
+        total_cfs = max(generation_cfs + BSD_MIN_FLOW_CFS, BSD_MIN_TOTAL_CFS)
 
         # "hour ending" format: hour 1 means 00:00-01:00
         start_time = base_date + timedelta(hours=hour - 1)
@@ -136,7 +138,9 @@ def parse_schedule_html(html_content, target_date=None):
             'mw': mw,
             'cfs': total_cfs,
             'generation_cfs': generation_cfs,
-            'min_flow_cfs': BSD_MIN_FLOW_CFS,
+            # Whatever isn't scheduled generation is minimum/base flow, so the
+            # displayed "generation + min flow" breakdown always sums to cfs
+            'min_flow_cfs': total_cfs - generation_cfs,
             'start_time': start_time,
             'end_time': end_time,
         })
@@ -149,7 +153,8 @@ def get_swpa_forecast(current_time=None):
     Fetch and parse the SWPA generation schedule for Bull Shoals Dam.
 
     Returns only future hours (hours that haven't ended yet).
-    Returns an empty list if the fetch fails.
+    Returns an empty list if the fetch fails or the page is for a
+    different date than expected (stale schedule).
     """
     if current_time is None:
         current_time = datetime.now(SWPA_TIMEZONE)
@@ -161,6 +166,14 @@ def get_swpa_forecast(current_time=None):
         response.raise_for_status()
     except requests.RequestException as e:
         print(f"Error fetching SWPA schedule: {e}")
+        return []
+
+    # The day-of-week page is only valid if its title carries today's date;
+    # a stale page would otherwise be presented as today's schedule
+    page_date = get_schedule_date_from_html(response.text)
+    if page_date is not None and page_date.date() != current_time.date():
+        print(f"SWPA schedule is stale (page date {page_date.date()}, "
+              f"expected {current_time.date()}); skipping forecast")
         return []
 
     schedule = parse_schedule_html(response.text, current_time)
