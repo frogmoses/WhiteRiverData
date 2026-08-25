@@ -48,15 +48,42 @@ class TestSeasonGating:
         for month in (1, 2, 5, 6, 7, 8, 11, 12):
             assert get_trip_season(datetime(2026, month, 10)) is None
 
-    def test_off_season_report_is_placeholder(self):
-        report = generate_fishing_report(750, JULY)
-        assert report["active"] is False
-        assert "trip windows" in report["placeholder"]
+    def test_effective_season_previews_upcoming_window(self):
+        from fishing_report import get_effective_season
+        for month in (5, 6, 7, 8):
+            assert get_effective_season(datetime(2026, month, 10)) == ("fall", False)
+        for month in (11, 12, 1, 2):
+            assert get_effective_season(datetime(2026, month, 10)) == ("spring", False)
+        assert get_effective_season(OCTOBER) == ("fall", True)
+        assert get_effective_season(APRIL) == ("spring", True)
 
-    def test_off_season_html_renders_placeholder(self):
+    def test_off_season_report_is_full_preview(self):
+        """Off-window months render the upcoming window's full playbook."""
+        report = generate_fishing_report(750, JULY)
+        assert report["in_window"] is False
+        assert report["season"] == "fall"
+        assert report["spin"]["browns"] and report["fly"]["rainbows"]
+
+    def test_off_season_html_carries_preview_note(self):
         html = render_fishing_report_html(generate_fishing_report(750, JULY))
-        assert "Fishing Report" in html
-        assert "trip windows" in html
+        assert "Off-season preview" in html
+        assert "September–October" in html
+        assert "Spin Fishing" in html
+
+    def test_in_window_has_no_preview_note(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert "Off-season preview" not in html
+
+    def test_report_is_collapsed_by_default(self):
+        """The whole report is a <details> block with no open attribute,
+        and the summary line carries the band and flow."""
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert '<details class="timeline-box">' in html
+        first_tag = html.split(">", 1)[0]
+        assert "open" not in first_tag
+        summary = html.split("</summary>", 1)[0]
+        assert "Minimum flow (dead low)" in summary
+        assert "750 CFS" in summary
 
 
 class TestSpotArrivals:
@@ -104,7 +131,7 @@ class TestSpotArrivals:
 class TestReportStructure:
     def test_active_report_has_all_sections(self):
         report = generate_fishing_report(750, OCTOBER)
-        assert report["active"] is True
+        assert report["in_window"] is True
         for key in ("band_label", "summary", "where", "boat", "timing",
                     "spin", "fly", "season_notes", "regulations", "gear_check"):
             assert report[key]
@@ -393,14 +420,15 @@ class TestPageIntegration:
         # Renders after the timeline/details sections (bottom of the page)
         assert html.index("Fishing Report") > html.index("Water Timeline")
 
-    def test_placeholder_on_page_off_season(self):
+    def test_off_season_page_shows_collapsed_preview(self):
         data = [self._entry(JULY - timedelta(hours=h), 750)
                 for h in range(6, 0, -1)]
         html = generate_white_hole_summary(
             output_format="html", data=data, current_time=JULY)
         assert "Fishing Report" in html
-        assert "trip windows" in html
-        assert "Spin Fishing" not in html
+        assert "Off-season preview" in html
+        assert "Spin Fishing" in html
+        assert '<details class="timeline-box">' in html
 
 
 class TestRigClarity:

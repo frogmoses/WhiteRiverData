@@ -20,8 +20,10 @@ fisheries (and the regulations):
 Gear recommendations are restricted to Brian's owned tackle
 (new-croton-fishing/reference/tackle-inventory.md) plus cheap consumables.
 
-The full report renders only during trip windows (March-April and
-September-October); other months get a placeholder. Spin and fly sections
+The report renders year-round as a collapsible section (collapsed by
+default). During trip windows (March-April, September-October) it shows
+that window's playbook; other months preview the upcoming window's
+playbook against current flow, labeled as such. Spin and fly sections
 are kept strictly separate.
 
 Standalone use:
@@ -80,6 +82,18 @@ def get_flow_band(cfs):
 def get_trip_season(date):
     """Return 'fall', 'spring', or None outside the trip windows."""
     return SEASON_MONTHS.get(date.month)
+
+
+def get_effective_season(date):
+    """
+    Return (season, in_window). During a trip window, that window's season;
+    otherwise the next upcoming window's season (May-Aug preview fall,
+    Nov-Feb preview spring), flagged as out-of-window.
+    """
+    season = get_trip_season(date)
+    if season is not None:
+        return season, True
+    return ("spring" if date.month in (1, 2, 11, 12) else "fall"), False
 
 
 def spot_arrival_times(release_time, cfs):
@@ -611,16 +625,11 @@ def generate_fishing_report(white_hole_cfs, current_time,
     """
     Build the structured fishing report for current conditions.
 
-    Returns a dict; 'active' is False outside the trip windows (March-April,
-    September-October), in which case only the placeholder text applies.
+    Always returns a full report. Outside the trip windows (March-April,
+    September-October) the upcoming window's playbook is shown with
+    'in_window' False so the renderer can label it as a preview.
     """
-    season = get_trip_season(current_time)
-    if season is None:
-        return {
-            "active": False,
-            "placeholder": "Fishing report runs during trip windows (March–April "
-                           "and September–October). Flow conditions above still apply.",
-        }
+    season, in_window = get_effective_season(current_time)
 
     band = get_flow_band(white_hole_cfs)
     content = BAND_CONTENT[band]
@@ -642,7 +651,7 @@ def generate_fishing_report(white_hole_cfs, current_time,
     }
 
     return {
-        "active": True,
+        "in_window": in_window,
         "season": season,
         "season_label": season_content["label"],
         "band": band,
@@ -724,13 +733,17 @@ def _species_block_html(browns, rainbows):
 
 
 def render_fishing_report_html(report):
-    """Render the fishing report as an HTML section for the conditions page."""
-    if not report["active"]:
-        return f'''
-    <div class="timeline-box">
-        <h3>🎣 Fishing Report</h3>
-        <p style="color: #666;">{report["placeholder"]}</p>
-    </div>'''
+    """
+    Render the fishing report as a collapsible section for the conditions
+    page — collapsed by default, with the band and flow visible in the
+    summary line. Off-window months carry a preview note.
+    """
+    preview_html = ""
+    if not report["in_window"]:
+        window = "September–October" if report["season"] == "fall" else "March–April"
+        preview_html = f'''
+        <p style="background-color: #ebf8ff; color: #2b6cb0; border-radius: 8px; padding: 8px 12px; margin: 10px 0; font-size: 0.9em;">
+            Off-season preview — the next trip window is {window}. This is that window's playbook run against the current flow.</p>'''
 
     timing_html = _items_html(report["timing"])
     where_html = _items_html(report["where"])
@@ -747,9 +760,14 @@ def render_fishing_report_html(report):
             <ul style="margin: 0 0 0 5px;">{_items_html(spin["notes"])}</ul>'''
 
     return f'''
-    <div class="timeline-box">
-        <h3>🎣 Fishing Report — Gaston's to Cranor's Island</h3>
-        <p style="color: #666; margin-bottom: 4px;">{report["season_label"]}</p>
+    <details class="timeline-box">
+        <summary style="cursor: pointer; list-style: none;">
+            <h3 style="display: inline;">🎣 Fishing Report — Gaston's to Cranor's Island</h3>
+            <span style="color: #666; margin-left: 8px;">{report["band_label"]} · {report["cfs"]:,} CFS</span>
+            <span style="float: right; color: #2b6cb0; font-size: 0.9em;">tap to expand ▾</span>
+        </summary>
+        <p style="color: #666; margin: 12px 0 4px;">{report["season_label"]}</p>
+        {preview_html}
         <p style="font-size: 1.1em; margin: 10px 0;"><strong>{report["band_label"]}</strong>
             — {report["cfs"]:,} CFS at White Hole ({report["generators"]})</p>
         <p style="color: #444;">{report["summary"]}</p>
@@ -796,7 +814,7 @@ def render_fishing_report_html(report):
             AGFC reports, OzarkAnglers); arrival times computed from this page's verified travel
             model. Regulations change — verify with AGFC before fishing.
         </p>
-    </div>'''
+    </details>'''
 
 
 # ---------------------------------------------------------------------------
@@ -856,6 +874,9 @@ def main():
 
     report = generate_fishing_report(cfs, current_time, timeline_data, forecast_timeline)
     section = render_fishing_report_html(report)
+    # The standalone page exists to read the report — render it expanded
+    section = section.replace('<details class="timeline-box">',
+                              '<details open class="timeline-box">', 1)
 
     page = f'''<!DOCTYPE html>
 <html lang="en">
@@ -882,10 +903,9 @@ h3 {{ margin-top: 0; color: #2c3e50; }}
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(page)
     print(f"Fishing report saved to {args.out}")
-    if report["active"]:
-        print(f"Band: {report['band_label']} — {report['cfs']:,} CFS ({report['generators']})")
-    else:
-        print(report["placeholder"])
+    window_note = "" if report["in_window"] else " (off-season preview)"
+    print(f"Band: {report['band_label']} — {report['cfs']:,} CFS "
+          f"({report['generators']}){window_note}")
 
 
 if __name__ == "__main__":
