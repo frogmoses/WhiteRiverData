@@ -133,19 +133,24 @@ appended to the bottom of the HTML page. Design rules:
   field-reference artifact is linked in Brian's memory) — fishing knowledge only:
   spots, rigs, baits, presentations, regulations.
 - **Gear doctrine (strict)**: `~/CodeProjects/new-croton-fishing/reference/
-  tackle-inventory.md` is the single inventory of record. Every item the report
-  names must either trace to an inventory row or appear in `GEAR_CHECK` as an
-  explicit buy/verify item — never present unowned gear as owned. The
-  inventory's rod rack carries a **Water column**: this repo prescribes from
-  **AR**-designated rods (a Daiwa Presso + a St. Croix staged at Brian's dad's,
-  specs pending — "spec on the next White River trip"); NY rods are the Croton
-  fleet and off-limits here. Main-line test is unknown fleet-wide. Remaining
-  gaps (2026-08-26, per Brian): ALL fly gear (Recon 5-wt, reel/line, tippet,
-  fly boxes — a future inventory section), and soft craw/hellgrammite plastics
-  (NOT owned — the inventory's utility-plastics row is wrong; Brian's word
-  overrides photo IDs). Brian maintains the inventory file manually. Fresh bait
-  is bought in Arkansas, not packed. When the inventory changes, re-audit
-  `GEAR_CHECK`.
+  tackle-inventory.md` is the single inventory of record — **read it fresh each
+  session and do not restate its contents here**: a stale snapshot of it in this
+  file ("specs pending", stale rod count) caused real cross-repo drift, caught
+  2026-08-26. Every item the report names must either trace to an inventory row
+  or appear in `GEAR_CHECK` as an explicit buy/verify item — never present
+  unowned gear as owned. Governance split (the rod rack's **Water column**):
+  this repo prescribes from **AR**-designated rods plus whatever row the
+  inventory marks as the AR travel rod; NY rods are the Croton fleet and
+  off-limits. In exchange, the AR rows' *duty and respool cells* are THIS
+  repo's to govern — when the species-program doctrine here changes a gear
+  prescription, edit those inventory cells in the same session (the inventory's
+  own header says AR prescriptions come from here); and when the inventory
+  changes, re-audit `GEAR_CHECK`. Two facts that stay true by Brian's word even
+  where the inventory disagrees: ALL fly gear is uninventoried (Recon 5-wt
+  etc. — a future inventory section), and soft craw/hellgrammite plastics are
+  NOT owned (Brian's word overrides the photo-ID'd utility-plastics row).
+  Brian maintains the inventory file manually. Fresh bait is bought in
+  Arkansas, not packed.
 - **Year-round, collapsed by default**: the whole report is a `<details>`
   block (no `open` attribute; band + CFS shown in the summary line). During
   trip windows (`SEASON_MONTHS`: Mar–Apr spring, Sep–Oct fall) it shows that
