@@ -131,10 +131,21 @@ appended to the bottom of the HTML page. Design rules:
   deliberately discarded as conflicting.
 - **Content source**: a Claude Cowork research brief (now deleted; its
   field-reference artifact is linked in Brian's memory) — fishing knowledge only:
-  spots, rigs, baits, presentations, regulations. Gear recommendations are
-  restricted to Brian's owned tackle
-  (`~/CodeProjects/new-croton-fishing/reference/tackle-inventory.md`) plus cheap
-  consumables.
+  spots, rigs, baits, presentations, regulations.
+- **Gear doctrine (strict)**: `~/CodeProjects/new-croton-fishing/reference/
+  tackle-inventory.md` is the single inventory of record. Every item the report
+  names must either trace to an inventory row or appear in `GEAR_CHECK` as an
+  explicit buy/verify item — never present unowned gear as owned. The
+  inventory's rod rack carries a **Water column**: this repo prescribes from
+  **AR**-designated rods (a Daiwa Presso + a St. Croix staged at Brian's dad's,
+  specs pending — "spec on the next White River trip"); NY rods are the Croton
+  fleet and off-limits here. Main-line test is unknown fleet-wide. Remaining
+  gaps (2026-08-26, per Brian): ALL fly gear (Recon 5-wt, reel/line, tippet,
+  fly boxes — a future inventory section), and soft craw/hellgrammite plastics
+  (NOT owned — the inventory's utility-plastics row is wrong; Brian's word
+  overrides photo IDs). Brian maintains the inventory file manually. Fresh bait
+  is bought in Arkansas, not packed. When the inventory changes, re-audit
+  `GEAR_CHECK`.
 - **Year-round, collapsed by default**: the whole report is a `<details>`
   block (no `open` attribute; band + CFS shown in the summary line). During
   trip windows (`SEASON_MONTHS`: Mar–Apr spring, Sep–Oct fall) it shows that

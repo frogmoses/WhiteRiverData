@@ -373,7 +373,7 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "Soft craw/hellgrammite plastic on the Ned head (tied direct) — the crawdad presentation earns its fall slot; soft-shell crawdads are a named top natural bait for browns",
+                "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: half a green-pumpkin Senko on the 1/10 oz Ned head (tied direct), or a soft craw plastic if bought (see gear check — not owned)",
             ],
             "rainbows": [
                 "Orange scented-garlic PowerBait is the named fall color",
@@ -390,6 +390,7 @@ SEASON_CONTENT = {
         "gear_add": {
             "spin": [
                 "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
+                "Optional: a bag of soft craw/hellgrammite plastics (~$5, not owned) to upgrade the Ned-head crawdad presentation",
             ],
             "fly": [
                 "A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor",
@@ -452,12 +453,22 @@ GEAR_CHECK = {
         "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
         "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
+        "Worm blower (~$3, not owned) — the inflated-crawler presentations depend on it",
+        "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, PowerBait (pink/white floating worms or Mice Tails; orange-garlic in fall), Power Eggs, cocktail shrimp, corn — plus mini marshmallows for flotation",
+        "The AR rod pair (a Daiwa Presso and a St. Croix, staged at Dad's) needs two jobs this trip: record their specs for the inventory, and respool first — main-line test is unknown across the whole fleet. Natural split is one rod per program: light mono main on the rainbow rod; the browns rod heavier than 8 lb so break-offs happen at the cartridge, never the main line",
     ],
     "fly": [
-        "Rainbow program tippet: 4 lb-class fluoro (5X), likely already owned",
+        "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
+        "Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds",
         "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
         "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
         "A 2 mm tippet ring finishes the tightline leader butt — same 10-pack as the spin cartridge rings",
+    ],
+    "boat": [
+        "Tie-up rope (50+ ft) and a sharp fixed-blade knife in a sheath — the two non-negotiables",
+        "Drag chain for 3+ units — check whether the resort provides one before buying",
+        "Headlamp for the after-dark sculpin run",
+        "Polarized glasses — the structure-reading tool at low water",
     ],
 }
 
@@ -491,7 +502,7 @@ RIGGING_REFERENCE = [
         "title": "Bait prep (spin)",
         "intro": "",
         "items": [
-            "Inflating a crawler: hook it FIRST, then inject 4–5 air bubbles spaced along a large crawler; use the smallest hook that will hold it",
+            "Inflating a crawler: hook it FIRST, then inject 4–5 air bubbles spaced along a large crawler with a worm blower; use the smallest hook that will hold it",
             "Mice Tail / floating worm: run the hook through the center of the worm and out ~½ in behind the head so it floats horizontally — head-hooked it hangs vertically, which is wrong",
             "No floating bait? Thread a mini marshmallow up the hook shank — the other documented flotation method on this river",
             "Keep mono on the hook leg of any floating rig — fluoro sinks and kills the lift",
@@ -681,6 +692,7 @@ def generate_fishing_report(white_hole_cfs, current_time,
         "gear_check": {
             "spin": GEAR_CHECK["spin"] + season_content["gear_add"]["spin"],
             "fly": GEAR_CHECK["fly"] + season_content["gear_add"]["fly"],
+            "boat": list(GEAR_CHECK["boat"]),
         },
         "rigging": RIGGING_REFERENCE,
     }
@@ -813,6 +825,8 @@ def render_fishing_report_html(report):
         <ul style="margin: 0 0 0 5px;">{_items_html(report["gear_check"]["spin"])}</ul>
         <p style="margin: 10px 0 4px;"><strong>🪶 Fly gear:</strong></p>
         <ul style="margin: 0 0 0 5px;">{_items_html(report["gear_check"]["fly"])}</ul>
+        <p style="margin: 10px 0 4px;"><strong>🛶 Boat &amp; trip gear:</strong></p>
+        <ul style="margin: 0 0 0 5px;">{_items_html(report["gear_check"]["boat"])}</ul>
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Rigging &amp; techniques (reference)</h4>
         {_rigging_html(report["rigging"])}
