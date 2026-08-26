@@ -497,3 +497,36 @@ class TestCartridgeRig:
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
         assert any("tippet rings" in item for item in gear["spin"])
         assert any("tippet ring" in item for item in gear["fly"])
+
+
+class TestGearDoctrine:
+    """tackle-inventory.md is the inventory of record; anything the report
+    recommends that isn't owned must surface in the gear check."""
+
+    def test_boat_gear_list_present_and_rendered(self):
+        report = generate_fishing_report(750, OCTOBER)
+        assert report["gear_check"]["boat"]
+        html = render_fishing_report_html(report)
+        assert "Boat &amp; trip gear" in html
+
+    def test_not_owned_items_flagged(self):
+        gear = generate_fishing_report(750, OCTOBER)["gear_check"]
+        spin = " ".join(gear["spin"])
+        assert "Worm blower" in spin and "not owned" in spin
+        assert "staged at Dad's" in spin
+        fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
+        assert "soft craw" in fall_spin.lower()
+
+    def test_soft_craw_not_presented_as_owned(self):
+        """Brian doesn't own soft craw plastics — the fall crawdad bullet
+        must lead with the owned option (half Senko on the Ned head)."""
+        fall = generate_fishing_report(750, OCTOBER)
+        craw = [item for item in fall["spin"]["browns"] if "crawdad" in item.lower()]
+        assert craw and "green-pumpkin Senko" in craw[0]
+        assert "not owned" in craw[0]
+
+    def test_fly_gear_marked_unverified(self):
+        gear = generate_fishing_report(750, OCTOBER)["gear_check"]
+        fly = " ".join(gear["fly"])
+        assert "isn't in the inventory yet" in fly or "isn't inventoried yet" in fly
+        assert "Fly box audit" in fly
