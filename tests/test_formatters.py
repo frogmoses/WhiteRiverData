@@ -549,3 +549,20 @@ class TestLandmarkMapLinks:
         for name, (lat, lon) in LANDMARK_COORDS:
             assert f"https://www.google.com/maps?q={lat},{lon}" in html
         assert html.count("google.com/maps?q=") == len(LANDMARK_COORDS)
+
+
+class TestCopyrightNotice:
+    def test_notice_in_page_footer(self, base_time, normal_conditions_data):
+        html = generate_html_summary(
+            current_time=base_time,
+            white_hole_cfs=6600,
+            generators_equivalent=2.0,
+            water_state="stable",
+            wading_condition="no wading",
+            boating_condition="ideal boating",
+            recent_trend="steady",
+            forecast="stable conditions expected",
+            latest_entry=normal_conditions_data[0],
+            relevant_entry=normal_conditions_data[0],
+        )
+        assert f"&copy; {base_time.year} Brian Carroll. All rights reserved." in html

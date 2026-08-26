@@ -72,3 +72,9 @@ Travel-time speeds come from [His Place Resort's White River guide](https://www.
 uv run pytest              # run all tests
 uv run pytest --cov        # with coverage report
 ```
+
+## License
+
+Source code is MIT-licensed. The generated report content (the conditions
+page, chart, and fishing report) is © Brian Carroll, all rights reserved —
+see [LICENSE](LICENSE).

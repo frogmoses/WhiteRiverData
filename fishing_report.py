@@ -919,6 +919,7 @@ h3 {{ margin-top: 0; color: #2c3e50; }}
 <h1>White Hole Fishing Report</h1>
 <p style="color: #718096;">{current_time.strftime('%A, %B %d, %Y at %I:%M %p')} (Central)</p>
 {section}
+<p style="font-size: 0.85em; color: #718096; text-align: center;">&copy; {current_time.year} Brian Carroll. All rights reserved.</p>
 </body>
 </html>'''
 

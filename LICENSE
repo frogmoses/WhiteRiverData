@@ -1,3 +1,21 @@
+This repository is dual-licensed.
+
+1. CONTENT — ALL RIGHTS RESERVED
+
+   The generated report content is © 2025-2026 Brian Carroll, all rights
+   reserved. This covers the published outputs (white_hole_conditions.html,
+   vertical_flow_chart.png, fishing_report.html) and the fishing-report text
+   authored in fishing_report.py — the band playbooks, species programs,
+   rigging and techniques reference, gear guidance, season notes, and related
+   prose. This content may be viewed at the published site but may not be
+   copied, modified, redistributed, or used to create derivative works
+   without written permission.
+
+2. SOURCE CODE — MIT LICENSE
+
+   The MIT license below applies to the repository's source code only,
+   excluding the Content defined above.
+
 MIT License
 
 Copyright (c) 2025 Brian Carroll
