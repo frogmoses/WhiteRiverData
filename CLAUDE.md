@@ -154,8 +154,9 @@ appended to the bottom of the HTML page. Design rules:
   -92.56191314472997 in `SPOT_COORDS`, rendered as a map link. The research
   brief called it "the Narrows" — that name found no corroboration and was
   dropped.
-- **`RIGGING_REFERENCE`**: static how-to content (White River rig build, bait
-  prep, boat tying, tied-boat presentations, fly-from-boat, etiquette) rendered
+- **`RIGGING_REFERENCE`**: static how-to content (White River rig build incl.
+  the tippet-ring cartridge system, bait prep, boat strategy — tie/drift/anchor,
+  tied-boat presentations, fly-from-boat, etiquette) rendered
   as collapsible blocks after the gear check. Unchanged by flow/season; spin
   and fly blocks tagged and kept separate; boat handling and etiquette shared.
 - **Standalone generation**: `uv run python fishing_report.py [--season fall|spring]

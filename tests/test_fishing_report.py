@@ -289,7 +289,9 @@ class TestSpeciesPrograms:
             spin_text = " ".join(gear["spin"])
             fly_text = " ".join(gear["fly"])
             # Fly vocabulary stays out of the spin list
-            assert "tippet" not in spin_text
+            # "tippet ring" is legitimate dual-use hardware in the cartridge
+            # rig; ban tippet-as-line vocabulary only
+            assert "tippet" not in spin_text.replace("tippet ring", "")
             assert "VersiLeader" not in spin_text
             assert "fly box" not in spin_text
             # Spin vocabulary stays out of the fly list
@@ -473,3 +475,25 @@ class TestQuietSummary:
         # No pointer cursor and no disclosure marker inviting interaction
         assert "cursor: default" in summary
         assert "list-style: none" in summary
+
+
+class TestCartridgeRig:
+    """The tippet-ring cartridge upgrade lives in the rig-build reference."""
+
+    def test_cartridge_system_documented(self):
+        report = generate_fishing_report(750, OCTOBER)
+        rig = next(s for s in report["rigging"]
+                   if s["title"].startswith("Building"))
+        text = " ".join(rig["items"])
+        assert "tippet-ring upgrade" in text
+        assert "8 lb fluoro base" in text
+        # The ladder and its band mapping
+        assert "12, 24 or 36 in" in text
+        assert "20, 32 or 44 in" in text
+        # Species selection moves to the cartridge
+        assert "4 lb mono = rainbows, 8 lb fluoro = browns" in text
+
+    def test_rings_in_both_gear_lists(self):
+        gear = generate_fishing_report(750, OCTOBER)["gear_check"]
+        assert any("tippet rings" in item for item in gear["spin"])
+        assert any("tippet ring" in item for item in gear["fly"])
