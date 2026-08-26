@@ -469,7 +469,8 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 
     <div class="timestamp">
         Data retrieved and processed on {current_time.strftime('%Y-%m-%d %H:%M:%S')} (Central time)<br>
-        Travel times are observational estimates (per <a href="https://www.hisplaceresort.net/white-river-info" target="_blank" style="color: #718096;">His Place Resort</a>) &mdash; always judge wading safety on-site.
+        Travel times are observational estimates (per <a href="https://www.hisplaceresort.net/white-river-info" target="_blank" style="color: #718096;">His Place Resort</a>) &mdash; always judge wading safety on-site.<br>
+        &copy; {current_time.year} Brian Carroll. All rights reserved.
     </div>
 </body>
 </html>'''
