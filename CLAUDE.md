@@ -145,10 +145,10 @@ appended to the bottom of the HTML page. Design rules:
   repo's to govern — when the species-program doctrine here changes a gear
   prescription, edit those inventory cells in the same session (the inventory's
   own header says AR prescriptions come from here); and when the inventory
-  changes, re-audit `GEAR_CHECK`. Two facts that stay true by Brian's word even
-  where the inventory disagrees: ALL fly gear is uninventoried (Recon 5-wt
-  etc. — a future inventory section), and soft craw/hellgrammite plastics are
-  NOT owned (Brian's word overrides the photo-ID'd utility-plastics row).
+  changes, re-audit `GEAR_CHECK`. Two standing facts by Brian's word: ALL fly gear is
+  uninventoried (Recon 5-wt etc. — a future inventory section), and soft
+  craw/hellgrammite plastics are NOT owned (the inventory's mis-ID'd
+  utility-plastics row was corrected to match, 2026-08-26).
   Brian maintains the inventory file manually. Fresh bait is bought in
   Arkansas, not packed.
 - **Year-round, collapsed by default**: the whole report is a `<details>`
