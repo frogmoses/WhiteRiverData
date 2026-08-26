@@ -447,6 +447,7 @@ GEAR_CHECK = {
     "spin": [
         "Rainbow program leader: 4 lb clear/green mono (~$4) — the owned 20/30 lb fluoro is rope in this water",
         "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
+        "2 mm tippet rings (~$6 for 10, not currently owned) for the cartridge version of the rig — plus an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
         "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
@@ -456,6 +457,7 @@ GEAR_CHECK = {
         "Rainbow program tippet: 4 lb-class fluoro (5X), likely already owned",
         "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
         "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
+        "A 2 mm tippet ring finishes the tightline leader butt — same 10-pack as the spin cartridge rings",
     ],
 }
 
@@ -477,6 +479,9 @@ RIGGING_REFERENCE = [
             "Short leg (6–10 in): bell sinker. Long leg (18–36 in): hook",
             "Top end to the main line with a size 10–12 barrel swivel — or tie direct for bigger, spookier fish",
             "Tune it: faster water → shorten the hook leg to 18–24 in (a long leader lays flat); minimum flow → lengthen to 30–48 in; snaggy bottom → tie the sinker leg in lighter line so it breaks away, or attach the bell with a rubber band",
+            "The tippet-ring upgrade — fixes the one-piece rig's can't-lengthen problem: tie the rig as a permanent 8 lb fluoro base (swivel, ~12 in butt, dropper loop + sinker leg, then an 8 in stub ending in a 2 mm tippet ring) and clinch pre-tied hook leaders ('cartridges') to the ring. Cartridge ladder: 12, 24 or 36 in for hook legs of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Trim to tune; swap up when the water drops",
+            "On the ring rig, the cartridge picks the species program — each program's 'Leader' spec applies to the cartridge: 4 lb mono = rainbows, 8 lb fluoro = browns. The 8 lb base sits 20+ in above the bait, so the fish inspects only cartridge-class line, and a 4 lb cartridge under the 8 lb base is automatically sacrificial: hook snags cost the cartridge, never the base, ring or bell",
+            "Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. Improved clinch at the ring on both sides — a Palomar won't thread a 2 mm ring with a 3 ft leader",
             "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7 · 3–5 units #6 · heavy #4 — then adjust one size by the calibration rule",
             "Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
             "The livebait drift exception (sculpin, minnows) — skip the Y entirely: leader straight to the hook, split shot pinched ~a foot up (stack shot as the current demands). A pinched shot rides over what a hanging bell snags in, and the bait swims naturally",
