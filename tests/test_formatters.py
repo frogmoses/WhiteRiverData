@@ -566,3 +566,43 @@ class TestCopyrightNotice:
             relevant_entry=normal_conditions_data[0],
         )
         assert f"&copy; {base_time.year} Brian Carroll. All rights reserved." in html
+
+
+class TestFeedFailedBanner:
+    """The live-feed-unavailable banner shown when serving cached data."""
+
+    def _summary_kwargs(self, base_time):
+        entry = {'date_time': base_time - timedelta(hours=2),
+                 'turbine_release': 6600}
+        return dict(
+            current_time=base_time,
+            white_hole_cfs=6600,
+            generators_equivalent=2.0,
+            water_state="stable",
+            wading_condition="still wadable",
+            boating_condition="ideal boating",
+            recent_trend="remained relatively steady",
+            forecast="stable conditions expected",
+            latest_entry=entry,
+            relevant_entry=entry,
+        )
+
+    def test_html_banner_shown_when_feed_failed(self, base_time):
+        html = generate_html_summary(
+            **self._summary_kwargs(base_time), feed_failed=True)
+        assert "LIVE DAM FEED UNAVAILABLE" in html
+
+    def test_html_banner_absent_by_default(self, base_time):
+        html = generate_html_summary(**self._summary_kwargs(base_time))
+        assert "LIVE DAM FEED UNAVAILABLE" not in html
+
+    def test_text_warning_shown_when_feed_failed(self, base_time):
+        text = generate_text_summary(
+            **self._summary_kwargs(base_time), feed_failed=True)
+        assert "Live dam feed unavailable" in text
+
+    def test_feed_failed_and_stale_warnings_coexist(self, base_time):
+        text = generate_text_summary(
+            **self._summary_kwargs(base_time), feed_failed=True, stale_hours=5.0)
+        assert "Live dam feed unavailable" in text
+        assert "5.0 hours old" in text

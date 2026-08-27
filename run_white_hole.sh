@@ -39,6 +39,12 @@ done
 echo "Committing updated output files..."
 git add "${OUTPUT_FILES[@]}"
 
+# Outage-fallback cache: must be committed (the stash -u above would discard
+# an untracked copy), but is absent when no run has succeeded yet
+if [[ -f "$BASE_DIR/last_good_data.json" ]]; then
+    git add "$BASE_DIR/last_good_data.json"
+fi
+
 # Only commit if there are changes
 if git diff --cached --quiet; then
     echo "No changes to commit."

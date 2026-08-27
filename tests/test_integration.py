@@ -311,3 +311,69 @@ class TestBugFixes:
         # 6000 < 10000, so should be falling
         assert "falling" in forecast.lower(), \
             f"Forecast should detect falling water (10000 -> 6000), got: {forecast}"
+
+
+class TestOutageFallback:
+    """When the live fetch fails, the page falls back to the last-good cache."""
+
+    CENTRAL = ZoneInfo("America/Chicago")
+
+    def _entry(self, dt, cfs):
+        return {'date_time': dt, 'elevation': 657.0, 'tailwater': 450.0,
+                'generation': 100, 'turbine_release': cfs,
+                'spillway_release': 0, 'total_release': cfs}
+
+    def _error_sentinel(self, now):
+        return [{'date_time': now, 'elevation': None, 'tailwater': None,
+                 'generation': None, 'turbine_release': 0,
+                 'spillway_release': 0, 'total_release': 0, 'error': True}]
+
+    def test_error_data_with_cache_serves_report(self):
+        from data_fetcher import save_last_good_data
+        now = datetime(2026, 8, 27, 6, 0, tzinfo=self.CENTRAL)
+        good = [self._entry(now - timedelta(hours=h), 6600) for h in range(6, 0, -1)]
+        save_last_good_data(good)
+
+        text = generate_white_hole_summary(
+            output_format="text", data=self._error_sentinel(now), current_time=now)
+        assert "WHITE HOLE CURRENT CONDITIONS SUMMARY" in text
+        assert "Live dam feed unavailable" in text
+        assert "Unable to retrieve" not in text
+
+    def test_error_data_without_cache_serves_error_page(self):
+        now = datetime(2026, 8, 27, 6, 0, tzinfo=self.CENTRAL)
+        text = generate_white_hole_summary(
+            output_format="text", data=self._error_sentinel(now), current_time=now)
+        assert "Unable to retrieve" in text
+
+    def test_error_data_with_expired_cache_serves_error_page(self):
+        from data_fetcher import save_last_good_data
+        now = datetime(2026, 8, 27, 6, 0, tzinfo=self.CENTRAL)
+        old = [self._entry(now - timedelta(hours=30), 6600)]
+        save_last_good_data(old)
+
+        text = generate_white_hole_summary(
+            output_format="text", data=self._error_sentinel(now), current_time=now)
+        assert "Unable to retrieve" in text
+
+    def test_cached_data_older_than_stale_threshold_gets_both_warnings(self):
+        from data_fetcher import save_last_good_data
+        now = datetime(2026, 8, 27, 6, 0, tzinfo=self.CENTRAL)
+        good = [self._entry(now - timedelta(hours=h), 6600) for h in (6, 5, 4)]
+        save_last_good_data(good)
+
+        text = generate_white_hole_summary(
+            output_format="text", data=self._error_sentinel(now), current_time=now)
+        assert "Live dam feed unavailable" in text
+        assert "hours old" in text
+
+    def test_html_fallback_shows_banner(self):
+        from data_fetcher import save_last_good_data
+        now = datetime(2026, 8, 27, 6, 0, tzinfo=self.CENTRAL)
+        good = [self._entry(now - timedelta(hours=h), 6600) for h in range(6, 0, -1)]
+        save_last_good_data(good)
+
+        html = generate_white_hole_summary(
+            output_format="html", data=self._error_sentinel(now), current_time=now)
+        assert "LIVE DAM FEED UNAVAILABLE" in html
+        assert "headline-banner" in html

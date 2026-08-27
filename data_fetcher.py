@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+import json
 import re
 
 from playwright.sync_api import sync_playwright
@@ -110,6 +111,71 @@ def get_bull_shoals_data():
     except Exception as e:
         print(f"Error fetching data: {e}")
         return get_error_data()
+
+# Cache of the last successful fetch, used as a fallback when the USACE site
+# is unreachable (e.g. the Aug 2026 army.mil DNS outage). Written relative to
+# the working directory: production runs from the repo root and commits the
+# file (see run_white_hole.sh — a plain untracked file would be lost to its
+# `git stash -u`); tests run from a tmp dir and stay isolated.
+LAST_GOOD_CACHE_FILE = "last_good_data.json"
+
+
+def save_last_good_data(data, filename=LAST_GOOD_CACHE_FILE):
+    """Persist a successful fetch so a later outage can fall back to it."""
+    try:
+        serializable = []
+        for entry in data:
+            entry = dict(entry)
+            entry['date_time'] = entry['date_time'].isoformat()
+            serializable.append(entry)
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(serializable, f, indent=1)
+        return True
+    except Exception as e:
+        print(f"Warning: could not save last-good data cache: {e}")
+        return False
+
+
+def load_last_good_data(filename=LAST_GOOD_CACHE_FILE, max_age_hours=24,
+                        current_time=None):
+    """
+    Load the cached last successful fetch.
+
+    Returns the data list, or None when the cache is missing, unreadable,
+    error-flagged, or its newest reading is older than max_age_hours
+    (checked only when current_time is given).
+    """
+    try:
+        with open(filename, encoding='utf-8') as f:
+            raw = json.load(f)
+
+        data = []
+        for entry in raw:
+            entry = dict(entry)
+            parsed = datetime.fromisoformat(entry['date_time'])
+            if parsed.tzinfo is not None:
+                # fromisoformat yields a fixed-offset tz; normalize to the
+                # dam's zone so downstream arithmetic crosses DST correctly
+                parsed = parsed.astimezone(DAM_TIMEZONE)
+            entry['date_time'] = parsed
+            data.append(entry)
+
+        if not data or any(entry.get('error') for entry in data):
+            return None
+
+        if current_time is not None and max_age_hours is not None:
+            newest = max(entry['date_time'] for entry in data)
+            age_hours = (current_time - newest).total_seconds() / 3600
+            if age_hours > max_age_hours:
+                return None
+
+        return data
+    except FileNotFoundError:
+        return None
+    except Exception as e:
+        print(f"Warning: could not load last-good data cache: {e}")
+        return None
+
 
 def get_error_data():
     """Return error data when web scraping fails."""
