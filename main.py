@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
-from data_fetcher import get_bull_shoals_data, DAM_TIMEZONE
+from data_fetcher import (
+    get_bull_shoals_data, DAM_TIMEZONE,
+    save_last_good_data, load_last_good_data
+)
 from forecast_fetcher import get_swpa_forecast
 from water_calculator import (
     calculate_travel_time, determine_water_state, get_fishing_condition,
@@ -16,6 +19,16 @@ from fishing_report import generate_fishing_report, render_fishing_report_html
 # Warn on the page when the newest dam reading is older than this many hours
 # (the USACE feed normally updates hourly but sometimes stalls)
 STALE_DATA_HOURS = 3
+
+# When the live fetch fails, fall back to the last successful fetch — but only
+# if its newest reading is within this window; beyond it the error page is
+# more honest than day-old conditions
+MAX_CACHE_AGE_HOURS = 24
+
+
+def _is_error_data(data):
+    """True for the error sentinel returned by data_fetcher on fetch failure."""
+    return len(data) == 1 and data[0].get('error', False)
 
 
 def generate_white_hole_summary(output_format="text", data=None, dataset_name=None, current_time=None):
@@ -40,6 +53,18 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
     if data is None:
         data = get_bull_shoals_data()
 
+    # Live fetch failed — fall back to the cached last successful fetch so an
+    # upstream outage degrades to a (possibly stale-flagged) report instead of
+    # replacing the whole page with an error
+    feed_failed = False
+    if not data or _is_error_data(data):
+        cached = load_last_good_data(
+            max_age_hours=MAX_CACHE_AGE_HOURS, current_time=current_time)
+        if cached:
+            print("Warning: live USACE fetch failed; using last-good data cache")
+            data = cached
+            feed_failed = True
+
     if not data:
         if output_format == "html":
             return generate_error_html("Unable to retrieve data from Bull Shoals Dam.")
@@ -47,7 +72,7 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
             return "Unable to retrieve data from Bull Shoals Dam."
 
     # Check if we got error data
-    if len(data) == 1 and data[0].get('error', False):
+    if _is_error_data(data):
         error_message = """
 ERROR: Unable to retrieve data from Bull Shoals Dam website.
 Please try again later or check your internet connection.
@@ -158,6 +183,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             timeline_data=timeline_data,
             forecast_timeline=forecast_timeline,
             stale_hours=stale_hours,
+            feed_failed=feed_failed,
             fishing_report_html=fishing_report_html
         )
 
@@ -181,12 +207,18 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             forecast=forecast,
             latest_entry=latest_entry,
             relevant_entry=relevant_entry,
-            stale_hours=stale_hours
+            stale_hours=stale_hours,
+            feed_failed=feed_failed
         )
 
 if __name__ == "__main__":
     # Get Bull Shoals Dam data once
     data = get_bull_shoals_data()
+
+    # A successful fetch refreshes the outage-fallback cache (production only:
+    # generate_test_html and tests never write it)
+    if data and not _is_error_data(data):
+        save_last_good_data(data)
 
     # Generate text summary
     text_summary = generate_white_hole_summary(output_format="text", data=data)

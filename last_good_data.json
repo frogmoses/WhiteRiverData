@@ -1,0 +1,317 @@
+[
+ {
+  "date_time": "2026-08-25T13:00:00-05:00",
+  "elevation": 657.86,
+  "tailwater": 451.07,
+  "generation": 33,
+  "turbine_release": 2847,
+  "spillway_release": 0,
+  "total_release": 2847
+ },
+ {
+  "date_time": "2026-08-25T14:00:00-05:00",
+  "elevation": 657.86,
+  "tailwater": 452.64,
+  "generation": 89,
+  "turbine_release": 7823,
+  "spillway_release": 0,
+  "total_release": 7823
+ },
+ {
+  "date_time": "2026-08-25T15:00:00-05:00",
+  "elevation": 657.85,
+  "tailwater": 454.5,
+  "generation": 153,
+  "turbine_release": 11817,
+  "spillway_release": 0,
+  "total_release": 11817
+ },
+ {
+  "date_time": "2026-08-25T16:00:00-05:00",
+  "elevation": 657.8,
+  "tailwater": 455.52,
+  "generation": 221,
+  "turbine_release": 15260,
+  "spillway_release": 0,
+  "total_release": 15260
+ },
+ {
+  "date_time": "2026-08-25T17:00:00-05:00",
+  "elevation": 657.78,
+  "tailwater": 457.14,
+  "generation": 266,
+  "turbine_release": 17912,
+  "spillway_release": 0,
+  "total_release": 17912
+ },
+ {
+  "date_time": "2026-08-25T18:00:00-05:00",
+  "elevation": 657.76,
+  "tailwater": 457.21,
+  "generation": 267,
+  "turbine_release": 17877,
+  "spillway_release": 0,
+  "total_release": 17877
+ },
+ {
+  "date_time": "2026-08-25T19:00:00-05:00",
+  "elevation": 657.8,
+  "tailwater": 456.46,
+  "generation": 109,
+  "turbine_release": 9100,
+  "spillway_release": 0,
+  "total_release": 9100
+ },
+ {
+  "date_time": "2026-08-25T20:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 454.92,
+  "generation": 114,
+  "turbine_release": 8827,
+  "spillway_release": 0,
+  "total_release": 8827
+ },
+ {
+  "date_time": "2026-08-25T21:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 453.06,
+  "generation": 38,
+  "turbine_release": 3305,
+  "spillway_release": 0,
+  "total_release": 3305
+ },
+ {
+  "date_time": "2026-08-25T22:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 450.86,
+  "generation": 9,
+  "turbine_release": 830,
+  "spillway_release": 0,
+  "total_release": 830
+ },
+ {
+  "date_time": "2026-08-25T23:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 450.77,
+  "generation": 8,
+  "turbine_release": 758,
+  "spillway_release": 0,
+  "total_release": 758
+ },
+ {
+  "date_time": "2026-08-26T00:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 450.74,
+  "generation": 8,
+  "turbine_release": 699,
+  "spillway_release": 0,
+  "total_release": 699
+ },
+ {
+  "date_time": "2026-08-26T01:00:00-05:00",
+  "elevation": 657.78,
+  "tailwater": 450.72,
+  "generation": 8,
+  "turbine_release": 711,
+  "spillway_release": 0,
+  "total_release": 711
+ },
+ {
+  "date_time": "2026-08-26T02:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 450.72,
+  "generation": 8,
+  "turbine_release": 732,
+  "spillway_release": 0,
+  "total_release": 732
+ },
+ {
+  "date_time": "2026-08-26T03:00:00-05:00",
+  "elevation": 657.8,
+  "tailwater": 450.74,
+  "generation": 8,
+  "turbine_release": 751,
+  "spillway_release": 0,
+  "total_release": 751
+ },
+ {
+  "date_time": "2026-08-26T04:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 450.72,
+  "generation": 8,
+  "turbine_release": 719,
+  "spillway_release": 0,
+  "total_release": 719
+ },
+ {
+  "date_time": "2026-08-26T05:00:00-05:00",
+  "elevation": 657.8,
+  "tailwater": 450.72,
+  "generation": 8,
+  "turbine_release": 719,
+  "spillway_release": 0,
+  "total_release": 719
+ },
+ {
+  "date_time": "2026-08-26T06:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 450.72,
+  "generation": 8,
+  "turbine_release": 735,
+  "spillway_release": 0,
+  "total_release": 735
+ },
+ {
+  "date_time": "2026-08-26T07:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 450.72,
+  "generation": 7,
+  "turbine_release": 699,
+  "spillway_release": 0,
+  "total_release": 699
+ },
+ {
+  "date_time": "2026-08-26T08:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 450.74,
+  "generation": 8,
+  "turbine_release": 749,
+  "spillway_release": 0,
+  "total_release": 749
+ },
+ {
+  "date_time": "2026-08-26T09:00:00-05:00",
+  "elevation": 657.8,
+  "tailwater": 450.74,
+  "generation": 8,
+  "turbine_release": 721,
+  "spillway_release": 0,
+  "total_release": 721
+ },
+ {
+  "date_time": "2026-08-26T10:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 450.72,
+  "generation": 8,
+  "turbine_release": 721,
+  "spillway_release": 0,
+  "total_release": 721
+ },
+ {
+  "date_time": "2026-08-26T11:00:00-05:00",
+  "elevation": 657.79,
+  "tailwater": 450.74,
+  "generation": 8,
+  "turbine_release": 721,
+  "spillway_release": 0,
+  "total_release": 721
+ },
+ {
+  "date_time": "2026-08-26T12:00:00-05:00",
+  "elevation": 657.73,
+  "tailwater": 451.27,
+  "generation": 35,
+  "turbine_release": 2899,
+  "spillway_release": 0,
+  "total_release": 2899
+ },
+ {
+  "date_time": "2026-08-26T13:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 452.92,
+  "generation": 73,
+  "turbine_release": 5677,
+  "spillway_release": 0,
+  "total_release": 5677
+ },
+ {
+  "date_time": "2026-08-26T14:00:00-05:00",
+  "elevation": 657.7,
+  "tailwater": 455.49,
+  "generation": 203,
+  "turbine_release": 13379,
+  "spillway_release": 0,
+  "total_release": 13379
+ },
+ {
+  "date_time": "2026-08-26T15:00:00-05:00",
+  "elevation": 657.74,
+  "tailwater": 456.61,
+  "generation": 232,
+  "turbine_release": 15873,
+  "spillway_release": 0,
+  "total_release": 15873
+ },
+ {
+  "date_time": "2026-08-26T16:00:00-05:00",
+  "elevation": 657.72,
+  "tailwater": 455.64,
+  "generation": 227,
+  "turbine_release": 15681,
+  "spillway_release": 0,
+  "total_release": 15681
+ },
+ {
+  "date_time": "2026-08-26T17:00:00-05:00",
+  "elevation": 657.64,
+  "tailwater": 457.33,
+  "generation": 278,
+  "turbine_release": 18533,
+  "spillway_release": 0,
+  "total_release": 18533
+ },
+ {
+  "date_time": "2026-08-26T18:00:00-05:00",
+  "elevation": 657.64,
+  "tailwater": 457.56,
+  "generation": 299,
+  "turbine_release": 19594,
+  "spillway_release": 0,
+  "total_release": 19594
+ },
+ {
+  "date_time": "2026-08-26T19:00:00-05:00",
+  "elevation": 657.67,
+  "tailwater": 457.68,
+  "generation": 282,
+  "turbine_release": 18653,
+  "spillway_release": 0,
+  "total_release": 18653
+ },
+ {
+  "date_time": "2026-08-26T20:00:00-05:00",
+  "elevation": 657.61,
+  "tailwater": 456.58,
+  "generation": 220,
+  "turbine_release": 15335,
+  "spillway_release": 0,
+  "total_release": 15335
+ },
+ {
+  "date_time": "2026-08-26T21:00:00-05:00",
+  "elevation": 657.68,
+  "tailwater": 455.11,
+  "generation": 110,
+  "turbine_release": 8074,
+  "spillway_release": 0,
+  "total_release": 8074
+ },
+ {
+  "date_time": "2026-08-26T22:00:00-05:00",
+  "elevation": 657.68,
+  "tailwater": 453.0,
+  "generation": 32,
+  "turbine_release": 2293,
+  "spillway_release": 0,
+  "total_release": 2293
+ },
+ {
+  "date_time": "2026-08-26T23:00:00-05:00",
+  "elevation": 657.66,
+  "tailwater": 450.83,
+  "generation": 8,
+  "turbine_release": 741,
+  "spillway_release": 0,
+  "total_release": 741
+ }
+]

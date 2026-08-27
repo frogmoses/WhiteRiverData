@@ -117,6 +117,7 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 - **MW→CFS** (`forecast_fetcher.mw_to_cfs`): linear via `BSD_FULL_MW = 391`, `BSD_FULL_CFS = 26400` (validated ±5% against actuals), plus `BSD_MIN_FLOW_CFS = 250` base flow, floored at `BSD_MIN_TOTAL_CFS = 750` — the dam never runs below its minimum-flow release (~750 observed, ~850 per His Place). Entry `min_flow_cfs` is `cfs - generation_cfs` so the displayed breakdown always sums.
 - **Forecast validity** (`forecast_fetcher.get_swpa_forecast`): rejects the day-of-week page (returns `[]`) if its `<title>` date doesn't match today — a stale page must not be re-anchored to the current date.
 - **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
+- **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails (empty data or the error sentinel), `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed` flag through both formatters) — plus the stale banner once the cached data ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the original error page. The cache file is **committed** by `run_white_hole.sh` (its `git stash -u` would destroy an untracked copy). Motivated by the Aug 27 2026 army.mil DNS outage, which blanked the page for hours despite the USACE web server being up.
 - **Landmarks** (`landmarks.py`): pinned GPS coordinates (Brian's in-river points beside each landmark) for the 8 dam→White Hole locations; river miles are cumulative haversine chord distances along the chain, scaled so The White Hole lands exactly on `WHITE_HOLE_MILE = 7.0` (the raw chord sum ~6.73 mi undercuts the meanders; scaling preserves the His Place calibration). `LANDMARK_MILES` drives the chart's `points`/`point_labels` and the fishing report's `REACH_SPOTS`/`SPOT_COORDS` (Gaston's ≈ mile 4.09). Cranor's Island stays at an estimated 9.5 — no GPS chain below White Hole.
 
 ### Fishing Report (`fishing_report.py`)
@@ -209,7 +210,7 @@ uv run pytest -m integration                   # Only integration tests
 
 ### Pitfalls
 
-- Tests run from a temporary directory (autouse `run_in_tmp_path` fixture in `conftest.py`), so generated charts/HTML stay out of the repo root. Running `main.py` or `generate_test_html.py` directly, however, does write into the repo root — restore `vertical_flow_chart.png` and `white_hole_conditions.html` with `git checkout` if the run wasn't meant to be committed.
+- Tests run from a temporary directory (autouse `run_in_tmp_path` fixture in `conftest.py`), so generated charts/HTML stay out of the repo root. Running `main.py` or `generate_test_html.py` directly, however, does write into the repo root — restore `vertical_flow_chart.png`, `white_hole_conditions.html`, and (for `main.py`) `last_good_data.json` with `git checkout` if the run wasn't meant to be committed.
 - Never mix naive and aware datetimes in one dataset/call (comparison raises `TypeError`).
 - The remote `master` advances hourly (Pi output commits) — use `git pull --rebase` before pushing.
 - `data_fetcher.get_error_data()` returns an error sentinel (single entry with `error: True`) used when scraping fails.
@@ -240,6 +241,6 @@ https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
 1. Uses venv Python if available, falls back to system Python
 2. Stashes any leftover changes, pulls latest code from GitHub (`git pull --ff-only`)
 3. Runs `main.py` to generate HTML and chart files
-4. Commits the 2 output files and pushes to GitHub (served via GitHub Pages)
+4. Commits the 2 output files (plus `last_good_data.json` when present) and pushes to GitHub (served via GitHub Pages)
 
 Commit-message timestamps from the Pi are Eastern; the report content itself is Central.
