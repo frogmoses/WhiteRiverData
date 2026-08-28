@@ -141,7 +141,7 @@ BAND_CONTENT = {
                    "of line the whole Y is tied from — both legs; your main line stays as spooled.",
             "browns": [
                 "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
-                "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook or large snelled Octopus, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
+                "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
                 "Whole inflated night crawler (hook first, then 4–5 air bubbles) on the White River rig — the long hook leg lets it float and drift",
                 "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
             ],
@@ -456,7 +456,7 @@ GEAR_CHECK = {
         "Worm blower (~$3, not owned) — the inflated-crawler presentations depend on it",
         "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, PowerBait (pink/white floating worms or Mice Tails; orange-garlic in fall), Power Eggs, cocktail shrimp, corn — plus mini marshmallows for flotation",
         "Respool the AR rod pair (staged at Dad's) before fishing — the inventory's rod rack now carries their specs and a per-rod respool pick (recorded 2026-08-26; the spools stay unknown-test until the respool actually happens): the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main",
-        "The browns rod travels from NY: the 2-piece Berkley Cherrywood CWD702MS (7 ft medium, Abu Garcia Black Max 30), respooled per the inventory heavier than the 8 lb cartridge so break-offs happen at the cartridge, never the main line. Pack it for any browns or high-generation agenda — it is the only rod aboard that casts the jerkbait class",
+        "The browns rod travels from NY: the 2-piece Berkley Cherrywood CWD702MS (7 ft medium, Abu Garcia Black Max 30). Respool DONE 2026-08-28 — it now carries a known 10 lb mono main, which out-tests the 8 lb browns cartridge, so break-offs happen at the cartridge and never the main line. Pack it for any browns or high-generation agenda — it is the only rod aboard that casts the jerkbait class",
     ],
     "fly": [
         "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
