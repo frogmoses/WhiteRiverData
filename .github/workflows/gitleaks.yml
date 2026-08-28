@@ -19,5 +19,8 @@ jobs:
 
       - name: Run gitleaks
         uses: gitleaks/gitleaks-action@v3
-        with:
-          args: detect --source . --log-opts="--all"
+        env:
+          # Without a token the action's owner-type lookup runs unauthenticated
+          # and intermittently hits the runner IP's anonymous rate limit; the
+          # failed lookup makes it demand a GITLEAKS_LICENSE (org-only) and fail
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
