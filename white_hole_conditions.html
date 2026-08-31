@@ -3,51 +3,503 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>White Hole Conditions - Error</title>
+    <title>White Hole Conditions - 2026-08-31 05:00</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f7fafc;
         }
         h1 {
             color: #2c3e50;
-            border-bottom: 2px solid #e74c3c;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        .headline-banner {
+            background-color: #319795;
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .headline-banner .main-status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .headline-banner .forecast-status {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        .current-conditions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .current-conditions h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #e2e8f0;
             padding-bottom: 10px;
         }
-        .error-box {
-            background-color: #fef0f0;
-            border-left: 4px solid #e74c3c;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
+        .flow-display {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2b6cb0;
+        }
+        .generator-display {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .condition-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .pill.wading {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .pill.boating {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .timeline-box {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .timeline-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .chart-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .webcam-link {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #bee3f8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .webcam-link:hover {
+            background-color: #bee3f8;
+        }
+        .details-section {
+            background-color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .details-section summary {
+            list-style: none;
+        }
+        .details-section summary::-webkit-details-marker {
+            display: none;
         }
         .timestamp {
-            font-size: 0.8em;
-            color: #7f8c8d;
-            text-align: right;
+            font-size: 0.85em;
+            color: #718096;
+            text-align: center;
             margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .headline-banner .main-status {
+                font-size: 20px;
+            }
+            .headline-banner .forecast-status {
+                font-size: 16px;
+            }
+            .flow-display {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>White Hole Conditions - Error</h1>
+    <h1>White Hole Current Conditions</h1>
+    <p class="subtitle">Monday, August 31, 2026 at 05:00 AM</p>
 
-    <div class="error-box">
-        <p>
-ERROR: Unable to retrieve data from Bull Shoals Dam website.
-Please try again later or check your internet connection.
 
-The White Hole water conditions cannot be determined at this time.
-</p>
+    <!-- HEADLINE BANNER -->
+    <div class="headline-banner">
+        <div class="main-status">✅ GOOD WADING — Conditions favorable</div>
+        <div class="forecast-status">➡️ STABLE CONDITIONS expected</div>
+        <div class="forecast-status" style="margin-top: 5px; opacity: 0.9;">📅 HIGH WATER SCHEDULED — ~3:45 PM</div>
     </div>
 
+    <!-- CURRENT CONDITIONS -->
+    <div class="current-conditions">
+        <h3>Current Conditions at White Hole</h3>
+        <div class="flow-display">725 CFS</div>
+        <div class="generator-display">Equivalent to 0-1 generators</div>
+        <div class="condition-pills">
+            <span class="pill wading">Excellent Wading</span>
+            <span class="pill boating">Low For Boating</span>
+        </div>
+        <a href="https://www.youtube.com/channel/UCAXhb9nFnsfu367AthDrgIA/live" target="_blank" class="webcam-link" style="margin-top: 15px;">
+            📹 View Live Webcam
+        </a>
+    </div>
+
+    <!-- WATER TIMELINE -->
+    
+        <div class="timeline-box">
+            <h3>Water Timeline</h3>
+            <p style="color: #666; margin-bottom: 15px;">Water released at the dam takes about 1.5&ndash;4 hours to reach White Hole (faster at higher flows)</p>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px; text-align: left;">Time</th>
+                        <th style="padding: 10px; text-align: left;">Flow</th>
+                        <th style="padding: 10px; text-align: left;">At White Hole</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #6b46c1; text-transform: uppercase; letter-spacing: 0.05em; background-color: #f3e8ff;">Scheduled (SWPA forecast)</td></tr>
+                
+                    <tr style="background-color: #faf5ff; ">
+                        <td style="padding: 10px; font-weight: bold;">8 AM</td>
+                        <td style="padding: 10px;">750 CFS<br><small style="color: #666;">(0-1 generators: 473 generation + 277 min flow)</small></td>
+                        <td style="padding: 10px;">~11:44 AM
+                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: #d1fae5; color: #065f46;">Excellent Wading</span>
+                        </td>
+                    </tr>
+                
+                    <tr style="background-color: #faf5ff; ">
+                        <td style="padding: 10px; font-weight: bold;">7 AM</td>
+                        <td style="padding: 10px;">750 CFS<br><small style="color: #666;">(0-1 generators: 473 generation + 277 min flow)</small></td>
+                        <td style="padding: 10px;">~10:44 AM
+                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: #d1fae5; color: #065f46;">Excellent Wading</span>
+                        </td>
+                    </tr>
+                
+                    <tr style="background-color: #faf5ff; ">
+                        <td style="padding: 10px; font-weight: bold;">6 AM</td>
+                        <td style="padding: 10px;">750 CFS<br><small style="color: #666;">(0-1 generators: 473 generation + 277 min flow)</small></td>
+                        <td style="padding: 10px;">~9:44 AM
+                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: #d1fae5; color: #065f46;">Excellent Wading</span>
+                        </td>
+                    </tr>
+                
+                    <tr style="background-color: #faf5ff; ">
+                        <td style="padding: 10px; font-weight: bold;">5 AM</td>
+                        <td style="padding: 10px;">750 CFS<br><small style="color: #666;">(0-1 generators: 473 generation + 277 min flow)</small></td>
+                        <td style="padding: 10px;">~8:44 AM
+                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: #d1fae5; color: #065f46;">Excellent Wading</span>
+                        </td>
+                    </tr>
+                
+            
+                    
+                <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #2b6cb0; text-transform: uppercase; letter-spacing: 0.05em; background-color: #ebf8ff;">Actual (dam readings)</td></tr>
+                
+                    <tr style="background-color: #ebf8ff;">
+                        <td style="padding: 10px; font-weight: bold;">4:00 AM</td>
+                        <td style="padding: 10px;">764 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
+                        <td style="padding: 10px;"><span style="color: #2b6cb0;">→ Arrives ~7:44 AM (in 163 min)</span></td>
+                    </tr>
+                
+                    <tr style="background-color: #ebf8ff;">
+                        <td style="padding: 10px; font-weight: bold;">3:00 AM</td>
+                        <td style="padding: 10px;">767 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
+                        <td style="padding: 10px;"><span style="color: #2b6cb0;">→ Arrives ~6:44 AM (in 103 min)</span></td>
+                    </tr>
+                
+                    <tr style="background-color: #ebf8ff;">
+                        <td style="padding: 10px; font-weight: bold;">2:00 AM</td>
+                        <td style="padding: 10px;">695 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
+                        <td style="padding: 10px;"><span style="color: #2b6cb0;">→ Arrives ~5:44 AM (in 43 min)</span></td>
+                    </tr>
+                
+                    <tr style="background-color: #e6fffa;">
+                        <td style="padding: 10px; font-weight: bold;">1:00 AM</td>
+                        <td style="padding: 10px;">725 CFS<br><small style="color: #666;">(0-1 generators)</small></td>
+                        <td style="padding: 10px;"><span style="color: #319795; font-weight: bold;">← AT WHITE HOLE NOW</span></td>
+                    </tr>
+                
+            
+                </tbody>
+            </table>
+            
+            <p style="color: #999; font-size: 0.8em; margin-top: 10px;">Scheduled CFS are estimates based on generation plus ~250 CFS minimum base flow. Actual release may vary.</p>
+            <p style="color: #999; font-size: 0.8em; margin-top: 5px;">Forecast source: <a href="https://www.energy.gov/swpa/generation-schedules" target="_blank" style="color: #999;">SWPA Generation Schedules</a></p>
+            
+        </div>
+        
+
+    <!-- CHART PLACEHOLDER -->
+    <div class="chart-section">
+        <h3>Water Flow Progression</h3>
+        <p style="color: #666;">Chart shows water traveling from Bull Shoals Dam to White Hole</p>
+        <div id="chart-container" style="text-align: center; margin: 20px 0;">
+            <img src="vertical_flow_chart.png" alt="Water Flow Progression Chart" style="max-width: 100%; height: auto; border-radius: 8px;">
+        </div>
+        <p style="color: #666; font-size: 0.85em; margin-top: 10px;">📍 Tap a landmark for its map pin: <a href="https://www.google.com/maps?q=36.365933396896075,-92.57517125493467" target="_blank" style="color: #2b6cb0; text-decoration: none;">Bull Shoals Dam</a> · <a href="https://www.google.com/maps?q=36.355581428703694,-92.59449628292708" target="_blank" style="color: #2b6cb0; text-decoration: none;">White River State Park</a> · <a href="https://www.google.com/maps?q=36.344313392658236,-92.58458283870175" target="_blank" style="color: #2b6cb0; text-decoration: none;">Copper John's</a> · <a href="https://www.google.com/maps?q=36.34317267222181,-92.56930497596221" target="_blank" style="color: #2b6cb0; text-decoration: none;">Cane Island</a> · <a href="https://www.google.com/maps?q=36.347597191038865,-92.55540040484095" target="_blank" style="color: #2b6cb0; text-decoration: none;">Gaston's</a> · <a href="https://www.google.com/maps?q=36.351399311192914,-92.53458646255478" target="_blank" style="color: #2b6cb0; text-decoration: none;">The Honey Hole</a> · <a href="https://www.google.com/maps?q=36.33950842714197,-92.52840665295527" target="_blank" style="color: #2b6cb0; text-decoration: none;">Big Island</a> · <a href="https://www.google.com/maps?q=36.329897607316106,-92.53355649411128" target="_blank" style="color: #2b6cb0; text-decoration: none;">The White Hole</a></p>
+    </div>
+
+    <!-- COLLAPSIBLE DETAILS -->
+    <details class="details-section">
+        <summary style="cursor: pointer; font-weight: bold; padding: 15px; background: #f7fafc; border-radius: 8px;">
+            📋 Calculation Details
+        </summary>
+        <div style="padding: 15px;">
+            <ul>
+                <li>Latest dam reading: 764 CFS at 2026-08-31 04:00</li>
+                <li>Travel time to White Hole: 3.7 hours at current flow</li>
+                <li>White Hole conditions based on dam reading from: 2026-08-31 01:00</li>
+            </ul>
+        </div>
+    </details>
+
+    
+        <details class="details-section">
+            <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #f7fafc; border-radius: 8px;">
+                📊 View Last 12 Hours of Dam Readings
+            </summary>
+            <div style="padding: 15px;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2; border-bottom: 1px solid #ddd;">
+                            <th style="padding: 8px; text-align: left;">Date/Time</th>
+                            <th style="padding: 8px; text-align: right;">Flow (CFS)</th>
+                            <th style="padding: 8px; text-align: right;">Generators</th>
+                            <th style="padding: 8px; text-align: right;">Travel Time (hrs)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-31 04:00</td>
+                    <td style="padding: 8px; text-align: right;">764</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-31 03:00</td>
+                    <td style="padding: 8px; text-align: right;">767</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-31 02:00</td>
+                    <td style="padding: 8px; text-align: right;">695</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-31 01:00</td>
+                    <td style="padding: 8px; text-align: right;">725</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-31 00:00</td>
+                    <td style="padding: 8px; text-align: right;">711</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-30 23:00</td>
+                    <td style="padding: 8px; text-align: right;">711</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-30 22:00</td>
+                    <td style="padding: 8px; text-align: right;">716</td>
+                    <td style="padding: 8px; text-align: right;">0.2</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-30 21:00</td>
+                    <td style="padding: 8px; text-align: right;">1826</td>
+                    <td style="padding: 8px; text-align: right;">0.6</td>
+                    <td style="padding: 8px; text-align: right;">3.7</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-30 20:00</td>
+                    <td style="padding: 8px; text-align: right;">6228</td>
+                    <td style="padding: 8px; text-align: right;">1.9</td>
+                    <td style="padding: 8px; text-align: right;">2.8</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-30 19:00</td>
+                    <td style="padding: 8px; text-align: right;">9754</td>
+                    <td style="padding: 8px; text-align: right;">3.0</td>
+                    <td style="padding: 8px; text-align: right;">2.6</td>
+                </tr>
+                
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">2026-08-30 18:00</td>
+                    <td style="padding: 8px; text-align: right;">10662</td>
+                    <td style="padding: 8px; text-align: right;">3.2</td>
+                    <td style="padding: 8px; text-align: right;">2.5</td>
+                </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </details>
+        
+
+    <!-- FISHING REPORT -->
+    
+    <details class="timeline-box">
+        <summary style="cursor: default; list-style: none;">
+            <h3 style="display: inline;">🎣 Fishing Report — Gaston's to Cranor's Island</h3>
+            <span style="color: #666; margin-left: 8px;">Minimum flow (dead low) · 725 CFS</span>
+        </summary>
+        <p style="color: #666; margin: 12px 0 4px;">Fall (September–October): pre-spawn browns</p>
+        
+        <p style="background-color: #ebf8ff; color: #2b6cb0; border-radius: 8px; padding: 8px 12px; margin: 10px 0; font-size: 0.9em;">
+            Off-season preview — the next trip window is September–October. This is that window's playbook run against the current flow.</p>
+        <p style="font-size: 1.1em; margin: 10px 0;"><strong>Minimum flow (dead low)</strong>
+            — 725 CFS at White Hole (0-1 generators)</p>
+        <p style="color: #444;">The river is a giant spring creek. Gravel bars exposed; prop strikes are the boat risk and the White Hole ramp can be tricky to launch. Wading is wide open. Fish see everything — go light for rainbows, go dark (not light) for browns.</p>
+        <p style="margin: 6px 0; font-size: 0.9em;"><a href="https://www.google.com/maps?q=36.347597191038865,-92.55540040484095" target="_blank" style="color: #2b6cb0;">📍 Gaston's</a> · <a href="https://www.google.com/maps?q=36.329897607316106,-92.53355649411128" target="_blank" style="color: #2b6cb0;">📍 White Hole</a> · <a href="https://www.google.com/maps?q=36.333492497534266,-92.56191314472997" target="_blank" style="color: #2b6cb0;">📍 Cranor's Island</a></p>
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Where to go</h4>
+        <ul style="margin: 0 0 0 5px;"><li>The weed-bed edges a short run upstream of the White Hole ramp — sowbug and scud water; trout hold on the edges and pick</li><li>The head of the White Hole where the deep water starts at the ramp and runs downstream</li><li>The downstream lip (drop-off) of every shoal, where gravel falls into the run</li><li>The seam where the main tongue runs past a moss/grass bed — the single most important low-water feature</li><li>Undercut banks, root wads, log jams, boulder pockets (brown water)</li><li>Cranor's Island — fish both sides, deepest water on the far side; downstream holds low water longest</li></ul>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Boat &amp; anchoring</h4>
+        <ul style="margin: 0 0 0 5px;"><li>Bank-tie is easy and anchoring is safe at this level</li><li>Watch the prop over gravel bars; know the channel before running</li><li>Low water lingers longest downstream — run down early, work back upstream as any afternoon water arrives</li></ul>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Timing</h4>
+        <ul style="margin: 0 0 0 5px;"><li>Fish the generation change: the leading edge of a rise and the first hour of falling water beat any time on the clock</li><li>SCHEDULED RISE to 7,002 CFS (2-3 generators) at 1 PM: Gaston's ~2:36 PM · White Hole ~3:45 PM · Cranor's Island ~4:45 PM. Downstream water stays low longer — be below the front and fish it up</li></ul>
+
+        <div style="background-color: #f0f7f4; border-radius: 8px; padding: 15px; margin-top: 18px;">
+            <h4 style="color: #2c3e50; margin: 0 0 8px;">🎣 Spin Fishing</h4>
+            <p style="margin: 4px 0;"><strong>Rig:</strong> White River rig both programs: dropper-loop Y, 6–10 in sinker leg with a 1/8 oz bell (#10), size 10 barrel swivel up top, hook leg long at this flow (30–48 in). Each program's 'Leader' below is the single piece of line the whole Y is tied from — both legs; your main line stays as spooled.</p>
+            
+            <p style="margin: 10px 0 4px;"><strong style="color: #7b4a12;">🟤 Browns — trophy program (all released)</strong></p>
+            <ul style="margin: 0 0 0 5px;"><li>Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line</li><li>Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)</li><li>Whole inflated night crawler (hook first, then 4–5 air bubbles) on the White River rig — the long hook leg lets it float and drift</li><li>Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light</li><li>The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: half a green-pumpkin Senko on the 1/10 oz Ned head (tied direct), or a soft craw plastic if bought (see gear check — not owned)</li></ul>
+            <p style="margin: 10px 0 4px;"><strong style="color: #9d2f4c;">🌈 Rainbows &amp; others — numbers program (keep 2 under 14 in)</strong></p>
+            <ul style="margin: 0 0 0 5px;"><li>Leader: 4 lb mono — this is 'the lighter the better' water, and the fish won't test it</li><li>PowerBait pink or white floating worm / Mice Tail on the White River rig: floats ~a foot off bottom from a #4 light-wire Aberdeen (keep the hook leg mono — fluoro sinks and kills the lift)</li><li>Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (survive current far better than dough), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg</li><li>Float rig — the highest-leverage method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated</li><li>1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges</li><li>Orange scented-garlic PowerBait is the named fall color</li></ul>
+            
+            <p style="margin: 10px 0 4px;"><strong>Notes:</strong></p>
+            <ul style="margin: 0 0 0 5px;"><li>One rod per angler in the water (regulation) — keep the other program's rod rigged and ready to swap, not fishing</li></ul>
+        </div>
+
+        <div style="background-color: #f4f2f7; border-radius: 8px; padding: 15px; margin-top: 12px;">
+            <h4 style="color: #2c3e50; margin: 0 0 8px;">🪶 Fly Fishing (9 ft 5-wt)</h4>
+            <p style="margin: 4px 0;"><strong>Setup:</strong> 9 ft 5-wt (Recon). Mechanics are shared: tightline the near seam with a 10–12 ft thin leader (the owned 20 lb fluoro makes the butt, down to a tippet ring), or swing on a shortened 6–7½ ft leader. Species decide the tippet and the fly.</p>
+            
+            <p style="margin: 10px 0 4px;"><strong style="color: #7b4a12;">🟤 Browns — trophy program (all released)</strong></p>
+            <ul style="margin: 0 0 0 5px;"><li>Tippet: 8 lb fluoro — nymphs and the streamer swing alike</li><li>Olive Woolly Bugger #8–10 or black Girdle Bug #8–10 swung at first and last light</li><li>Sunday Special #12 tungsten dredged through the deep slots where the big fish hold</li><li>Swing the soft hackle through shoal tails and hang it 6–10 seconds at the dangle — a trophy-finding presentation</li><li>A #10 hopper on warm afternoons — browns here reportedly favor pink and black/purple hoppers</li></ul>
+            <p style="margin: 10px 0 4px;"><strong style="color: #9d2f4c;">🌈 Rainbows &amp; others — numbers program (keep 2 under 14 in)</strong></p>
+            <ul style="margin: 0 0 0 5px;"><li>Tippet: 4 lb-class fluoro (5X)</li><li>Gray sowbug #14–16 point + Zebra/Ruby Midge #16–18 dropper 18 in above, tightlined on the near seam</li><li>Short indicator drift, 20–25 ft max, indicator ~1.5× depth; stick-on indicators hold on fine tippet at this flow</li><li>Pink San Juan worm or peach/orange egg the moment any water starts moving up</li><li>Dry-dropper a hopper over the soft bank water on warm afternoons</li></ul>
+        </div>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Season notes</h4>
+        <ul style="margin: 0 0 0 5px;"><li>Browns are staging pre-spawn — aggression without redds. They've shifted to eating big: sculpin here run 5–6 in, so don't fish small for them</li><li>Stage points: upper ends of holes (trophy browns found in as little as 5 ft), shoal-tail drop-offs, undercut banks and wood</li><li>Water is at its annual warmest (~53–56°F) — the highest-metabolism window; fish will chase</li><li>Dissolved oxygen is at its seasonal low: land fish fast, keep them wet</li><li>Typical pattern: minimum flow through the morning, generation arriving afternoon/evening — run downstream early, fish the low water, work back up on the rise</li><li>Rainbow forage: sowbug/scud > midge > worms-on-the-rise; brown forage: sculpin > crawdad > everything else</li><li>Not a dry-fly month — nymphs and streamers; hoppers on warm afternoons are the exception</li></ul>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Regulations</h4>
+        <ul style="margin: 0 0 0 5px;"><li>Keep only 2 rainbows under 14 in; every other trout goes back immediately (Bull Shoals Dam to Norfork Access, effective Feb 2026) — browns are catch-and-release here</li><li>Bait fishing = single hooking point per pole. Swap trebles for a single hook before tipping any spoon or spinner with shrimp/crawdad</li><li>One rod per angler, attended at all times</li><li>Trout permit required (16+) in addition to the fishing license</li><li>Verify current limits by phone before the trip: AGFC 833-345-0325 (this fishery is under active emergency management)</li></ul>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Gear check</h4>
+        <p style="margin: 6px 0 4px;"><strong>🎣 Spin gear:</strong></p>
+        <ul style="margin: 0 0 0 5px;"><li>Rainbow program leader: 4 lb clear/green mono (~$4) — the owned 20/30 lb fluoro is rope in this water</li><li>Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly</li><li>2 mm tippet rings (~$6 for 10, not currently owned) for the cartridge version of the rig — plus an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)</li><li>Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band</li><li>Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off</li><li>Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)</li><li>Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks</li><li>Worm blower (~$3, not owned) — the inflated-crawler presentations depend on it</li><li>Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, PowerBait (pink/white floating worms or Mice Tails; orange-garlic in fall), Power Eggs, cocktail shrimp, corn — plus mini marshmallows for flotation</li><li>Respool the AR rod pair (staged at Dad's) before fishing — the inventory's rod rack now carries their specs and a per-rod respool pick (recorded 2026-08-26; the spools stay unknown-test until the respool actually happens): the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main</li><li>The browns rod travels from NY: the 2-piece Berkley Cherrywood CWD702MS (7 ft medium, Abu Garcia Black Max 30). Respool DONE 2026-08-28 — it now carries a known 10 lb mono main, which out-tests the 8 lb browns cartridge, so break-offs happen at the cartridge and never the main line. Pack it for any browns or high-generation agenda — it is the only rod aboard that casts the jerkbait class</li><li>Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono</li><li>Optional: a bag of soft craw/hellgrammite plastics (~$5, not owned) to upgrade the Ned-head crawdad presentation</li></ul>
+        <p style="margin: 10px 0 4px;"><strong>🪶 Fly gear:</strong></p>
+        <ul style="margin: 0 0 0 5px;"><li>Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet</li><li>Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds</li><li>Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on</li><li>Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing</li><li>A 2 mm tippet ring finishes the tightline leader butt — same 10-pack as the spin cartridge rings</li><li>A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor</li></ul>
+        <p style="margin: 10px 0 4px;"><strong>🛶 Boat &amp; trip gear:</strong></p>
+        <ul style="margin: 0 0 0 5px;"><li>Tie-up rope (50+ ft) and a sharp fixed-blade knife in a sheath — the two non-negotiables</li><li>Drag chain for 3+ units — check whether the resort provides one before buying</li><li>Headlamp for the after-dark sculpin run</li><li>Polarized glasses — the structure-reading tool at low water</li></ul>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Rigging &amp; techniques (reference)</h4>
+        
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">Building the White River rig (spin)</summary>
+            <div style="padding: 5px 15px;">
+                <p style="color: #666; margin: 8px 0 4px;">Not a Carolina rig and not a true three-way — one continuous piece of leader split into a short weight leg and a long hook leg (the "Y").</p>
+                <ul style="margin: 5px 0 5px 5px;"><li>Start with 30–40 in of leader (4 lb for the rainbow program, 8 lb for browns)</li><li>Tie a dropper loop 6–10 in from one end and cut one side of the loop — that's the Y</li><li>Short leg (6–10 in): bell sinker. Long leg (18–36 in): hook</li><li>Top end to the main line with a size 10–12 barrel swivel — or tie direct for bigger, spookier fish</li><li>Tune it: faster water → shorten the hook leg to 18–24 in (a long leader lays flat); minimum flow → lengthen to 30–48 in; snaggy bottom → tie the sinker leg in lighter line so it breaks away, or attach the bell with a rubber band</li><li>The tippet-ring upgrade — fixes the one-piece rig's can't-lengthen problem: tie the rig as a permanent 8 lb fluoro base (swivel, ~12 in butt, dropper loop + sinker leg, then an 8 in stub ending in a 2 mm tippet ring) and clinch pre-tied hook leaders ('cartridges') to the ring. Cartridge ladder: 12, 24 or 36 in for hook legs of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Trim to tune; swap up when the water drops</li><li>On the ring rig, the cartridge picks the species program — each program's 'Leader' spec applies to the cartridge: 4 lb mono = rainbows, 8 lb fluoro = browns. The 8 lb base sits 20+ in above the bait, so the fish inspects only cartridge-class line, and a 4 lb cartridge under the 8 lb base is automatically sacrificial: hook snags cost the cartridge, never the base, ring or bell</li><li>Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. Improved clinch at the ring on both sides — a Palomar won't thread a 2 mm ring with a 3 ft leader</li><li>Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7 · 3–5 units #6 · heavy #4 — then adjust one size by the calibration rule</li><li>Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12</li><li>The livebait drift exception (sculpin, minnows) — skip the Y entirely: leader straight to the hook, split shot pinched ~a foot up (stack shot as the current demands). A pinched shot rides over what a hanging bell snags in, and the bait swims naturally</li></ul>
+            </div>
+        </details>
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">Bait prep (spin)</summary>
+            <div style="padding: 5px 15px;">
+                
+                <ul style="margin: 5px 0 5px 5px;"><li>Inflating a crawler: hook it FIRST, then inject 4–5 air bubbles spaced along a large crawler with a worm blower; use the smallest hook that will hold it</li><li>Mice Tail / floating worm: run the hook through the center of the worm and out ~½ in behind the head so it floats horizontally — head-hooked it hangs vertically, which is wrong</li><li>No floating bait? Thread a mini marshmallow up the hook shank — the other documented flotation method on this river</li><li>Keep mono on the hook leg of any floating rig — fluoro sinks and kills the lift</li><li>Calibrate weight on the water: cast quartering upstream and let it settle. Right weight holds, then slips a few inches and re-grabs when you lift the tip. Never moves = too heavy; never stops = too light</li><li>Catching sculpin — verified legal: banded and Ozark sculpin (the species in this tailwater) are named legal baitfish, and a hand dip net (1 in mesh or finer) is legal for personal use while sport fishing, day or night (AGFC Code 32.04). Flip rocks on shallow cobble and gravel shoal margins at minimum flow with the net held tight downstream — easiest after dark, when they sit out exposed. Keep only sculpin and return every other species immediately; never collect within 100 yards of the dam (32.05); never take them across the state line (32.03)</li><li>Minnow traps for sculpin are the slow backup, not the plan: an overnight soak (oily bait, trap flush on the bottom in cobble, or off the dock) yields a handful at best — the dip net outproduces it in 20 minutes. Arkansas wrinkle: traps are limited to 1 gallon capacity with a 1.5 in throat (32.04.D) — a standard Gee torpedo trap is oversized and illegal here</li></ul>
+            </div>
+        </details>
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">Boat strategy — tie, drift, or anchor</summary>
+            <div style="padding: 5px 15px;">
+                <p style="color: #666; margin: 8px 0 4px;">Tying to the bank is the default. Drifting and anchoring are both real options with their places — and one hard rule: most drownings on this river involve an anchor thrown during generation.</p>
+                <ul style="margin: 5px 0 5px 5px;"><li>TIE (the default): from the BOW, bow pointed upstream — a stern- or side-tied boat in current gets rolled or swamped. Slip knot / quick-release at the cleat, sharp fixed-blade knife in a sheath within arm's reach</li><li>Tie HIGH to a tree and leave slack; re-tend the rope every 20–30 minutes once water is coming — a tight, low rope on a rising river pulls a gunwale under</li><li>Tie in the slack or eddy and cast to the seam where slow meets fast — put the boat by the fast water, fish the slower water. Rotate every 45–60 minutes: untie, drop 100 yards, retie</li><li>DRIFT (the coverage option): set up at the head of a run, drift the bank lane at current speed, motor back up, repeat. The cost is a rod — the driver is on the tiller and mostly can't fish, so rotate who drives. Earns its keep from 1 unit up, where a tied boat's lanes get thin</li><li>On the drift, drop one bell size — a boat moving with the current needs less weight to tick bottom than a tied one</li><li>ANCHOR (very low water only): safe at minimum flow. From real current up, NEVER anchor — tie high or run a drag chain instead (legal on the White, banned on the Norfork)</li><li>Know what's downstream before committing to a spot — there is no warning siren below the dam</li></ul>
+            </div>
+        </details>
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">Presentations from a tied boat (spin)</summary>
+            <div style="padding: 5px 15px;">
+                <p style="color: #666; margin: 8px 0 4px;">The boat can't move, so the bait has to.</p>
+                <ul style="margin: 5px 0 5px 5px;"><li>45° upstream cast + natural swing: sink on slack, follow with the rod tip as it drifts past, let it come tight below the boat and HOLD — many takes come at the dangle</li><li>Downstream cast and hold: the current keeps the leader straight and lifts the bait in the column — the technique for two whole crawlers. Don't yank it back when it starts to rise</li><li>Walk the rig down: lift the tip to unweight the sinker, feed 3–6 ft of line, let it re-settle, repeat — turns a fixed position into a 100-yard drift. Fan it: near seam, a rod-length out, far seam</li><li>Float rig: set the bait 1–3 ft off bottom, cast up, feed the float 40–80 ft downstream under control, reel back, repeat</li><li>Spinners by the clock: quartering upstream (10–11 o'clock) is primary — sink first, steady retrieve, the take comes on the swing. Then straight across at 9 o'clock. Then the downstream hang — the blade turns on current alone, a free presentation only a stationary boat gets. Feed line in 3–6 ft steps to walk it downstream</li><li>Snag avoidance: get the bait up off the rock, run a lighter sacrificial sinker leg, prefer bell over egg sinkers in rock, and don't over-weight — a planted sinker is a snagged sinker</li><li>Three-up lane discipline (bow tied upstream): stern fishes the long straight-downstream hold in the boat's own lane, middle fishes short on the near seam, bow works upstream-and-across to the far seam — three static lines that never cross. The bow seat also owns the rope: re-tend it and pull the quick-release. Two-up with a driver: the stern/driver inherits the downstream lanes — the two-crawler hold and the spinner hang, the trophy water</li></ul>
+            </div>
+        </details>
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">Fly fishing from the tied boat (fly)</summary>
+            <div style="padding: 5px 15px;">
+                <p style="color: #666; margin: 8px 0 4px;">A tied-off boat is a fixed position — and swinging streamers works best wading or from fixed positions. The swing is the primary method here, not a consolation prize.</p>
+                <ul style="margin: 5px 0 5px 5px;"><li>Tightline the near seam from the seat: flick 8–15 ft upstream, lead down with the tip high — the highest fish-per-hour presentation from a seat, and the only one that works well in wind</li><li>Swing sequence: cast across and slightly down, one upstream mend, let it come tight, swing, then hang and pulse 6–10 seconds at the dangle. Cover water by lengthening 20, 25, 30, 35 ft — don't strike at the grab, let it come tight</li><li>Keep casts compact: roll cast, side-arm, or a Belgian/oval cast — a 9-ft rod and a beaded nymph at eye level with someone seated behind you is a real injury risk</li><li>Strip into a five-gallon bucket with a couple inches of water in it — the line stays put and out from underfoot</li><li>The boat makes its own soft water — a drag-free lane to fish when nothing else is reachable from the tie-up</li><li>Fly casting needs a two-man boat: fly angler forward, the other rod fishing straight downstream from the stern in the boat's own lane — different quadrants, the lines never cross. Three aboard, the fly rod stays cased: a 9-ft rod and a beaded fly at eye level with two seated people behind you is a real injury risk</li><li>One rod per angler, attended, is the law — no propping a second rod in a holder while casting</li></ul>
+            </div>
+        </details>
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">River etiquette</summary>
+            <div style="padding: 5px 15px;">
+                
+                <ul style="margin: 5px 0 5px 5px;"><li>Downstream boats hold mid-river; upstream boats hug the bank. The downstream boat has priority running a shoal unless one is already occupied</li><li>No-wake around tied or anchored boats and anyone standing in the water</li><li>Never run between a fisherman and the bank</li></ul>
+            </div>
+        </details>
+
+        <p style="color: #999; font-size: 0.8em; margin-top: 15px;">
+            Fishing content distilled from local sources (His Place, Dally's, Cotter Trout Dock,
+            AGFC reports, OzarkAnglers); arrival times computed from this page's verified travel
+            model. Regulations change — verify with AGFC before fishing.
+        </p>
+    </details>
+
     <div class="timestamp">
-        Generated on 2026-08-31 04:00:33
+        Data retrieved and processed on 2026-08-31 05:00:09 (Central time)<br>
+        Travel times are observational estimates (per <a href="https://www.hisplaceresort.net/white-river-info" target="_blank" style="color: #718096;">His Place Resort</a>) &mdash; always judge wading safety on-site.<br>
+        &copy; 2026 Brian Carroll. All rights reserved.
     </div>
 </body>
 </html>
