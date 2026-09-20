@@ -480,11 +480,75 @@ GEAR_CHECK = {
 # blocks stay separate; boat handling and etiquette are shared seamanship.
 # ---------------------------------------------------------------------------
 
+# Inline diagram of the tippet-ring cartridge rig. Literal colours, because
+# the report page has no CSS custom properties and no dark mode. The base is
+# drawn in ink and the cartridge in orange: that split is the whole point of
+# the system, so it carries the one colour distinction in the drawing.
+SPIN_RIG_SVG = '''
+<svg viewBox="0 0 420 356" role="img" aria-labelledby="rigttl"
+     style="width:100%;max-width:430px;height:auto;display:block;margin:10px auto 0;">
+  <title id="rigttl">The White River rig built as the tippet-ring cartridge system: main line to a
+  barrel swivel, then a permanent 8 lb fluorocarbon base carrying a 12 inch butt and a dropper loop
+  that splits into a short sinker leg with a bell sinker and an 8 inch stub ending in a 2 mm tippet
+  ring; a swappable pre-tied cartridge clinches to that ring and runs down to the hook, where the
+  bait rides up off the bottom</title>
+  <g fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round">
+    <path d="M100 10 L100 44"/>
+    <ellipse cx="100" cy="52" rx="5" ry="8" stroke-width="1.4"/>
+    <path d="M100 60 L100 88"/>
+    <circle cx="100" cy="95" r="6" stroke-width="1.4"/>
+    <path d="M97 101 L83 246"/>
+    <path d="M104 101 C 128 126, 152 148, 176 163"/>
+  </g>
+  <path d="M83 246 l-11 30 h22 z" fill="#4a5568" stroke="none"/>
+  <g fill="none" stroke="#2d3748">
+    <circle cx="182" cy="168" r="6" stroke-width="1.5"/>
+    <circle cx="182" cy="168" r="2.6" stroke-width="1"/>
+  </g>
+  <path d="M187 172 C 228 200, 275 226, 320 246"
+        fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round"/>
+  <path d="M0 280 C 70 272, 140 288, 210 278 S 340 284, 420 274"
+        fill="none" stroke="#cbd5e0" stroke-width="2.5"/>
+  <g fill="#cbd5e0" stroke="none" opacity=".75">
+    <circle cx="40" cy="290" r="8"/><circle cx="130" cy="295" r="10"/>
+    <circle cx="250" cy="288" r="8"/><circle cx="355" cy="292" r="11"/>
+  </g>
+  <path d="M320 246 l0 12 a9 9 0 1 0 -13 -6"
+        fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="323" cy="248" r="9" fill="#2b6cb0" stroke="none"/>
+  <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" fill="#718096">
+    <text x="114" y="28">main line, as spooled</text>
+    <text x="114" y="56">size 10 barrel swivel</text>
+    <text x="114" y="80" fill="#2b6cb0">12 in butt</text>
+    <text x="114" y="99">dropper loop</text>
+    <text x="2" y="180" fill="#2b6cb0">6–10 in</text>
+    <text x="2" y="232">bell #10–#4</text>
+    <text x="142" y="126" fill="#2b6cb0">8 in stub</text>
+    <text x="196" y="160">2 mm tippet ring</text>
+    <text x="112" y="252" fill="#c05621">cartridge  12 / 24 / 36 in</text>
+    <text x="112" y="267">= hook leg  20 / 32 / 44 in</text>
+    <text x="418" y="266" text-anchor="end">bait rides up</text>
+  </g>
+  <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#718096">
+    <path d="M8 314 l22 0" fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
+    <text x="38" y="318">permanent base · 8 lb fluoro · stays on the rod</text>
+    <path d="M8 338 l22 0" fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round"/>
+    <text x="38" y="342">cartridge · clinched on · 4 lb rainbows, 8 lb browns</text>
+  </g>
+</svg>
+<p style="font-size: 0.82em; color: #718096; text-align: center; margin: 8px auto 4px; max-width: 430px; line-height: 1.5;">
+  The base never comes off the rod. A hook snag costs the cartridge and never the base, the ring or
+  the bell, which is why a 4&nbsp;lb rainbow cartridge hangs under an 8&nbsp;lb base. The base sits
+  more than 20&nbsp;in above the bait, so the fish only ever inspects cartridge-class line.
+</p>'''
+
+
 RIGGING_REFERENCE = [
     {
         "title": "Building the White River rig (spin)",
         "intro": "Not a Carolina rig and not a true three-way — one continuous piece of "
                  "leader split into a short weight leg and a long hook leg (the \"Y\").",
+        "figure": SPIN_RIG_SVG,
         "items": [
             "Start with 40–50 in of leader (4 lb for the rainbow program, 8 lb for browns) — cutting one side of the loop burns roughly twice the finished tag length, so a 30 in strand comes up short",
             "Tie a dropper loop 6–10 in from one end and cut one side of the loop — that's the Y. The standing line runs on through the knot uncut; only the cut tag is a branch",
@@ -729,11 +793,13 @@ def _rigging_html(rigging):
     for section in rigging:
         intro = (f'<p style="color: #666; margin: 8px 0 4px;">{section["intro"]}</p>'
                  if section["intro"] else "")
+        figure = section.get("figure", "")
         blocks.append(f'''
         <details style="margin-bottom: 8px;">
             <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">{section["title"]}</summary>
             <div style="padding: 5px 15px;">
                 {intro}
+                {figure}
                 <ul style="margin: 5px 0 5px 5px;">{_items_html(section["items"])}</ul>
             </div>
         </details>''')
