@@ -231,15 +231,29 @@ class TestSpeciesPrograms:
     @pytest.mark.parametrize("when", [OCTOBER, APRIL])
     @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
     def test_only_two_line_weights_prescribed(self, cfs, when):
-        """The report runs on exactly two spools: 4 lb (rainbows), 8 lb (browns).
+        """Leader/cartridge prescriptions run on exactly two spools: 4 lb
+        (rainbows), 8 lb (browns). 20 lb is allowed only as the fly leader's
+        butt section. Any other pound-test (6, 10, 12, 16, ranges like 6-8 or
+        8-10...) in the prescriptions is drift.
 
-        20/30 lb appear only as inventory/butt-section references. Any other
-        pound-test (6, 10, 12, 16, ranges like 6-8 or 8-10...) is drift.
+        Scoped to the spin/fly programs and the rigging how-to — the gear check
+        is deliberately excluded, since it records rod main lines and owned
+        inventory (10 lb Cherrywood main, 20/30 lb fluoro spools) rather than
+        prescribing a leader class.
         """
         import re
-        html = render_fishing_report_html(generate_fishing_report(cfs, when))
-        weights = set(re.findall(r"(\d+(?:–\d+)?) lb", html))
-        assert weights <= {"4", "8", "20", "30"}, f"nonconforming weights: {weights}"
+        report = generate_fishing_report(cfs, when)
+        prescriptions = [report["spin"]["rig"], report["fly"]["setup"]]
+        for program in ("browns", "rainbows", "notes"):
+            prescriptions += report["spin"].get(program, [])
+        for program in ("browns", "rainbows"):
+            prescriptions += report["fly"][program]
+        for section in report["rigging"]:
+            prescriptions.append(section["intro"] or "")
+            prescriptions += section["items"]
+        text = " ".join(prescriptions)
+        weights = set(re.findall(r"(\d+(?:–\d+)?) lb", text))
+        assert weights <= {"4", "8", "20"}, f"nonconforming weights: {weights}"
 
     BAND_SINKERS = {
         750: "1/8 oz bell (#10)",
