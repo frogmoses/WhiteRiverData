@@ -486,9 +486,9 @@ RIGGING_REFERENCE = [
         "intro": "Not a Carolina rig and not a true three-way — one continuous piece of "
                  "leader split into a short weight leg and a long hook leg (the \"Y\").",
         "items": [
-            "Start with 30–40 in of leader (4 lb for the rainbow program, 8 lb for browns)",
-            "Tie a dropper loop 6–10 in from one end and cut one side of the loop — that's the Y",
-            "Short leg (6–10 in): bell sinker. Long leg (18–36 in): hook",
+            "Start with 40–50 in of leader (4 lb for the rainbow program, 8 lb for browns) — cutting one side of the loop burns roughly twice the finished tag length, so a 30 in strand comes up short",
+            "Tie a dropper loop 6–10 in from one end and cut one side of the loop — that's the Y. The standing line runs on through the knot uncut; only the cut tag is a branch",
+            "Short end above the knot (6–10 in) goes to the swivel, the long end below it (18–36 in) is the hook leg, and the cut tag (6–10 in) carries the bell. Keep that order — a fish then pulls against unbroken line through the junction, and the tag, which is the weakest part of a dropper loop, only ever holds lead",
             "Top end to the main line with a size 10–12 barrel swivel — or tie direct for bigger, spookier fish",
             "Tune it: faster water → shorten the hook leg to 18–24 in (a long leader lays flat); minimum flow → lengthen to 30–48 in; snaggy bottom → tie the sinker leg in lighter line so it breaks away, or attach the bell with a rubber band",
             "The tippet-ring upgrade — fixes the one-piece rig's can't-lengthen problem: tie the rig as a permanent 8 lb fluoro base (swivel, ~12 in butt, dropper loop + sinker leg, then an 8 in stub ending in a 2 mm tippet ring) and clinch pre-tied hook leaders ('cartridges') to the ring. Cartridge ladder: 12, 24 or 36 in for hook legs of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Trim to tune; swap up when the water drops",
