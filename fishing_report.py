@@ -271,7 +271,7 @@ BAND_CONTENT = {
                    "'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
-                "Countdown jerkbaits (brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
+                "The sinking swimmers (Countdown class — brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
                 "3-in minnow on the split-shot rig, lips-hooked: cast quartering upstream and drift it naturally past structure and drop-offs, feeding line to stretch the drift — drift speed is the whole game",
                 "TWO whole night crawlers on the White River rig — threaded on a #4, tails dangling, cast downstream from the tied boat and held",
                 "The downstream hang with a spinner: let it swing dead below the boat and hold — the blade works on current alone",
@@ -280,7 +280,7 @@ BAND_CONTENT = {
             "rainbows": [
                 "Leader: 4 lb mono",
                 "Crawler stubs, PowerBait, shrimp on the White River rig through the seams",
-                "1/4 oz spoons — Kastmaster chrome or chrome/blue, Little Cleo-class, gold w/ red accents. Gold in bright sun, silver/nickel under cloud",
+                "1/4 oz spoons — Kastmaster chrome or blue/chrome, the gold Kastmaster or the gold Cleo. Gold in bright sun, silver under cloud",
                 "1/4 oz Rooster Tail (flame/chartreuse) or Mepps Aglia #3, quartering upstream, sink first, steady retrieve — the take comes on the swing (Black Fury #3 on dark days)",
                 "Float rig in the slower lanes, still effective to ~2 units",
             ],
@@ -327,7 +327,7 @@ BAND_CONTENT = {
                    "(a long leader lays flat in faster water). 'Leader' below = the line the whole Y is tied from.",
             "browns": [
                 "Leader: 8 lb fluorocarbon — the trophy window is open, fish accordingly",
-                "Jerkbait prime time (2–4 units): Countdowns and the suspending perch deep jerkbait, twitch-pause along the banks",
+                "Jerkbait prime time (2–4 units): the sinking swimmers and the suspending perch deep jerkbait, twitch-pause along the banks",
                 "Keitech Swing Impact FAT 3.3/3.8 on a Flashy Swimmer, or the 4 in white-pearl Tab Tail, swum along the bank edge — white is the named color for White River browns",
                 "TWO whole crawlers on the White River rig (#4 or a #1 drop-shot hook), downstream and held in the soft lane",
                 "Walk the White River rig down: lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
@@ -337,7 +337,7 @@ BAND_CONTENT = {
                 "Worms cast near the banks in the first hour of the rise — a documented, predictable pattern, not folklore",
                 "White River rig with crawler stubs or shrimp in the soft lanes off the main push",
                 "Float rig only in true slack edges at this flow",
-                "3/8 oz XPS spoon in the defined runs when the 1/4 oz won't stay down",
+                "3/8 oz Kastmaster (blue/chrome) in the defined runs when the 1/4 oz won't stay down",
             ],
             "notes": [],
         },
@@ -417,8 +417,7 @@ BAND_CONTENT = {
             "Re-check the schedule and the ramp before committing — this level with a rental jon is a risk decision, not a tactics decision",
         ],
         "spin": {
-            "rig": "White River rig: 1 oz bell (#4) or bank sinker, short leg — "
-                   "slack-water soaks only.",
+            "rig": "White River rig: 1 oz bell (#4), short leg — slack-water soaks only.",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "4 in white Tab Tail or Keitech 4.3 on its swimbait head (tied direct), pitched along slack margins for a hunting brown",
@@ -536,6 +535,7 @@ GEAR_CHECK = {
         "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
         "2 mm tippet rings (~$6 for 10, not currently owned) for the cartridge version of the rig — plus an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
+        "Marabou jigs: the inventory records their hooks as failed inspection (2026-08-28) — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
         "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
         "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
