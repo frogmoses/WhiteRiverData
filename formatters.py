@@ -4,6 +4,7 @@ from water_calculator import (
     get_fishing_condition, get_flow, find_incoming_change, clock
 )
 from water_quality import describe as describe_water_quality, STALE_READING_HOURS
+from fishing_report import light_windows_for
 
 from landmarks import LANDMARK_COORDS
 
@@ -228,6 +229,15 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 
     # Tailwater temperature / oxygen block (USGS), omitted when unavailable
     water_quality_html = generate_water_quality_html(water_quality, current_time)
+
+    # Sunrise / sunset and the low-light windows the fishing report keys on
+    sun_html = ""
+    light = light_windows_for(current_time)
+    if light:
+        sun_html = (f'<p style="color: #718096; font-size: 0.9em; margin: 10px 0 0;">'
+                    f'☀️ Sunrise {clock(light["sunrise"])} · Sunset {clock(light["sunset"])} '
+                    f'<small>— low light: dawn until {clock(light["dawn"][1])}, '
+                    f'dusk from {clock(light["dusk"][0])}</small></p>')
 
     # Build unified water timeline (scheduled forecast + actual dam readings)
     water_timeline_html = ""
@@ -562,6 +572,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
             <span class="pill wading">{wading_condition.title()}</span>
             <span class="pill boating">{boating_condition.title()}</span>
         </div>
+        {sun_html}
         {water_quality_html}
         <a href="https://www.youtube.com/channel/UCAXhb9nFnsfu367AthDrgIA/live" target="_blank" class="webcam-link" style="margin-top: 15px;">
             📹 View Live Webcam

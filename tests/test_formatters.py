@@ -741,3 +741,16 @@ class TestWaterQualityBlock:
             latest_entry=normal_conditions_data[0], relevant_entry=normal_conditions_data[0],
             water_quality=wq)
         assert "Water 58.3°F" in text and "Oxygen 4.5 mg/L" in text
+
+
+class TestSunLine:
+    def test_sunrise_and_sunset_on_the_page(self, base_time, normal_conditions_data):
+        html = generate_html_summary(
+            current_time=base_time, white_hole_cfs=750, generators_equivalent=0.2,
+            water_state="stable", wading_condition="excellent wading",
+            boating_condition="low for boating", recent_trend="steady",
+            forecast="stable conditions expected",
+            latest_entry=normal_conditions_data[0], relevant_entry=normal_conditions_data[0],
+            recent_data=normal_conditions_data, timeline_data=[])
+        assert "Sunrise" in html and "Sunset" in html
+        assert "dawn until" in html and "dusk from" in html

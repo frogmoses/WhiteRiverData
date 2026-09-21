@@ -36,7 +36,9 @@ from water_calculator import (
     recession_window, clock
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
+import suncalc
 from water_quality import describe as describe_water_quality
+from data_fetcher import DAM_TIMEZONE as SPOT_TZ
 
 # Reach landmarks, miles below the dam. Gaston's and White Hole come from the
 # GPS-derived chart model (landmarks.py); Cranor's Island extends it downstream
@@ -463,7 +465,7 @@ REGULATIONS = [
     "Bait fishing = single hooking point per pole. Swap trebles for a single hook before tipping any spoon or spinner with shrimp/crawdad",
     "One rod per angler, attended at all times",
     "Trout permit required (16+) in addition to the fishing license",
-    "Verify current limits by phone before the trip: AGFC 833-345-0325 (this fishery is under active emergency management)",
+    "Verify current limits by phone before the trip: AGFC 833-345-0325 — the Feb 2026 limits replaced an emergency order and hold until further notice, so they can change again",
 ]
 
 # Core, season-independent packing list, split spin/fly like everything else;
@@ -655,6 +657,13 @@ RIGGING_REFERENCE = [
 ]
 
 
+def light_windows_for(current_time):
+    """Sunrise/sunset and the dawn/dusk windows at the White Hole pin for the day."""
+    tz = current_time.tzinfo or SPOT_TZ
+    lat, lon = SPOT_COORDS["White Hole"]
+    return suncalc.light_windows(current_time.date(), lat, lon, tz)
+
+
 def _find_flow_change(current_cfs, forecast_timeline):
     """
     Find the first scheduled SWPA hour that meaningfully changes the flow
@@ -687,6 +696,16 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
         "Fish the generation change: the leading edge of a rise and the first hour "
         "of falling water beat any time on the clock",
     ]
+
+    # The day's low-light windows — the browns program's hours
+    light = light_windows_for(current_time)
+    if light:
+        timing.append(
+            f"Low light today: dawn {clock(light['dawn'][0])}–{clock(light['dawn'][1])} "
+            f"(sunrise {clock(light['sunrise'])}) · dusk {clock(light['dusk'][0])}–"
+            f"{clock(light['dusk'][1])} (sunset {clock(light['sunset'])}) — the browns "
+            f"program's hours; at low water fish the dusk window into dark"
+        )
 
     # Water already in transit (actual readings): the first incoming plug
     # that changes the band, not merely the nearest one — a same-level

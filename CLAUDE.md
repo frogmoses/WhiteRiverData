@@ -46,9 +46,9 @@ WhiteRiverData/
 ├── water_quality.py         # USGS tailwater temperature / dissolved oxygen (gauges 07054527, 07054502)
 ├── prediction_log.py        # Per-run CSV of model predictions (predictions.csv) for later validation
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
+├── suncalc.py               # NOAA sunrise/sunset (copied from new-croton-fishing) — the one copy the page, report and journal share
 ├── scripts/
-│   ├── build_journal.py         # journal/entries/*.md → journal/build/{digest.md,index.json,catches.csv,catches_report.md}
-│   └── suncalc.py               # NOAA sunrise/sunset, copied from new-croton-fishing (catch windows)
+│   └── build_journal.py         # journal/entries/*.md → journal/build/{digest.md,index.json,catches.csv,catches_report.md}
 ├── journal/                 # Trip notes + catch tables (see "The journal" below); build/ is gitignored
 │   ├── README.md, TEMPLATE.md, entries/
 ├── run_white_hole.sh        # Production script: pulls code, runs main.py, commits and pushes output
@@ -223,7 +223,7 @@ Rules that matter:
   in `fishing_report.py` with the row count in the commit message (and the inventory's AR
   cells per the gear doctrine). Read `journal/build/digest.md` before any content change.
 - Sunset for the windows (dawn/midday/dusk/night) is computed at the White Hole pin from
-  `landmarks.py` via `scripts/suncalc.py`.
+  `landmarks.py` via `suncalc.py` (repo root). `suncalc.light_windows` defines dawn as sunrise−1 h..+2 h and dusk as sunset−2 h..+1 h; the page's Current Conditions line and the report's "Low light today" Timing bullet use the same function (`fishing_report.light_windows_for`), so the three never disagree.
 - Voice intake (Croton's ssh + local-model path) is not wired here; entries are hand-written.
 
 ### Data Sources

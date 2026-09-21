@@ -36,9 +36,8 @@ import zoneinfo
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-sys.path.insert(0, HERE)
 
-import suncalc  # noqa: E402
+import suncalc  # noqa: E402  (repo root: the one copy the page and report share)
 from landmarks import LANDMARK_COORDS  # noqa: E402
 from fishing_report import FLOW_BANDS, BAND_CONTENT, REACH_SPOTS, get_flow_band  # noqa: E402
 
