@@ -32,7 +32,8 @@ Standalone use:
 from datetime import datetime, timedelta
 
 from water_calculator import (
-    calculate_travel_time, get_flow, format_generators, get_fishing_condition
+    calculate_travel_time, get_flow, format_generators, get_fishing_condition,
+    recession_window, clock
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
 
@@ -106,6 +107,24 @@ def spot_arrival_times(release_time, cfs):
         (name, release_time + timedelta(hours=tt_white_hole * (mile / WHITE_HOLE_MILE)))
         for name, mile in REACH_SPOTS
     ]
+
+
+def spot_recession_windows(cut_time, from_cfs, to_cfs):
+    """
+    When a cut released at the dam is felt at each reach landmark: (name,
+    start, fully_down) per spot, from the repo's recession model.
+    """
+    return [
+        (name, *recession_window(cut_time, from_cfs, to_cfs, mile=mile))
+        for name, mile in REACH_SPOTS
+    ]
+
+
+def _window_str(name, start, end, reference):
+    """'Gaston's ~9:15–9:40 PM' — or a single time when the window is a step."""
+    if end - start < timedelta(minutes=10):
+        return f"{name} ~{clock(end, reference)}"
+    return f"{name} ~{clock(start, reference)}–{clock(end, reference)}"
 
 
 # ---------------------------------------------------------------------------
@@ -456,7 +475,7 @@ GEAR_CHECK = {
         "Worm blower (~$3, not owned) — the inflated-crawler presentations depend on it",
         "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, PowerBait (pink/white floating worms or Mice Tails; orange-garlic in fall), Power Eggs, cocktail shrimp, corn — plus mini marshmallows for flotation",
         "Respool the AR rod pair (staged at Dad's) before fishing — the inventory's rod rack now carries their specs and a per-rod respool pick (recorded 2026-08-26; the spools stay unknown-test until the respool actually happens): the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main",
-        "The browns rod travels from NY: the 2-piece Berkley Cherrywood CWD702MS (7 ft medium, Abu Garcia Black Max 30). Respool DONE 2026-08-28 — it now carries a known 10 lb mono main, which out-tests the 8 lb browns cartridge, so break-offs happen at the cartridge and never the main line. Pack it for any browns or high-generation agenda — it is the only rod aboard that casts the jerkbait class",
+        "The browns rod travels from NY: the 2-piece Berkley Cherrywood CWD702MS (7 ft medium, Abu Garcia Black Max 30). Respool DONE 2026-08-28 — it now carries a known mono main (spec in the inventory) that out-tests the 8 lb browns cartridge, so break-offs happen at the cartridge and never the main line. Pack it for any browns or high-generation agenda — it is the only rod aboard that casts the jerkbait class",
     ],
     "fly": [
         "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
@@ -636,15 +655,19 @@ def _find_flow_change(current_cfs, forecast_timeline):
     Find the first scheduled SWPA hour that meaningfully changes the flow
     (>= 2000 CFS difference from what's at White Hole now).
 
-    Returns (direction, entry) where direction is 'rise' or 'drop', or None.
+    Returns (direction, entry, from_cfs) where direction is 'rise' or
+    'drop' and from_cfs is the flow the change replaces (the scheduled hour
+    before it, or the current flow for the first hour), or None.
     """
     if not forecast_timeline:
         return None
+    previous_cfs = current_cfs
     for entry in forecast_timeline:
         if entry["cfs"] - current_cfs >= 2000:
-            return ("rise", entry)
+            return ("rise", entry, previous_cfs)
         if current_cfs - entry["cfs"] >= 2000:
-            return ("drop", entry)
+            return ("drop", entry, previous_cfs)
+        previous_cfs = entry["cfs"]
     return None
 
 
@@ -660,46 +683,61 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
         "of falling water beat any time on the clock",
     ]
 
-    # Water already in transit (actual readings)
+    # Water already in transit (actual readings): the first incoming plug
+    # that changes the band, not merely the nearest one — a same-level
+    # reading often sits ahead of the real rise or drop
     if timeline_data:
         incoming = [item for item in timeline_data if item["status"] == "incoming"]
-        if incoming:
-            nearest = incoming[0]
-            if nearest["cfs"] - current_cfs >= 2000:
+        for item in incoming:
+            if item["cfs"] - current_cfs >= 2000:
                 timing.append(
-                    f"RISE EN ROUTE: {nearest['cfs']:,} CFS "
-                    f"({format_generators(nearest['cfs'])}) reaches White Hole "
-                    f"~{nearest['arrival_time'].strftime('%I:%M %p').lstrip('0')} — "
+                    f"RISE EN ROUTE: {item['cfs']:,} CFS "
+                    f"({format_generators(item['cfs'])}) reaches White Hole "
+                    f"~{clock(item['arrival_time'], current_time)} — "
                     f"cast worms near the banks in the first hour, then fish the "
-                    f"{BAND_CONTENT[get_flow_band(nearest['cfs'])]['label']} program"
+                    f"{BAND_CONTENT[get_flow_band(item['cfs'])]['label']} program"
                 )
-            elif current_cfs - nearest["cfs"] >= 2000:
+                break
+            if current_cfs - item["cfs"] >= 2000:
+                start = item.get("recession_start")
+                down = clock(item["arrival_time"], current_time)
+                if start is not None and start <= current_time:
+                    when = f"is dropping now and fully down ~{down}"
+                elif start is not None:
+                    when = f"starts dropping ~{clock(start, current_time)} and is fully down ~{down}"
+                else:
+                    when = f"reaches White Hole ~{down}"
                 timing.append(
-                    f"DROP EN ROUTE: {nearest['cfs']:,} CFS reaches White Hole "
-                    f"~{nearest['arrival_time'].strftime('%I:%M %p').lstrip('0')} — "
-                    f"the first hour of falling water is a prime bite window"
+                    f"DROP EN ROUTE: the cut to {item['cfs']:,} CFS {when} — "
+                    f"the first hour of the drop is a prime bite window; it's a "
+                    f"recession, not a step, so the window is the whole span"
                 )
+                break
 
     # Next scheduled change (SWPA)
     change = _find_flow_change(current_cfs, forecast_timeline)
     if change:
-        direction, entry = change
-        etas = spot_arrival_times(entry["scheduled_time"], entry["cfs"])
-        eta_str = " · ".join(
-            f"{name} ~{eta.strftime('%I:%M %p').lstrip('0')}" for name, eta in etas
-        )
+        direction, entry, from_cfs = change
+        when = clock(entry["scheduled_time"], current_time, minutes=False)
         if direction == "rise":
+            etas = spot_arrival_times(entry["scheduled_time"], entry["cfs"])
+            eta_str = " · ".join(
+                f"{name} ~{clock(eta, current_time)}" for name, eta in etas
+            )
             timing.append(
                 f"SCHEDULED RISE to {entry['cfs']:,} CFS "
-                f"({format_generators(entry['cfs'])}) at "
-                f"{entry['scheduled_time'].strftime('%I %p').lstrip('0')}: {eta_str}. "
+                f"({format_generators(entry['cfs'])}) at {when}: {eta_str}. "
                 f"Downstream water stays low longer — be below the front and fish it up"
             )
         else:
+            windows = spot_recession_windows(entry["scheduled_time"], from_cfs, entry["cfs"])
+            eta_str = " · ".join(
+                _window_str(name, start, end, current_time) for name, start, end in windows
+            )
             timing.append(
-                f"SCHEDULED DROP to {entry['cfs']:,} CFS at "
-                f"{entry['scheduled_time'].strftime('%I %p').lstrip('0')}: "
-                f"low water reaches {eta_str}"
+                f"SCHEDULED DROP to {entry['cfs']:,} CFS at {when}: "
+                f"falling water {eta_str} (start of the drop–fully down). "
+                f"Fish the first hour of the drop at each spot; upstream falls first"
             )
 
     return timing

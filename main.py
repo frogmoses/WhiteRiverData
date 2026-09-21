@@ -156,7 +156,10 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     try:
         swpa_data = get_swpa_forecast(current_time)
         if swpa_data:
-            forecast_timeline = calculate_forecast_timeline(swpa_data, current_time)
+            # The latest actual reading is the flow ahead of the first
+            # scheduled hour, so a scheduled cut right after it is a drop
+            forecast_timeline = calculate_forecast_timeline(
+                swpa_data, current_time, previous_cfs=get_flow(latest_entry))
     except Exception as e:
         print(f"Warning: Could not fetch SWPA forecast: {e}")
 

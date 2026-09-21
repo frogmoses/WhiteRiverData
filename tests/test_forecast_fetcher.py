@@ -158,34 +158,101 @@ class TestParseScheduleHtml:
             assert 'end_time' in entry
 
 
+def _schedule_html(page_date, title_date=None, bsd_mw=7):
+    """A schedule page dated page_date in its <pre> header. The <title> date
+    is whatever the CMS rendered — by default a different (later) day."""
+    title_date = title_date or (page_date + timedelta(days=5))
+    header = SAMPLE_SCHEDULE_HTML.split("\n")[0]
+    body = SAMPLE_SCHEDULE_HTML.replace(
+        "WEDNESDAY APRIL 08, 2026", page_date.strftime("%A %B %d, %Y").upper()
+    ).replace(
+        "<TITLE>Generation Schedule,WEDNESDAY,APRIL 08, 2026</TITLE>",
+        f"<TITLE>Generation Schedule,{title_date.strftime('%A,%B %d, %Y').upper()}</TITLE>",
+    )
+    return body
+
+
+class _FakeResponse:
+    def __init__(self, text):
+        self.text = text
+
+    def raise_for_status(self):
+        pass
+
+
 class TestGetSwpaForecast:
     """Tests for get_swpa_forecast date validation (network mocked)."""
 
-    class _FakeResponse:
-        def __init__(self, text):
-            self.text = text
-
-        def raise_for_status(self):
-            pass
-
-    def _mock_fetch(self, monkeypatch):
-        monkeypatch.setattr(
-            forecast_fetcher.requests, "get",
-            lambda url, timeout: self._FakeResponse(SAMPLE_SCHEDULE_HTML))
+    def _mock_fetch(self, monkeypatch, pages):
+        """pages: {slug: html} — any other slug raises like a failed fetch."""
+        def fake_get(url, timeout):
+            slug = url.rsplit("/", 1)[1].replace(".htm", "")
+            if slug not in pages:
+                raise forecast_fetcher.requests.RequestException("no page")
+            return _FakeResponse(pages[slug])
+        monkeypatch.setattr(forecast_fetcher.requests, "get", fake_get)
 
     def test_stale_page_date_returns_empty(self, monkeypatch):
         """A page dated other than today must be rejected, not re-anchored."""
-        self._mock_fetch(monkeypatch)
+        self._mock_fetch(monkeypatch, {"wed": SAMPLE_SCHEDULE_HTML, "thu": SAMPLE_SCHEDULE_HTML})
         current_time = datetime(2026, 4, 9, 6, 0)  # page is dated April 8
         assert get_swpa_forecast(current_time) == []
 
     def test_matching_page_date_returns_future_hours(self, monkeypatch):
-        self._mock_fetch(monkeypatch)
+        self._mock_fetch(monkeypatch, {"wed": SAMPLE_SCHEDULE_HTML})
         current_time = datetime(2026, 4, 8, 6, 30)
         result = get_swpa_forecast(current_time)
         assert result
         # Only hours that haven't ended yet (hour 7 = 06:00-07:00 onward)
         assert all(entry['end_time'] > current_time for entry in result)
+        assert all(entry['start_time'].date() == current_time.date() for entry in result)
+
+    def test_render_date_in_title_does_not_validate_the_page(self, monkeypatch):
+        """Regression: every SWPA day page carries today's date in its
+        <title> (the CMS render date), so a title check passes for last
+        week's leftover schedule. Only the <pre> header date counts."""
+        today = datetime(2026, 4, 8, 6, 0)
+        stale = _schedule_html(today - timedelta(days=7), title_date=today)
+        self._mock_fetch(monkeypatch, {"wed": stale})
+        assert get_swpa_forecast(today) == []
+
+    def test_page_without_schedule_date_is_rejected(self, monkeypatch):
+        html = SAMPLE_SCHEDULE_HTML.replace("PROJECTED LOADING SCHEDULE", "LOADING")
+        self._mock_fetch(monkeypatch, {"wed": html})
+        assert get_swpa_forecast(datetime(2026, 4, 8, 6, 0)) == []
+
+    def test_tomorrow_appended_once_posted(self, monkeypatch):
+        today = datetime(2026, 4, 8, 18, 0)  # Wednesday evening
+        tomorrow = today + timedelta(days=1)
+        self._mock_fetch(monkeypatch, {
+            "wed": _schedule_html(today),
+            "thu": _schedule_html(tomorrow),
+        })
+        result = get_swpa_forecast(today)
+        days = [entry['start_time'].date() for entry in result]
+        assert today.date() in days and tomorrow.date() in days
+        # Chronological: today's remaining hours first, then all 24 of tomorrow
+        assert days == sorted(days)
+        assert days.count(tomorrow.date()) == 24
+        assert result[0]['end_time'] > today
+
+    def test_tomorrow_skipped_while_still_last_weeks_page(self, monkeypatch):
+        today = datetime(2026, 4, 8, 9, 0)
+        self._mock_fetch(monkeypatch, {
+            "wed": _schedule_html(today),
+            "thu": _schedule_html(today - timedelta(days=6), title_date=today),
+        })
+        result = get_swpa_forecast(today)
+        assert result
+        assert all(entry['start_time'].date() == today.date() for entry in result)
+
+    def test_today_missing_but_tomorrow_posted(self, monkeypatch):
+        today = datetime(2026, 4, 8, 20, 0)
+        tomorrow = today + timedelta(days=1)
+        self._mock_fetch(monkeypatch, {"thu": _schedule_html(tomorrow)})
+        result = get_swpa_forecast(today)
+        assert len(result) == 24
+        assert all(entry['start_time'].date() == tomorrow.date() for entry in result)
 
 
 class TestGetSwpaScheduleUrl:
@@ -208,16 +275,24 @@ class TestGetSwpaScheduleUrl:
 
 
 class TestGetScheduleDateFromHtml:
-    """Tests for extracting date from schedule HTML."""
+    """Tests for extracting the schedule date from the <pre> header."""
 
     def test_extracts_date(self):
         result = get_schedule_date_from_html(SAMPLE_SCHEDULE_HTML)
         assert result == datetime(2026, 4, 8)
 
-    def test_no_title_returns_none(self):
+    def test_pre_header_wins_over_title(self):
+        html = _schedule_html(datetime(2026, 9, 15), title_date=datetime(2026, 9, 20))
+        assert get_schedule_date_from_html(html) == datetime(2026, 9, 15)
+
+    def test_no_pre_returns_none(self):
         result = get_schedule_date_from_html("<html><body></body></html>")
         assert result is None
 
-    def test_bad_title_returns_none(self):
-        result = get_schedule_date_from_html("<html><head><title>Bad Title</title></head></html>")
-        assert result is None
+    def test_title_only_returns_none(self):
+        html = "<html><head><title>Generation Schedule,SUNDAY,SEPTEMBER 20, 2026</title></head></html>"
+        assert get_schedule_date_from_html(html) is None
+
+    def test_bad_header_returns_none(self):
+        html = "<html><body><pre>PROJECTED LOADING SCHEDULE   SOMEDAY NOMONTH 99, 2026</pre></body></html>"
+        assert get_schedule_date_from_html(html) is None

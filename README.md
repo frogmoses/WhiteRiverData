@@ -38,8 +38,9 @@ Water released at Bull Shoals Dam takes roughly 1.5–4 hours (faster at higher 
 1. Scrapes the USACE Bull Shoals Dam data page for hourly total releases (turbine + spillway, in CFS)
 2. Calculates travel time based on flow rate using generator band interpolation
 3. Determines which past release is currently affecting White Hole
-4. Fetches the SWPA generation schedule to forecast scheduled releases and their arrival times
-5. Reports wading/boating conditions and flags incoming changes
+4. Fetches the SWPA generation schedule for today and, once posted (~5 PM), tomorrow, to forecast scheduled releases and their arrival times
+5. Treats falling water as a window rather than a step: the drop starts when the front of a cut arrives at the higher flow's speed and is fully down when the slower low-flow water has made the trip
+6. Reports wading/boating conditions and flags incoming changes, naming the day's scheduled peak
 
 | CFS Range | Wading | Boating |
 |-----------|--------|---------|
