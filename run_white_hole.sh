@@ -12,10 +12,14 @@ else
     PYTHON="python3"
 fi
 
-# Stash any uncommitted changes (from interrupted/failed runs) and pull
+# Stash any uncommitted changes (from interrupted/failed runs) and pull.
+# --rebase rather than --ff-only: a run whose push was rejected (a code push
+# landed between its pull and its push, 2026-09-21) leaves a local output
+# commit that would block every later fast-forward; rebasing it onto origin
+# keeps that run's predictions.csv row and heals the branch on the next run.
 echo "Pulling latest changes..."
 git stash push -u -q || true
-git pull --ff-only
+git pull --rebase
 
 # Run the Python program
 echo "Running main.py..."
@@ -56,6 +60,12 @@ if git diff --cached --quiet; then
     echo "No changes to commit."
 else
     git commit -m "Update water conditions $(date '+%Y-%m-%d %H:%M')"
-    git push
+    # A push can lose the race against a code push from the workstation;
+    # integrate and retry once before giving up (the next run rebases anyway)
+    if ! git push; then
+        echo "Push rejected; rebasing onto origin and retrying..."
+        git pull --rebase
+        git push
+    fi
     echo "Push complete."
 fi
