@@ -47,8 +47,10 @@ WhiteRiverData/
 ├── prediction_log.py        # Per-run CSV of model predictions (predictions.csv) for later validation
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
 ├── suncalc.py               # NOAA sunrise/sunset (copied from new-croton-fishing) — the one copy the page, report and journal share
+├── inventory_audit.py       # Gear registries + drift audit against the Croton tackle inventory (test + scripts/audit_gear_inventory.py)
 ├── scripts/
-│   └── build_journal.py         # journal/entries/*.md → journal/build/{digest.md,index.json,catches.csv,catches_report.md}
+│   ├── build_journal.py         # journal/entries/*.md → journal/build/{digest.md,index.json,catches.csv,catches_report.md}
+│   └── audit_gear_inventory.py  # CLI for inventory_audit (exit 1 on drift)
 ├── research/                # WHITE_RIVER_RESEARCH_BRIEF.md (the tagged source layer) + archive/ (frozen snapshots, never sources)
 ├── journal/                 # Trip notes + catch tables (see "The journal" below); build/ is gitignored
 │   ├── README.md, TEMPLATE.md, entries/
@@ -66,6 +68,7 @@ WhiteRiverData/
 │   ├── test_water_quality.py      # USGS JSON parsing, gauge preference, thresholds
 │   ├── test_prediction_log.py     # Prediction row contents, CSV append, opt-in from main
 │   ├── test_build_journal.py      # Journal parsing, catch vocabulary, model-row matching, crosswalk
+│   ├── test_gear_inventory.py     # Gear registries; drift vs the inventory file when present
 │   ├── test_formatters.py         # HTML/text output generation
 │   └── test_integration.py        # End-to-end scenarios, incl. timezone-aware data
 ```
@@ -169,6 +172,19 @@ appended to the bottom of the HTML page. Design rules:
   uninventoried (Recon 5-wt etc. — a future inventory section), and soft
   craw/hellgrammite plastics are NOT owned (the inventory's mis-ID'd
   utility-plastics row was corrected to match, 2026-08-26).
+  **The drift test (2026-09-21)**: `inventory_audit.py` holds three registries — `OWNED_GEAR`
+  (label, how the report mentions it, how its inventory row reads), `BUY_OR_VERIFY` (named as
+  not owned) and `UNINVENTORIED` (fly gear) — and `GEAR_TOKENS`, the brand/hardware words that
+  count as gear. `tests/test_gear_inventory.py` fails when the report names gear no registry
+  covers, when a registered item is no longer mentioned, or — only where the inventory file
+  exists (this workstation; skipped on the Pi and in CI) — when an owned item has no live row,
+  matches only a "Pruned on repack day" paragraph, or its row says "failed inspection" without
+  the gear check saying so. `uv run python scripts/audit_gear_inventory.py` runs the same audit
+  from the command line (exit 1 on drift) for the Croton side to call after an inventory edit.
+  Naming new gear in the report means registering it in the same commit. The first run caught
+  four drifts from the 2026-08-28 repack: the pruned XPS ⅜ oz and gold/red spoon, "Countdown"
+  for what the inventory calls the sinking swimmers, and a bank sinker the inventory no longer
+  lists — plus the marabou jigs' failed hook inspection, now a gear-check item.
   Brian maintains the inventory file manually. Fresh bait is bought in
   Arkansas, not packed.
 - **Year-round, collapsed by default**: the whole report is a `<details>`
