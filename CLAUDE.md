@@ -301,6 +301,9 @@ uv run pytest -m integration                   # Only integration tests
 ### Production Environment
 
 - **Host**: Raspberry Pi (local network), runs **Eastern time** — safe only because all pipeline datetimes are timezone-aware Central
+- **Reach it**: `ssh briancarroll` (workstation alias → 192.168.1.181, user frogmoses). Log: `/home/frogmoses/log/white_hole.log`.
+- **DNS**: the Pi runs Pi-hole + unbound on :53. Its Wi-Fi connection ("Dar-ling-a-ling", NetworkManager) was pointed at the router (192.168.1.1), which returns SERVFAIL for army.mil (DNSSEC) — 114 `ERR_NAME_NOT_RESOLVED` runs in the log through 2026-09-21. Fixed 2026-09-21: `ipv4.dns "127.0.0.1 1.1.1.1"`, `ignore-auto-dns yes` (both families). `data_fetcher` additionally falls back to DNS-over-HTTPS + `--host-resolver-rules` if the local resolver fails again.
+- **Push race**: the Pi pulls, runs and pushes at :00. A workstation push landing inside that window gets the Pi's push rejected; `run_white_hole.sh` now pulls `--rebase` and retries a rejected push, but avoid pushing code at the top of the hour.
 - **Project Path**: `/home/frogmoses/WhiteRiverData`
 - **Log Path**: `/home/frogmoses/log/white_hole.log`
 - **Serving**: GitHub Pages from the repo's master branch
