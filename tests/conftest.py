@@ -12,6 +12,23 @@ def run_in_tmp_path(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
 
+@pytest.fixture(autouse=True)
+def no_network(monkeypatch):
+    """
+    Tests never reach the internet. Every fetcher goes through
+    requests.get; make it fail like an outage so page-level tests exercise
+    the no-forecast / no-water-quality paths deterministically. Tests that
+    need a response monkeypatch requests.get themselves (their patch is
+    applied later and wins).
+    """
+    import requests
+
+    def offline(*args, **kwargs):
+        raise requests.ConnectionError("network disabled in tests")
+
+    monkeypatch.setattr(requests, "get", offline)
+
+
 @pytest.fixture
 def base_time():
     """Base time for test datasets."""

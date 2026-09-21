@@ -598,3 +598,31 @@ class TestGearDoctrine:
         fly = " ".join(gear["fly"])
         assert "isn't in the inventory yet" in fly or "isn't inventoried yet" in fly
         assert "Fly box audit" in fly
+
+
+class TestWaterNotes:
+    """Measured USGS temperature/oxygen leads the season notes."""
+
+    WQ = {"site": "07054527", "site_label": "USGS gauge at Cane Island",
+          "temp_c": 14.6, "temp_f": 58.3, "do_mg_l": 4.5,
+          "observed": OCTOBER - timedelta(minutes=30), "age_hours": 0.5,
+          "do_status": "low", "temp_status": "prime"}
+
+    def test_measured_reading_replaces_the_guess(self):
+        report = generate_fishing_report(750, OCTOBER, water_quality=self.WQ)
+        notes = report["season_notes"]
+        assert notes[0].startswith("Water 58.3°F — prime")
+        assert notes[1].startswith("Oxygen 4.5 mg/L — LOW")
+        assert "USGS gauge at Cane Island" in notes[1]
+        assert not any("unavailable" in n for n in notes)
+
+    def test_fallback_without_a_reading(self):
+        for when in (OCTOBER, APRIL):
+            notes = generate_fishing_report(750, when, water_quality=None)["season_notes"]
+            assert "USGS tailwater reading unavailable" in notes[0]
+
+    def test_no_hardcoded_temperature_claims(self):
+        """The old fixed '~53–56°F' note contradicted the live gauge."""
+        for when in (OCTOBER, APRIL):
+            html = render_fishing_report_html(generate_fishing_report(750, when))
+            assert "53–56" not in html and "annual warmest" not in html

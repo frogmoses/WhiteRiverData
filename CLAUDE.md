@@ -43,6 +43,8 @@ WhiteRiverData/
 ├── formatters.py            # HTML and text output generation, chart embedding
 ├── chart_generator.py       # Matplotlib vertical dam→White Hole flow chart
 ├── landmarks.py             # Pinned GPS coordinates → river miles for reach landmarks
+├── water_quality.py         # USGS tailwater temperature / dissolved oxygen (gauges 07054527, 07054502)
+├── prediction_log.py        # Per-run CSV of model predictions (predictions.csv) for later validation
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
 ├── run_white_hole.sh        # Production script: pulls code, runs main.py, commits and pushes output
 ├── index.html               # Redirect to white_hole_conditions.html for GitHub Pages root
@@ -55,6 +57,8 @@ WhiteRiverData/
 │   ├── test_water_calculator.py   # Flow calculations, trend/state logic, timelines
 │   ├── test_fishing_report.py     # Bands, seasons, ETA math, spin/fly separation
 │   ├── test_landmarks.py          # GPS-derived river miles, haversine, ordering
+│   ├── test_water_quality.py      # USGS JSON parsing, gauge preference, thresholds
+│   ├── test_prediction_log.py     # Prediction row contents, CSV append, opt-in from main
 │   ├── test_formatters.py         # HTML/text output generation
 │   └── test_integration.py        # End-to-end scenarios, incl. timezone-aware data
 ```
@@ -121,6 +125,8 @@ Water data entries are dicts with: `date_time` (aware Central in production, nai
 - **Forecast validity and horizon** (`forecast_fetcher.get_swpa_forecast`): fetches today's day-of-week page **and tomorrow's** (posted by ~5 p.m.; Friday covers the weekend), validating each against the date in the `<pre>` header line (`PROJECTED LOADING SCHEDULE <DAY> <MONTH> <DD>, <YYYY>`, `SCHEDULE_DATE_RE`). A page that is undated or dated for another day is dropped — the day pages persist for a week, so a missed post would otherwise serve last week's schedule. **Never validate against the `<title>`**: its date is the CMS render date and every one of the seven pages carries *today's* date there (verified 2026-09-20). Returns remaining today + all of tomorrow, chronological.
 - **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
 - **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails (empty data or the error sentinel), `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed` flag through both formatters) — plus the stale banner once the cached data ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the original error page. The cache file is **committed** by `run_white_hole.sh` (its `git stash -u` would destroy an untracked copy). Motivated by the Aug 27 2026 army.mil DNS outage, which blanked the page for hours despite the USACE web server being up.
+- **Water quality** (`water_quality.get_water_quality`): one call to the USGS instantaneous-values service for gauges 07054527 (near Fairview, beside the Cane Island pin — preferred) and 07054502 (0.7 mi below the dam — fallback): water temperature and dissolved oxygen, 15-minute, **no discharge** (no downstream flow gauge exists for validating the travel model). Thresholds: DO <5 mg/L low / <6 marginal; temp <50°F cold / 50–62 prime / 62–68 warm / ≥68 hot (commonly cited trout ranges — verify before tightening). Rendered as pills under Current Conditions (`formatters.generate_water_quality_html`, age shown past `STALE_READING_HOURS`), in the text summary, and as the first lines of the fishing report's season notes (`fishing_report.water_notes`; a per-season fallback sentence when the fetch fails — the old fixed "~53–56°F" note contradicted the live gauge). Fetch failure never blanks the page.
+- **Prediction log** (`prediction_log.py`): `main.__main__` passes `prediction_log_file=PREDICTION_LOG_FILE` for the HTML run only, appending one row per production run to `predictions.csv` (run time, latest reading, predicted White Hole CFS and its source reading, next significant actual change with its arrival or recession window, first significant scheduled change, water temp/DO, feed_failed). Committed by `run_white_hole.sh` (same `git stash -u` caveat as the cache). Purpose: the first validation dataset for the travel model — compare against timestamped on-site observations and later dam readings.
 - **Landmarks** (`landmarks.py`): pinned GPS coordinates (Brian's in-river points beside each landmark) for the 8 dam→White Hole locations; river miles are cumulative haversine chord distances along the chain, scaled so The White Hole lands exactly on `WHITE_HOLE_MILE = 7.0` (the raw chord sum ~6.73 mi undercuts the meanders; scaling preserves the His Place calibration). `LANDMARK_MILES` drives the chart's `points`/`point_labels` and the fishing report's `REACH_SPOTS`/`SPOT_COORDS` (Gaston's ≈ mile 4.09). Cranor's Island stays at an estimated 9.5 — no GPS chain below White Hole.
 
 ### Fishing Report (`fishing_report.py`)
@@ -195,6 +201,7 @@ appended to the bottom of the HTML page. Design rules:
 ## Output Files
 
 - `white_hole_conditions.html` — HTML report with headline banner, unified timeline (SWPA scheduled + actual dam readings), condition pills, and embedded chart
+- `predictions.csv` — production-only prediction log (see Key Calculations)
 - `vertical_flow_chart.png` — Chart showing dam→White Hole flow progression with color gradient and generator labels
 - Test variants: `white_hole_conditions_{scenario}.html` and `vertical_flow_chart_{scenario}.png`
 
@@ -213,7 +220,7 @@ uv run pytest -m integration                   # Only integration tests
 
 ### Pitfalls
 
-- Tests run from a temporary directory (autouse `run_in_tmp_path` fixture in `conftest.py`), so generated charts/HTML stay out of the repo root. Running `main.py` or `generate_test_html.py` directly, however, does write into the repo root — restore `vertical_flow_chart.png`, `white_hole_conditions.html`, and (for `main.py`) `last_good_data.json` with `git checkout` if the run wasn't meant to be committed.
+- Tests run from a temporary directory (autouse `run_in_tmp_path` fixture in `conftest.py`), so generated charts/HTML stay out of the repo root, and **offline** (autouse `no_network` makes `requests.get` raise; tests that need a response monkeypatch it themselves). CI runs `uv run pytest` on every push/PR (`.github/workflows/tests.yml`) — the suite sat red for three weeks before that existed. Running `main.py` or `generate_test_html.py` directly, however, does write into the repo root — restore `vertical_flow_chart.png`, `white_hole_conditions.html`, and (for `main.py`) `last_good_data.json` with `git checkout` if the run wasn't meant to be committed.
 - Never mix naive and aware datetimes in one dataset/call (comparison raises `TypeError`).
 - The remote `master` advances hourly (Pi output commits) — use `git pull --rebase` before pushing.
 - `data_fetcher.get_error_data()` returns an error sentinel (single entry with `error: True`) used when scraping fails.
@@ -244,6 +251,6 @@ https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
 1. Uses venv Python if available, falls back to system Python
 2. Stashes any leftover changes, pulls latest code from GitHub (`git pull --ff-only`)
 3. Runs `main.py` to generate HTML and chart files
-4. Commits the 2 output files (plus `last_good_data.json` when present) and pushes to GitHub (served via GitHub Pages)
+4. Commits the 2 output files (plus `last_good_data.json` and `predictions.csv` when present) and pushes to GitHub (served via GitHub Pages)
 
 Commit-message timestamps from the Pi are Eastern; the report content itself is Central.

@@ -45,6 +45,12 @@ if [[ -f "$BASE_DIR/last_good_data.json" ]]; then
     git add "$BASE_DIR/last_good_data.json"
 fi
 
+# Prediction log: one row per run, committed for later validation of the
+# travel model (same stash caveat as the cache above)
+if [[ -f "$BASE_DIR/predictions.csv" ]]; then
+    git add "$BASE_DIR/predictions.csv"
+fi
+
 # Only commit if there are changes
 if git diff --cached --quiet; then
     echo "No changes to commit."

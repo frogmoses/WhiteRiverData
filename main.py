@@ -15,6 +15,8 @@ from formatters import (
 )
 from chart_generator import generate_vertical_river_chart
 from fishing_report import generate_fishing_report, render_fishing_report_html
+from water_quality import get_water_quality
+from prediction_log import build_prediction_row, append_prediction, PREDICTION_LOG_FILE
 
 # Warn on the page when the newest dam reading is older than this many hours
 # (the USACE feed normally updates hourly but sometimes stalls)
@@ -31,7 +33,8 @@ def _is_error_data(data):
     return len(data) == 1 and data[0].get('error', False)
 
 
-def generate_white_hole_summary(output_format="text", data=None, dataset_name=None, current_time=None):
+def generate_white_hole_summary(output_format="text", data=None, dataset_name=None, current_time=None,
+                                prediction_log_file=None):
     """
     Generate a summary of current water conditions at White Hole.
 
@@ -40,6 +43,8 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
         data (list, optional): Pre-fetched data. If None, data will be fetched.
         dataset_name (str, optional): Name of the dataset, used for chart filename.
         current_time (datetime, optional): Override for current time. Defaults to now.
+        prediction_log_file (str, optional): When given, append this run's
+            predictions to that CSV (production only — see prediction_log.py).
 
     Returns:
         str: Summary in the requested format
@@ -163,11 +168,26 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     except Exception as e:
         print(f"Warning: Could not fetch SWPA forecast: {e}")
 
+    # Tailwater temperature / dissolved oxygen from the USGS gauges
+    # (optional — failures just drop the section)
+    water_quality = None
+    try:
+        water_quality = get_water_quality(current_time)
+    except Exception as e:
+        print(f"Warning: Could not fetch USGS water quality: {e}")
+
     # Build the fishing report (full content during trip windows,
     # placeholder otherwise) driven by the flow at White Hole
     fishing_report = generate_fishing_report(
-        white_hole_cfs, current_time, timeline_data, forecast_timeline)
+        white_hole_cfs, current_time, timeline_data, forecast_timeline,
+        water_quality=water_quality)
     fishing_report_html = render_fishing_report_html(fishing_report)
+
+    if prediction_log_file:
+        append_prediction(build_prediction_row(
+            current_time, latest_entry, relevant_entry, white_hole_cfs,
+            water_state, forecast, timeline_data, forecast_timeline,
+            water_quality, feed_failed), prediction_log_file)
 
     # Format the summary based on requested output format
     if output_format == "html":
@@ -187,7 +207,8 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             forecast_timeline=forecast_timeline,
             stale_hours=stale_hours,
             feed_failed=feed_failed,
-            fishing_report_html=fishing_report_html
+            fishing_report_html=fishing_report_html,
+            water_quality=water_quality
         )
 
         chart_filename = f"vertical_flow_chart_{dataset_name}.png" if dataset_name else "vertical_flow_chart.png"
@@ -211,7 +232,8 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             latest_entry=latest_entry,
             relevant_entry=relevant_entry,
             stale_hours=stale_hours,
-            feed_failed=feed_failed
+            feed_failed=feed_failed,
+            water_quality=water_quality
         )
 
 if __name__ == "__main__":
@@ -227,6 +249,7 @@ if __name__ == "__main__":
     text_summary = generate_white_hole_summary(output_format="text", data=data)
     print(text_summary)
 
-    # Generate HTML report
-    html_summary = generate_white_hole_summary(output_format="html", data=data)
+    # Generate HTML report; the production run also logs its predictions
+    html_summary = generate_white_hole_summary(
+        output_format="html", data=data, prediction_log_file=PREDICTION_LOG_FILE)
     save_html_summary(html_summary, filename="white_hole_conditions.html")

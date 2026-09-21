@@ -22,6 +22,7 @@ This scrapes current dam data, calculates conditions at White Hole, and produces
 |--------|-------------|
 | `white_hole_conditions.html` | Report with headline banner, water timeline, SWPA generation forecast, and condition details |
 | `vertical_flow_chart.png` | Chart showing dam-to-White Hole flow progression |
+| `predictions.csv` | Production only: one row per run of what the model predicted, for later validation |
 
 ## Generate Test Scenarios
 
@@ -41,6 +42,7 @@ Water released at Bull Shoals Dam takes roughly 1.5–4 hours (faster at higher 
 4. Fetches the SWPA generation schedule for today and, once posted (~5 PM), tomorrow, to forecast scheduled releases and their arrival times
 5. Treats falling water as a window rather than a step: the drop starts when the front of a cut arrives at the higher flow's speed and is fully down when the slower low-flow water has made the trip
 6. Reports wading/boating conditions and flags incoming changes, naming the day's scheduled peak
+7. Reads tailwater temperature and dissolved oxygen from the USGS gauges below the dam and shows them with trout-relevant verdicts (low oxygen: land fish fast)
 
 | CFS Range | Wading | Boating |
 |-----------|--------|---------|

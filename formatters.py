@@ -3,6 +3,8 @@ from water_calculator import (
     calculate_travel_time, format_generators, calculate_timeline,
     get_fishing_condition, get_flow, find_incoming_change, clock
 )
+from water_quality import describe as describe_water_quality, STALE_READING_HOURS
+
 from landmarks import LANDMARK_COORDS
 
 
@@ -60,6 +62,44 @@ def is_recession(item):
             and item['arrival_time'] - start >= MIN_RECESSION_WINDOW)
 
 
+WQ_PILL_STYLES = {
+    "low": ("#fee2e2", "#991b1b"), "hot": ("#fee2e2", "#991b1b"),
+    "marginal": ("#fef3c7", "#92400e"), "warm": ("#fef3c7", "#92400e"),
+    "cold": ("#dbeafe", "#1e40af"),
+    "good": ("#d1fae5", "#065f46"), "prime": ("#d1fae5", "#065f46"),
+}
+
+
+def generate_water_quality_html(water_quality, current_time):
+    """Temperature and oxygen pills with their verdicts; '' when no reading."""
+    temp_line, do_line = describe_water_quality(water_quality)
+    if not temp_line and not do_line:
+        return ""
+
+    pills = []
+    for line, status in ((temp_line, water_quality["temp_status"]),
+                         (do_line, water_quality["do_status"])):
+        if not line:
+            continue
+        bg, color = WQ_PILL_STYLES.get(status, ("#edf2f7", "#2d3748"))
+        value, verdict = line.split(" — ", 1)
+        pills.append(
+            f'<span class="pill" style="background-color: {bg}; color: {color};">'
+            f'{value} <small>— {verdict}</small></span>')
+
+    age = water_quality.get("age_hours")
+    observed = clock(water_quality["observed"], current_time)
+    if age is not None and age > STALE_READING_HOURS:
+        when = f"reading is {age:.1f} h old ({observed})"
+    else:
+        when = f"as of {observed}"
+    source = (f'<a href="https://waterdata.usgs.gov/monitoring-location/USGS-{water_quality["site"]}/" '
+              f'target="_blank" style="color: #718096;">{water_quality["site_label"]}</a>')
+    return f'''
+        <div class="condition-pills" style="margin-top: 12px;">{"".join(pills)}</div>
+        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
+
+
 def group_forecast_runs(forecast_timeline):
     """
     Collapse consecutive scheduled hours at the same CFS into runs so the
@@ -92,7 +132,8 @@ def group_forecast_runs(forecast_timeline):
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
-                           stale_hours=None, feed_failed=False, fishing_report_html=""):
+                           stale_hours=None, feed_failed=False, fishing_report_html="",
+                           water_quality=None):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -184,6 +225,9 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     <div style="background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; font-weight: 500;">
         ⚠️ DAM DATA DELAYED — The latest reading is {stale_hours:.1f} hours old. Conditions shown may not reflect the river right now.
     </div>'''
+
+    # Tailwater temperature / oxygen block (USGS), omitted when unavailable
+    water_quality_html = generate_water_quality_html(water_quality, current_time)
 
     # Build unified water timeline (scheduled forecast + actual dam readings)
     water_timeline_html = ""
@@ -518,6 +562,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
             <span class="pill wading">{wading_condition.title()}</span>
             <span class="pill boating">{boating_condition.title()}</span>
         </div>
+        {water_quality_html}
         <a href="https://www.youtube.com/channel/UCAXhb9nFnsfu367AthDrgIA/live" target="_blank" class="webcam-link" style="margin-top: 15px;">
             📹 View Live Webcam
         </a>
@@ -635,10 +680,13 @@ def save_html_summary(html_content, filename="white_hole_conditions.html"):
 
 def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                          wading_condition, boating_condition, recent_trend, forecast,
-                         latest_entry, relevant_entry, stale_hours=None, feed_failed=False):
+                         latest_entry, relevant_entry, stale_hours=None, feed_failed=False,
+                         water_quality=None):
     """Generate a text version of the White Hole summary."""
     # Calculate travel time for the summary
     travel_time = calculate_travel_time(get_flow(relevant_entry))
+    temp_line, do_line = describe_water_quality(water_quality)
+    water_quality_text = "".join(f"{line}\n" for line in (temp_line, do_line) if line)
     stale_warning = ""
     if feed_failed:
         stale_warning += "\nWARNING: Live dam feed unavailable — showing the last successfully retrieved readings.\n"
@@ -656,7 +704,7 @@ Boating Conditions: {boating_condition.title()}
 
 Over the past 6 hours, dam releases have {recent_trend}.
 Looking ahead: {forecast.capitalize()}.
-
+{water_quality_text}
 CALCULATION DETAILS:
 - Latest dam reading: {get_flow(latest_entry)} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}
 - Travel time to White Hole: {travel_time:.1f} hours at {white_hole_cfs} CFS
