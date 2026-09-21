@@ -141,9 +141,12 @@ only** — no parameter 00060 (discharge), no 00065 (gage height):
 | 07054527 | White River below Bull Shoals Dam near Fairview | 00010, 00300 |
 | 07055000 | White River near Flippin | **discontinued** (daily 1928–1981) |
 
-Nearest USGS **discharge** gauges are both far downstream and both include the Norfork
-and Buffalo inflows: **07057370** (near Norfork, ~RM 49) and **07060500** (Calico Rock,
-~RM 62, record from 1943). Calico Rock is the only long-record proxy available and is
+Nearest USGS **discharge** gauges are both far downstream: **07057370** (near Norfork,
+~RM 49 — at 36.2236, -92.30 it sits about 1.5 mi *above* the North Fork confluence, so it
+carries the Buffalo and Crooked Creek but not Norfork Dam's release `[CONFIRMED]` USGS site
+catalog 2026-09-21) and **07060500** (Calico Rock, ~RM 62, record from 1943, below both).
+Between the dam and Norfork there is nothing: 07055500 Cotter never had a continuous
+record and 07055000 Flippin's daily record ended 1981 `[CONFIRMED]`. Calico Rock is the only long-record proxy available and is
 what §4's statistics are built on — absolute values run above Bull Shoals-only releases,
 so **use it for ratios and seasonality, not for absolute flow.**
 

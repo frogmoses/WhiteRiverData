@@ -27,3 +27,15 @@ float / direct / indicator / tightline / swing / dry; `bait` is what was on the 
 | species | size | time | spot | water | boat | rig | bait | lost |
 |---|---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |  |
+
+## Stage
+
+The dock post at White Hole read as a staff gauge — the only check the travel model gets.
+`time` is Central `HH:MM`; `reading` is the mark the deck sits at, same unit every time;
+`water` is what it was doing (rising / falling / steady / dead low) — leave it blank and
+the builder works it out from the reading before; `note` is yours. Read it every 15–20 min
+across a predicted arrival: the reading that moves is the observed arrival.
+
+| time | reading | water | note |
+|---|---|---|---|
+|  |  |  |  |
