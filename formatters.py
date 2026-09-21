@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from water_calculator import (
     calculate_travel_time, format_generators, calculate_timeline,
-    get_fishing_condition, get_flow, find_incoming_change, clock
+    get_fishing_condition, get_flow, find_incoming_change, clock, group_forecast_runs
 )
 from water_quality import describe as describe_water_quality, STALE_READING_HOURS
 from fishing_report import light_windows_for
@@ -99,35 +99,6 @@ def generate_water_quality_html(water_quality, current_time):
     return f'''
         <div class="condition-pills" style="margin-top: 12px;">{"".join(pills)}</div>
         <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
-
-
-def group_forecast_runs(forecast_timeline):
-    """
-    Collapse consecutive scheduled hours at the same CFS into runs so the
-    whole remaining schedule fits on the page. Each run carries the first
-    hour's arrival/recession times (when that level reaches White Hole) and
-    the span it covers.
-    """
-    runs = []
-    for item in forecast_timeline:
-        if runs and runs[-1]['cfs'] == item['cfs']:
-            runs[-1]['end_time'] = item['scheduled_time'] + timedelta(hours=1)
-            runs[-1]['hours'] += 1
-            continue
-        runs.append({
-            'start_time': item['scheduled_time'],
-            'end_time': item['scheduled_time'] + timedelta(hours=1),
-            'hours': 1,
-            'cfs': item['cfs'],
-            'generators': item['generators'],
-            'generation_cfs': item.get('generation_cfs', item['cfs']),
-            'min_flow_cfs': item.get('min_flow_cfs', 0),
-            'wading': item['wading'],
-            'arrival_time': item['arrival_time'],
-            'change': item.get('change'),
-            'recession_start': item.get('recession_start'),
-        })
-    return runs
 
 
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,

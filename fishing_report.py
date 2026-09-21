@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 
 from water_calculator import (
     calculate_travel_time, get_flow, format_generators, get_fishing_condition,
-    recession_window, clock
+    recession_window, clock, group_forecast_runs, significant_change
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
 import suncalc
@@ -131,6 +131,59 @@ def _window_str(name, start, end, reference):
 
 
 # ---------------------------------------------------------------------------
+# Provenance. Every block of advice names its sources. The "brief" is the Aug
+# 2026 research brief, restored to research/ on 2026-09-21: each of its claims
+# carries a confidence tag, so a bullet here can be traced to a tagged claim and
+# its §12 source. The journal's catch rows are what confirms or retires the
+# REPORTED/INFERRED ones (EVIDENCE below, journal/README.md).
+# ---------------------------------------------------------------------------
+
+SOURCES = {
+    "his_place": ("His Place Resort river guide (flow bands, travel and fall-out times, "
+                  "boat safety)", "https://www.hisplaceresort.net/white-river-info"),
+    "agfc_regs": ("AGFC 2026 trout regulations (verified 2026-09-20)",
+                  "https://www.agfc.com/news/agfc-passes-new-trout-regulations-for-2026/"),
+    "agfc_code": ("AGFC Code ch. 32 — sculpin as legal baitfish (verified Aug 2026)",
+                  "https://www.agfc.com/regulations/"),
+    "usgs": ("USGS tailwater gauges 07054527 / 07054502 (temperature, oxygen)",
+             "https://waterdata.usgs.gov/monitoring-location/USGS-07054527/"),
+    "brief": ("Research brief, Aug 2026 (research/WHITE_RIVER_RESEARCH_BRIEF.md — every "
+              "claim carries a CONFIRMED / REPORTED / INFERRED / CONFLICT tag and §12 lists "
+              "the sources)", "research/WHITE_RIVER_RESEARCH_BRIEF.md"),
+    "brian": ("Brian's own vetting and boat experience on this reach", None),
+}
+
+# Journal evidence per (band key, program): filled by hand from
+# journal/build/catches_report.md after each trip — the count of landed fish
+# behind the block and the dates. Empty until the first rows exist.
+EVIDENCE = {
+    # ("minimum", "browns"): {"fish": 1, "dates": ["2026-10-06"], "note": "sculpin, split-shot, dawn"},
+}
+
+
+def evidence_line(band, program):
+    """'Journal: 3 fish on record (2026-10-06, 2026-10-07) — note' or the honest default."""
+    e = EVIDENCE.get((band, program))
+    if not e or not e.get("fish"):
+        return "Journal: no fish on record yet for this block"
+    dates = ", ".join(e.get("dates", []))
+    note = f" — {e['note']}" if e.get("note") else ""
+    return f"Journal: {e['fish']} fish on record ({dates}){note}"
+
+
+def sources_html(keys):
+    """A grey 'Sources:' line with links where a source has one."""
+    parts = []
+    for key in keys:
+        label, url = SOURCES[key]
+        short = label.split(" (")[0].split(" — ")[0]
+        parts.append(f'<a href="{url}" target="_blank" style="color: #718096;">{short}</a>'
+                     if url else short)
+    return (f'<p style="color: #999; font-size: 0.8em; margin: 6px 0 0;">'
+            f'Sources: {" · ".join(parts)}</p>')
+
+
+# ---------------------------------------------------------------------------
 # Band content. Spin and fly are separate by design; within each, 'browns'
 # and 'rainbows' are separate programs with their own leader guidance.
 # Do not merge any of them.
@@ -139,6 +192,7 @@ def _window_str(name, start, end, reference):
 BAND_CONTENT = {
     "minimum": {
         "label": "Minimum flow (dead low)",
+        "sources": ["his_place", "brief", "brian", "agfc_code"],
         "summary": "The river is a giant spring creek. Gravel bars exposed; prop strikes "
                    "are the boat risk and the White Hole ramp can be tricky to launch. "
                    "Wading is wide open. Fish see everything — go light for rainbows, "
@@ -198,6 +252,7 @@ BAND_CONTENT = {
     },
     "one_unit": {
         "label": "Around 1 unit (2,000–5,000 CFS)",
+        "sources": ["his_place", "brief", "brian"],
         "summary": "The best all-round level. The channel runs cleanly and shoals are passable "
                    "with care. Wading is still possible with caution near edges.",
         "where": [
@@ -252,6 +307,7 @@ BAND_CONTENT = {
     },
     "two_three_units": {
         "label": "2–3 units (5,000–10,000 CFS)",
+        "sources": ["his_place", "brief", "brian"],
         "summary": "Fish move to the banks and flooded grass. No wading. Fish the edges, "
                    "not open water — and the brown-trout window starts opening.",
         "where": [
@@ -301,6 +357,7 @@ BAND_CONTENT = {
     },
     "four_five_units": {
         "label": "3–5 units (10,000–16,500 CFS)",
+        "sources": ["his_place", "brief", "brian"],
         "summary": "Boat water — and the big-brown window. Drag chain, not anchor. "
                    "Bank ties need a real eddy. No wading anywhere.",
         "where": [
@@ -348,6 +405,7 @@ BAND_CONTENT = {
     },
     "high": {
         "label": "Heavy generation (16,500+ CFS)",
+        "sources": ["his_place", "brief"],
         "summary": "20,000+ CFS class water. Debris moving, no wading anywhere, and this is not "
                    "a small-rental-jon proposition. Fish true slack water only — or wait for the drop.",
         "where": [
@@ -390,6 +448,7 @@ WATER_FALLBACK_NOTES = {
 SEASON_CONTENT = {
     "fall": {
         "label": "Fall (September–October): pre-spawn browns",
+        "sources": ["brief", "usgs"],
         "notes": [
             "Browns are staging pre-spawn — aggression without redds. They've shifted to eating big: sculpin here run 5–6 in, so don't fish small for them",
             "Stage points: upper ends of holes (trophy browns found in as little as 5 ft), shoal-tail drop-offs, undercut banks and wood",
@@ -425,6 +484,7 @@ SEASON_CONTENT = {
     },
     "spring": {
         "label": "Spring (March–April): post-spawn rainbows, front edge of the caddis",
+        "sources": ["brief", "agfc_regs"],
         "notes": [
             "Rainbows are post-spawn and feeding normally; stockings are still thin after the 2025 hatchery losses — temper numbers expectations, brown expectations are intact or better",
             "The caddis hatch truly fires at flows around 4,000 CFS or less and works upstream from the lower river — early April usually catches the front edge here, not the peak",
@@ -764,7 +824,49 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
                 f"Fish the first hour of the drop at each spot; upstream falls first"
             )
 
+    timing.extend(schedule_outline(forecast_timeline, current_time))
+
     return timing
+
+
+def schedule_outline(forecast_timeline, current_time):
+    """
+    One bullet per scheduled day: every significant change at White Hole in
+    order, the peak marked — the night-before read of tomorrow, and the rest
+    of today beyond the first change the SCHEDULED RISE/DROP bullet names.
+    """
+    if not forecast_timeline:
+        return []
+    bullets = []
+    by_day = {}
+    for run in group_forecast_runs(forecast_timeline):
+        by_day.setdefault(run["start_time"].date(), []).append(run)
+    for day, day_runs in sorted(by_day.items()):
+        # The day's high point — unmarked when it is simply where the day
+        # starts (a day that only falls from the current level has no peak)
+        peak = max(day_runs, key=lambda r: r["cfs"])
+        if peak is day_runs[0]:
+            peak = None
+        steps = []
+        prev = None
+        for run in day_runs:
+            if prev is not None and significant_change(prev, run["cfs"]) is None and run is not peak:
+                prev = run["cfs"]
+                continue
+            when = (f"falling ~{clock(run['recession_start'], current_time)}"
+                    if run.get("change") == "falling" and run.get("recession_start")
+                    else f"by ~{clock(run['arrival_time'], current_time)}")
+            tag = " (peak)" if run is peak else ""
+            steps.append(f"{run['cfs']:,} {when}{tag}")
+            prev = run["cfs"]
+        if day == current_time.date():
+            label = "Rest of today at White Hole"
+        elif day == current_time.date() + timedelta(days=1):
+            label = f"Tomorrow ({day.strftime('%a')}) at White Hole"
+        else:
+            label = f"{day.strftime('%a')} at White Hole"
+        bullets.append(f"{label}: " + " · ".join(steps))
+    return bullets
 
 
 def water_notes(water_quality, season, current_time=None):
@@ -826,6 +928,9 @@ def generate_fishing_report(white_hole_cfs, current_time,
         "wading": wading,
         "boating": boating,
         "summary": content["summary"],
+        "sources": content["sources"],
+        "season_sources": season_content["sources"],
+        "evidence": {program: evidence_line(band, program) for program in ("browns", "rainbows")},
         "where": content["where"],
         "boat": content["boat"],
         "timing": build_timing(white_hole_cfs, current_time,
@@ -886,17 +991,24 @@ def _rigging_html(rigging):
     return "".join(blocks)
 
 
-def _species_block_html(browns, rainbows):
+def _evidence_html(text):
+    return f'<p style="color: #999; font-size: 0.8em; margin: 2px 0 6px;">{text}</p>'
+
+
+def _species_block_html(browns, rainbows, evidence=None):
     """Render the two species programs; either may be empty."""
+    evidence = evidence or {}
     html = ""
     if browns:
         html += f'''
             <p style="margin: 10px 0 4px;"><strong style="color: #7b4a12;">🟤 {BROWNS_HEADER}</strong></p>
-            <ul style="margin: 0 0 0 5px;">{_items_html(browns)}</ul>'''
+            <ul style="margin: 0 0 0 5px;">{_items_html(browns)}</ul>
+            {_evidence_html(evidence["browns"]) if evidence.get("browns") else ""}'''
     if rainbows:
         html += f'''
             <p style="margin: 10px 0 4px;"><strong style="color: #9d2f4c;">🌈 {RAINBOWS_HEADER}</strong></p>
-            <ul style="margin: 0 0 0 5px;">{_items_html(rainbows)}</ul>'''
+            <ul style="margin: 0 0 0 5px;">{_items_html(rainbows)}</ul>
+            {_evidence_html(evidence["rainbows"]) if evidence.get("rainbows") else ""}'''
     return html
 
 
@@ -938,6 +1050,7 @@ def render_fishing_report_html(report):
         <p style="font-size: 1.1em; margin: 10px 0;"><strong>{report["band_label"]}</strong>
             — {report["cfs"]:,} CFS at White Hole ({report["generators"]})</p>
         <p style="color: #444;">{report["summary"]}</p>
+        {sources_html(report["sources"])}
         {_map_links_html()}
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Where to go</h4>
         <ul style="margin: 0 0 0 5px;">{where_html}</ul>
@@ -951,21 +1064,23 @@ def render_fishing_report_html(report):
         <div style="background-color: #f0f7f4; border-radius: 8px; padding: 15px; margin-top: 18px;">
             <h4 style="color: #2c3e50; margin: 0 0 8px;">🎣 Spin Fishing</h4>
             <p style="margin: 4px 0;"><strong>Rig:</strong> {spin["rig"]}</p>
-            {_species_block_html(spin["browns"], spin["rainbows"])}
+            {_species_block_html(spin["browns"], spin["rainbows"], report["evidence"])}
             {spin_notes_html}
         </div>
 
         <div style="background-color: #f4f2f7; border-radius: 8px; padding: 15px; margin-top: 12px;">
             <h4 style="color: #2c3e50; margin: 0 0 8px;">🪶 Fly Fishing (9 ft 5-wt)</h4>
             <p style="margin: 4px 0;"><strong>Setup:</strong> {fly["setup"]}</p>
-            {_species_block_html(fly["browns"], fly["rainbows"])}
+            {_species_block_html(fly["browns"], fly["rainbows"], report["evidence"])}
         </div>
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Season notes</h4>
         <ul style="margin: 0 0 0 5px;">{season_html}</ul>
+        {sources_html(report["season_sources"])}
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Regulations</h4>
         <ul style="margin: 0 0 0 5px;">{regs_html}</ul>
+        {sources_html(["agfc_regs", "agfc_code"])}
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Gear check</h4>
         <p style="margin: 6px 0 4px;"><strong>🎣 Spin gear:</strong></p>
@@ -979,9 +1094,10 @@ def render_fishing_report_html(report):
         {_rigging_html(report["rigging"])}
 
         <p style="color: #999; font-size: 0.8em; margin-top: 15px;">
-            Fishing content distilled from local sources (His Place, Dally's, Cotter Trout Dock,
-            AGFC reports, OzarkAnglers); arrival times computed from this page's verified travel
-            model. Regulations change — verify with AGFC before fishing.
+            Each block names its sources above. The research brief tags every claim by
+            confidence; the journal's catch rows are what confirm or retire the reported
+            ones. Arrival times come from this page's travel model, not the brief's.
+            Regulations change — verify with AGFC before fishing.
         </p>
     </details>'''
 

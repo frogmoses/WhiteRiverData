@@ -426,3 +426,32 @@ def find_incoming_change(timeline_data, current_cfs):
         if direction:
             return direction, item
     return None, None
+
+
+def group_forecast_runs(forecast_timeline):
+    """
+    Collapse consecutive scheduled hours at the same CFS into runs so the
+    whole remaining schedule fits on the page. Each run carries the first
+    hour's arrival/recession times (when that level reaches White Hole) and
+    the span it covers.
+    """
+    runs = []
+    for item in forecast_timeline:
+        if runs and runs[-1]['cfs'] == item['cfs']:
+            runs[-1]['end_time'] = item['scheduled_time'] + timedelta(hours=1)
+            runs[-1]['hours'] += 1
+            continue
+        runs.append({
+            'start_time': item['scheduled_time'],
+            'end_time': item['scheduled_time'] + timedelta(hours=1),
+            'hours': 1,
+            'cfs': item['cfs'],
+            'generators': item.get('generators') or format_generators(item['cfs']),
+            'generation_cfs': item.get('generation_cfs', item['cfs']),
+            'min_flow_cfs': item.get('min_flow_cfs', 0),
+            'wading': item.get('wading') or get_fishing_condition(item['cfs'])[0],
+            'arrival_time': item['arrival_time'],
+            'change': item.get('change'),
+            'recession_start': item.get('recession_start'),
+        })
+    return runs

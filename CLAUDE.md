@@ -145,9 +145,12 @@ appended to the bottom of the HTML page. Design rules:
   (`FLOW_BANDS`) align with `get_fishing_condition` thresholds (2000/5000/10000)
   plus a 16,500 split. The research brief's surge-front arrival table was
   deliberately discarded as conflicting.
-- **Content source**: a Claude Cowork research brief (now deleted; its
-  field-reference artifact is linked in Brian's memory) — fishing knowledge only:
-  spots, rigs, baits, presentations, regulations.
+- **Content source**: the Aug 2026 research brief, `research/WHITE_RIVER_RESEARCH_BRIEF.md`
+  (deleted 2026-08-25, restored 2026-09-21) — fishing knowledge only: spots, rigs, baits,
+  presentations, regulations. Every claim in it carries a `[CONFIRMED]` / `[REPORTED]` /
+  `[INFERRED]` / `[CONFLICT]` tag and §12 lists its sources; trace a report bullet to a
+  tagged claim before changing it, and keep the tags when quoting. Its travel-time table
+  (§3.3) and "the Narrows" name remain superseded by this repo's model and Cranor's Island.
 - **Gear doctrine (strict)**: `~/CodeProjects/new-croton-fishing/reference/
   tackle-inventory.md` is the single inventory of record — **read it fresh each
   session and do not restate its contents here**: a stale snapshot of it in this
@@ -186,6 +189,21 @@ appended to the bottom of the HTML page. Design rules:
   -92.56191314472997 in `SPOT_COORDS`, rendered as a map link. The research
   brief called it "the Narrows" — that name found no corroboration and was
   dropped.
+- **Provenance (`SOURCES`, per-block `sources`, `EVIDENCE`)**: every band and season block
+  names its sources and the page renders a "Sources:" line under it (`brief` links the
+  restored research brief, whose claims are confidence-tagged; a REPORTED or INFERRED claim
+  stays that until a journal row or a primary source confirms it — never present it as a
+  named local source's statement). `EVIDENCE` maps
+  `(band key, program)` → `{fish, dates, note}` and renders a "Journal: N fish on record"
+  line under each program block, defaulting to "no fish on record yet". **After each trip**:
+  run the journal builder, read `journal/build/catches_report.md`'s "Bands and programs
+  with a fish behind them" table, and update `EVIDENCE` by hand in the same commit as any
+  doctrine change it justifies. The builder never writes `EVIDENCE`.
+- **Schedule outline (`fishing_report.schedule_outline`)**: one Timing bullet per scheduled
+  day ("Rest of today at White Hole: …", "Tomorrow (Mon) at White Hole: …") listing every
+  significant change with its White Hole ETA (falls as "falling ~start"), peak marked — the
+  night-before read. Built on `water_calculator.group_forecast_runs`, which the page's
+  timeline shares.
 - **`RIGGING_REFERENCE`**: static how-to content (White River rig build incl.
   the tippet-ring cartridge system, bait prep, boat strategy — tie/drift/anchor,
   tied-boat presentations, fly-from-boat, etiquette) rendered

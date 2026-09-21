@@ -651,3 +651,63 @@ class TestLightWindows:
         regs = " ".join(report["regulations"])
         assert "emergency management" not in regs
         assert "until further notice" in regs
+
+
+class TestScheduleOutline:
+    def _hour(self, when, cfs, change=None, recession_start=None):
+        return {"scheduled_time": when, "cfs": cfs, "generators": "x",
+                "arrival_time": when + timedelta(hours=calculate_travel_time(cfs)),
+                "wading": "no wading", "change": change, "recession_start": recession_start,
+                "generation_cfs": cfs - 250, "min_flow_cfs": 250}
+
+    def test_tomorrow_bullet_lists_every_significant_change_and_the_peak(self):
+        tomorrow = OCTOBER.replace(hour=0) + timedelta(days=1)
+        forecast = (
+            [self._hour(tomorrow + timedelta(hours=h), 750) for h in range(0, 6)]
+            + [self._hour(tomorrow + timedelta(hours=h), 1600, "rising") for h in range(6, 11)]
+            + [self._hour(tomorrow + timedelta(hours=11), 4301, "rising")]
+            + [self._hour(tomorrow + timedelta(hours=16), 18818, "rising")]
+            + [self._hour(tomorrow + timedelta(hours=19), 10378, "falling",
+                          tomorrow + timedelta(hours=21))]
+        )
+        timing = build_timing(750, OCTOBER, None, forecast)
+        outline = [t for t in timing if t.startswith("Tomorrow (")][0]
+        assert "at White Hole:" in outline
+        assert "1,600 by ~" in outline and "4,301 by ~" in outline
+        assert "18,818 by ~" in outline and "(peak)" in outline
+        assert "10,378 falling ~" in outline
+        # weekday prefix on every clock, since the day is tomorrow
+        assert tomorrow.strftime("%a") in outline
+
+    def test_rest_of_today_bullet(self):
+        later = OCTOBER + timedelta(hours=2)
+        forecast = [self._hour(later, 8352, "rising"), self._hour(later + timedelta(hours=3), 750, "falling")]
+        timing = " ".join(build_timing(750, OCTOBER, None, forecast))
+        assert "Rest of today at White Hole: 8,352 by ~" in timing
+
+    def test_no_forecast_no_outline(self):
+        assert not [t for t in build_timing(750, OCTOBER, None, None) if "at White Hole:" in t]
+
+
+class TestProvenance:
+    def test_every_band_and_season_names_sources(self):
+        from fishing_report import BAND_CONTENT, SEASON_CONTENT, SOURCES
+        for content in list(BAND_CONTENT.values()) + list(SEASON_CONTENT.values()):
+            assert content["sources"], content["label"]
+            assert all(key in SOURCES for key in content["sources"])
+
+    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
+    def test_sources_and_evidence_render(self, cfs):
+        html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
+        assert html.count("Sources:") >= 3          # band, season, regulations
+        assert "hisplaceresort.net" in html
+        assert "agfc.com" in html
+        assert "no fish on record yet" in html
+
+    def test_evidence_renders_when_recorded(self, monkeypatch):
+        import fishing_report
+        monkeypatch.setitem(fishing_report.EVIDENCE, ("minimum", "browns"),
+                            {"fish": 2, "dates": ["2026-10-06"], "note": "sculpin at dawn"})
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert "Journal: 2 fish on record (2026-10-06) — sculpin at dawn" in html
+        assert "no fish on record yet" in html      # the rainbows block is still empty
