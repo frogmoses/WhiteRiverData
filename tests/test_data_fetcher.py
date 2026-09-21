@@ -128,3 +128,67 @@ class TestLastGoodDataCache:
         assert save_last_good_data(data)
         aware_now = datetime(2026, 8, 27, 6, 0, tzinfo=CENTRAL)
         assert load_last_good_data(current_time=aware_now) is None
+
+
+class TestDnsFallback:
+    """When the local resolver fails, resolve over DoH and pin the IP."""
+
+    SAMPLE_ROW = ("<html><body><hr>\n 21SEP2026    0600     655.40       450.80          8"
+                  "            771          0        771\n<hr></body></html>")
+
+    def test_resolve_via_doh_parses_first_a_record(self, monkeypatch):
+        import data_fetcher
+        import requests
+
+        class Resp:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {"Answer": [{"type": 5, "data": "cname.example."},
+                                   {"type": 1, "data": "140.194.204.29"}]}
+
+        seen = {}
+        monkeypatch.setattr(requests, "get",
+                            lambda url, params=None, headers=None, timeout=None: seen.update(params) or Resp())
+        assert data_fetcher.resolve_via_doh("www.swl-wc.usace.army.mil") == "140.194.204.29"
+        assert seen["name"] == "www.swl-wc.usace.army.mil" and seen["type"] == "A"
+
+    def test_resolve_via_doh_offline_returns_none(self):
+        import data_fetcher
+        assert data_fetcher.resolve_via_doh("www.swl-wc.usace.army.mil") is None
+
+    def test_retries_with_pinned_ip_on_dns_failure(self, monkeypatch):
+        import data_fetcher
+        calls = []
+
+        def fake_fetch(url, extra_args=()):
+            calls.append(list(extra_args))
+            if len(calls) == 1:
+                raise RuntimeError("Page.goto: net::ERR_NAME_NOT_RESOLVED at " + url)
+            return self.SAMPLE_ROW
+
+        monkeypatch.setattr(data_fetcher, "_fetch_html", fake_fetch)
+        monkeypatch.setattr(data_fetcher, "resolve_via_doh", lambda host: "140.194.204.29")
+        data = data_fetcher.get_bull_shoals_data()
+        assert calls == [[], ["--host-resolver-rules=MAP www.swl-wc.usace.army.mil 140.194.204.29"]]
+        assert data[0]["total_release"] == 771 and not data[0].get("error")
+
+    def test_no_retry_for_other_errors(self, monkeypatch):
+        import data_fetcher
+        calls = []
+
+        def fake_fetch(url, extra_args=()):
+            calls.append(1)
+            raise RuntimeError("Page.goto: Timeout 60000ms exceeded")
+
+        monkeypatch.setattr(data_fetcher, "_fetch_html", fake_fetch)
+        data = data_fetcher.get_bull_shoals_data()
+        assert len(calls) == 1 and data[0]["error"] is True
+
+    def test_dns_failure_without_doh_answer_is_error_data(self, monkeypatch):
+        import data_fetcher
+        monkeypatch.setattr(data_fetcher, "_fetch_html",
+                            lambda url, extra_args=(): (_ for _ in ()).throw(RuntimeError("net::ERR_NAME_NOT_RESOLVED")))
+        monkeypatch.setattr(data_fetcher, "resolve_via_doh", lambda host: None)
+        assert data_fetcher.get_bull_shoals_data()[0]["error"] is True

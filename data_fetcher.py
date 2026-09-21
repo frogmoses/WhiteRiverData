@@ -79,27 +79,68 @@ def parse_table_content(html_content):
     return data
 
 
-def get_bull_shoals_data():
-    """Scrape the Bull Shoals Dam data table from the website using Playwright."""
-    url = "https://www.swl-wc.usace.army.mil/pages/data/tabular/htm/bulsdam.htm"
+USACE_URL = "https://www.swl-wc.usace.army.mil/pages/data/tabular/htm/bulsdam.htm"
+USACE_HOST = "www.swl-wc.usace.army.mil"
 
+# DNS-over-HTTPS resolver used only when the host's own resolver fails. The
+# Pi's resolver is the home router, which returns SERVFAIL for army.mil (its
+# DNSSEC chain has failed before — Aug 2026 — and did again 2026-09-21) while
+# public resolvers answer fine. Pinning the answered IP into Chromium keeps
+# the live feed up without touching the Pi's system configuration.
+DOH_URL = "https://cloudflare-dns.com/dns-query"
+DNS_FAILURE_MARKER = "ERR_NAME_NOT_RESOLVED"
+
+
+def resolve_via_doh(hostname, timeout=10):
+    """The first A record for hostname from DNS-over-HTTPS, or None."""
+    import requests
     try:
-        with sync_playwright() as p:
-            # Launch browser with ignore-certificate-errors flag to bypass SSL issues
-            browser = p.chromium.launch(
-                args=["--ignore-certificate-errors"],
-                headless=True
-            )
+        response = requests.get(DOH_URL, params={"name": hostname, "type": "A"},
+                                headers={"accept": "application/dns-json"}, timeout=timeout)
+        response.raise_for_status()
+        for answer in response.json().get("Answer", []):
+            if answer.get("type") == 1 and answer.get("data"):
+                return answer["data"]
+    except Exception as e:
+        print(f"DoH lookup for {hostname} failed: {e}")
+    return None
 
-            # Create a new page and navigate to the URL
-            page = browser.new_page()
-            page.goto(url, wait_until="networkidle", timeout=60000)
 
-            # Get the page content
-            html_content = page.content()
+def _fetch_html(url, extra_args=()):
+    """Render the page in headless Chromium and return its HTML."""
+    with sync_playwright() as p:
+        # ignore-certificate-errors: the USACE cert chain has been flaky, and a
+        # resolver-pinned IP may present a mismatched certificate
+        browser = p.chromium.launch(
+            args=["--ignore-certificate-errors", *extra_args],
+            headless=True
+        )
+        page = browser.new_page()
+        page.goto(url, wait_until="networkidle", timeout=60000)
+        html_content = page.content()
+        browser.close()
+    return html_content
 
-            # Close the browser
-            browser.close()
+
+def get_bull_shoals_data():
+    """
+    Scrape the Bull Shoals Dam data table from the website using Playwright.
+
+    When the local resolver cannot resolve the USACE host, resolve it over
+    DNS-over-HTTPS and retry with the answer pinned into Chromium.
+    """
+    try:
+        try:
+            html_content = _fetch_html(USACE_URL)
+        except Exception as e:
+            if DNS_FAILURE_MARKER not in str(e):
+                raise
+            ip = resolve_via_doh(USACE_HOST)
+            if not ip:
+                raise
+            print(f"Local DNS failed for {USACE_HOST}; retrying with DoH answer {ip}")
+            html_content = _fetch_html(
+                USACE_URL, [f"--host-resolver-rules=MAP {USACE_HOST} {ip}"])
 
         data = parse_table_content(html_content)
 
