@@ -502,7 +502,7 @@ class TestPageIntegration:
         assert "Spin Fishing" in html
         assert "Fly Fishing" in html
         # Renders after the timeline/details sections (bottom of the page)
-        assert html.index("Fishing Report") > html.index("Water Timeline")
+        assert html.index("Fishing Report") > html.index("Arrivals at White Hole")
 
     def test_off_season_page_shows_collapsed_preview(self):
         data = [self._entry(JULY - timedelta(hours=h), 750)

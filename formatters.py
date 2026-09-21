@@ -101,6 +101,149 @@ def generate_water_quality_html(water_quality, current_time):
         <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
 
 
+def _effective_time(row):
+    """When a row starts to matter at White Hole: the start of a drop, else arrival."""
+    if is_recession(row):
+        return row['recession_start']
+    return row['arrival_time']
+
+
+def arrival_rows(timeline_data, forecast_timeline, current_time):
+    """
+    The water headed for White Hole as one list keyed on arrival there.
+
+    The row for the water at White Hole now comes first; everything that has
+    already passed is dropped (the chart shows what is where). Measured
+    readings ('released 7:00 AM') and scheduled hours ('scheduled 2 PM')
+    interleave by arrival time; a scheduled hour the dam has already reported
+    is dropped in favour of the reading. Each row: kind ('now' | 'actual' |
+    'scheduled'), cfs, generators, wading, arrival_time, change,
+    recession_start, source (the dam-side label).
+    """
+    rows = []
+    for item in timeline_data or []:
+        if item['status'] == 'arrived':
+            continue
+        rows.append({
+            'kind': 'now' if item['status'] == 'current' else 'actual',
+            'cfs': item['cfs'],
+            'generators': item['generators'],
+            'wading': get_fishing_condition(item['cfs'])[0],
+            'arrival_time': item['arrival_time'],
+            'change': item.get('change'),
+            'recession_start': item.get('recession_start'),
+            'minutes_until': item.get('minutes_until'),
+            'source': f"released {clock(item['release_time'], current_time)}",
+        })
+    # A measured reading trumps the schedule for its hour: once the dam has
+    # reported 10:00, the "scheduled 10 AM" row only contradicts it
+    measured_through = max((item['release_time'] for item in timeline_data or []), default=None)
+    pending = [entry for entry in forecast_timeline or []
+               if measured_through is None or entry['scheduled_time'] > measured_through]
+    for run in group_forecast_runs(pending):
+        start_str = clock(run['start_time'], current_time, minutes=False)
+        if run['hours'] == 1:
+            when = start_str
+        else:
+            when = f"{start_str}–{clock(run['end_time'], run['start_time'], minutes=False)}"
+        rows.append({
+            'kind': 'scheduled',
+            'cfs': run['cfs'],
+            'generators': run['generators'],
+            'wading': run['wading'],
+            'arrival_time': run['arrival_time'],
+            'change': run['change'],
+            'recession_start': run['recession_start'],
+            'minutes_until': None,
+            'source': f"scheduled {when}",
+        })
+    now_rows = [r for r in rows if r['kind'] == 'now']
+    future = sorted((r for r in rows if r['kind'] != 'now'), key=_effective_time)
+    return now_rows + future
+
+
+WADING_PILL = {
+    "no wading": ("#fee2e2", "#991b1b"),
+    "excellent wading": ("#d1fae5", "#065f46"),
+}
+
+
+def render_arrivals(rows, current_time, wading_condition, has_forecast):
+    """The Arrivals at White Hole table."""
+    body = []
+    last_date = current_time.date()
+    for row in rows:
+        when = _effective_time(row) if row['kind'] != 'now' else current_time
+        if when.date() != last_date:
+            last_date = when.date()
+            body.append(f'''
+                    <tr><td colspan="3" style="padding: 6px 10px; font-size: 0.8em; font-weight: bold; color: #4a5568; background-color: #edf2f7;">{when.strftime('%A')}</td></tr>
+            ''')
+
+        arrival = clock(row['arrival_time'], current_time)
+        if row['kind'] == 'now':
+            when_html = (f'<span style="color: #319795; font-weight: bold;">AT WHITE HOLE NOW</span>'
+                         f'<br><small style="color: #666;">since ~{arrival}</small>')
+        elif is_recession(row):
+            start = row['recession_start']
+            if start <= current_time:
+                when_html = f'falling now, down ~{arrival}'
+            else:
+                when_html = f'falling ~{clock(start, current_time)}, down ~{arrival}'
+        else:
+            when_html = f'~{arrival}'
+            if row['minutes_until'] is not None:
+                when_html += f'<br><small style="color: #666;">in {row["minutes_until"]} min</small>'
+
+        bg, color = WADING_PILL.get(row['wading'], ("#fef3c7", "#92400e"))
+        pill = (f'<span style="display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 12px; '
+                f'font-size: 0.8em; background-color: {bg}; color: {color};">{row["wading"].title()}</span>')
+
+        row_border = ""
+        if row['kind'] != 'now':
+            if row['wading'] == "no wading" and wading_condition != "no wading":
+                row_border = "border-left: 4px solid #e53e3e;"
+            elif row['wading'] == "excellent wading" and wading_condition != "excellent wading":
+                row_border = "border-left: 4px solid #38a169;"
+
+        row_bg = {'now': '#e6fffa', 'actual': '#ebf8ff', 'scheduled': '#faf5ff'}[row['kind']]
+        source_color = '#6b46c1' if row['kind'] == 'scheduled' else '#2b6cb0'
+        body.append(f'''
+                    <tr style="background-color: {row_bg}; {row_border}">
+                        <td style="padding: 10px; font-weight: bold;">{when_html}</td>
+                        <td style="padding: 10px;">{row['cfs']:,} CFS<br><small style="color: #666;">({row['generators']})</small><br>{pill}</td>
+                        <td style="padding: 10px; color: {source_color};">{row['source']}</td>
+                    </tr>
+        ''')
+
+    note = ""
+    if has_forecast:
+        note = '''
+            <p style="color: #999; font-size: 0.8em; margin-top: 10px;">Scheduled CFS are estimates based on generation plus ~250 CFS minimum base flow. Actual release may vary. Tomorrow's schedule appears once SWPA posts it (usually by 5 PM). Falling water arrives as a window, not a step — "falling" is when the level starts dropping, "down" when it is fully down.</p>
+            <p style="color: #999; font-size: 0.8em; margin-top: 5px;">Forecast source: <a href="https://www.energy.gov/swpa/generation-schedules" target="_blank" style="color: #999;">SWPA Generation Schedules</a></p>
+        '''
+
+    return f'''
+        <div class="timeline-box">
+            <h3>Arrivals at White Hole</h3>
+            <p style="color: #666; margin-bottom: 15px;">The water on its way to you, in the order it gets here. <span style="color: #2b6cb0;">Released</span> rows are the dam's hourly readings; <span style="color: #6b46c1;">scheduled</span> rows are SWPA's generation plan. Water takes about 1.5&ndash;4 hours to travel from the dam, faster at higher flows &mdash; the chart below shows where each release is right now.</p>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px; text-align: left;">At White Hole</th>
+                        <th style="padding: 10px; text-align: left;">Flow</th>
+                        <th style="padding: 10px; text-align: left;">From the dam</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {''.join(body)}
+                </tbody>
+            </table>
+            {note}
+        </div>
+        '''
+
+
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
@@ -210,142 +353,13 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
                     f'<small>— low light: dawn until {clock(light["dawn"][1])}, '
                     f'dusk from {clock(light["dusk"][0])}</small></p>')
 
-    # Build unified water timeline (scheduled forecast + actual dam readings)
+    # Arrivals at White Hole: one list of the water on its way to the reader,
+    # in the order it gets there, measured and scheduled rows interleaved
     water_timeline_html = ""
-    has_actual = timeline_data and len(timeline_data) > 0
-    has_forecast = forecast_timeline and len(forecast_timeline) > 0
-
-    if has_actual or has_forecast:
-        # Build forecast rows: the whole remaining schedule (today's rest and
-        # tomorrow once posted), newest first, with consecutive same-flow
-        # hours collapsed into one run so the day's shape — and its peak —
-        # stays visible instead of four rows of the next four hours
-        forecast_rows_html = ""
-        if has_forecast:
-            forecast_rows = []
-            last_date = current_time.date()
-            for run in group_forecast_runs(forecast_timeline):
-                if run['start_time'].date() != last_date:
-                    last_date = run['start_time'].date()
-                    forecast_rows.append(f'''
-                    <tr><td colspan="3" style="padding: 6px 10px; font-size: 0.8em; font-weight: bold; color: #6b46c1; background-color: #f3e8ff;">{run['start_time'].strftime('%A')}</td></tr>
-                ''')
-                start_str = clock(run['start_time'], current_time, minutes=False)
-                if run['hours'] == 1:
-                    hour_str = start_str
-                else:
-                    hour_str = f"{start_str}–{clock(run['end_time'], run['start_time'], minutes=False)}"
-                cfs_formatted = f"{run['cfs']:,}"
-                gen_cfs = run['generation_cfs']
-                min_flow = run['min_flow_cfs']
-
-                if is_recession(run):
-                    arrival_html = (f"falling ~{clock(run['recession_start'], current_time)}, "
-                                    f"down ~{clock(run['arrival_time'], current_time)}")
-                else:
-                    arrival_html = f"~{clock(run['arrival_time'], current_time)}"
-
-                # Determine wading pill style
-                if run['wading'] == "no wading":
-                    wading_bg = "#fee2e2"
-                    wading_color = "#991b1b"
-                elif run['wading'] == "excellent wading":
-                    wading_bg = "#d1fae5"
-                    wading_color = "#065f46"
-                else:
-                    wading_bg = "#fef3c7"
-                    wading_color = "#92400e"
-
-                # Highlight row if conditions differ significantly from current
-                row_border = ""
-                if run['wading'] == "no wading" and wading_condition != "no wading":
-                    row_border = "border-left: 4px solid #e53e3e;"
-                elif run['wading'] == "excellent wading" and wading_condition != "excellent wading":
-                    row_border = "border-left: 4px solid #38a169;"
-
-                forecast_rows.append(f'''
-                    <tr style="background-color: #faf5ff; {row_border}">
-                        <td style="padding: 10px; font-weight: bold;">{hour_str}</td>
-                        <td style="padding: 10px;">{cfs_formatted} CFS<br><small style="color: #666;">({run['generators']}: {gen_cfs} generation + {min_flow} min flow)</small></td>
-                        <td style="padding: 10px;">{arrival_html}
-                            <span style="display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background-color: {wading_bg}; color: {wading_color};">{run['wading'].title()}</span>
-                        </td>
-                    </tr>
-                ''')
-
-            forecast_rows_html = f'''
-                <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #6b46c1; text-transform: uppercase; letter-spacing: 0.05em; background-color: #f3e8ff;">Scheduled (SWPA forecast)</td></tr>
-                {''.join(forecast_rows)}
-            '''
-
-        # Build actual data rows (newest first)
-        actual_rows_html = ""
-        if has_actual:
-            actual_rows = []
-            for item in timeline_data:
-                cfs_formatted = f"{item['cfs']:,}"
-
-                if item['status'] == 'current':
-                    status_html = '<span style="color: #319795; font-weight: bold;">← AT WHITE HOLE NOW</span>'
-                    row_style = "background-color: #e6fffa;"
-                elif item['status'] == 'incoming':
-                    arrival_str = clock(item['arrival_time'], current_time)
-                    mins = item['minutes_until']
-                    start = item.get('recession_start')
-                    if is_recession(item):
-                        if start <= current_time:
-                            status_html = f'<span style="color: #2b6cb0;">↘ Falling now, fully down ~{arrival_str} (in {mins} min)</span>'
-                        else:
-                            status_html = f'<span style="color: #2b6cb0;">↘ Falls from ~{clock(start, current_time)}, fully down ~{arrival_str}</span>'
-                    else:
-                        status_html = f'<span style="color: #2b6cb0;">→ Arrives ~{arrival_str} (in {mins} min)</span>'
-                    row_style = "background-color: #ebf8ff;"
-                else:
-                    status_html = '<span style="color: #718096;">passed</span>'
-                    row_style = ""
-
-                time_str = item['release_time'].strftime('%I:%M %p').lstrip('0')
-                actual_rows.append(f'''
-                    <tr style="{row_style}">
-                        <td style="padding: 10px; font-weight: bold;">{time_str}</td>
-                        <td style="padding: 10px;">{cfs_formatted} CFS<br><small style="color: #666;">({item['generators']})</small></td>
-                        <td style="padding: 10px;">{status_html}</td>
-                    </tr>
-                ''')
-
-            actual_rows_html = f'''
-                <tr><td colspan="3" style="padding: 8px 10px; font-size: 0.8em; font-weight: bold; color: #2b6cb0; text-transform: uppercase; letter-spacing: 0.05em; background-color: #ebf8ff;">Actual (dam readings)</td></tr>
-                {''.join(actual_rows)}
-            '''
-
-        # Footer note if forecast data present
-        forecast_note = ""
-        if has_forecast:
-            forecast_note = '''
-            <p style="color: #999; font-size: 0.8em; margin-top: 10px;">Scheduled CFS are estimates based on generation plus ~250 CFS minimum base flow. Actual release may vary. Tomorrow's schedule appears once SWPA posts it (usually by 5 PM). Falling water arrives as a window, not a step — "falling" is when the level starts dropping, "down" when it is fully down.</p>
-            <p style="color: #999; font-size: 0.8em; margin-top: 5px;">Forecast source: <a href="https://www.energy.gov/swpa/generation-schedules" target="_blank" style="color: #999;">SWPA Generation Schedules</a></p>
-            '''
-
-        water_timeline_html = f'''
-        <div class="timeline-box">
-            <h3>Water Timeline</h3>
-            <p style="color: #666; margin-bottom: 15px;">Water released at the dam takes about 1.5&ndash;4 hours to reach White Hole (faster at higher flows). Oldest at the top: what has passed, what is at White Hole now, what is on the way, then the scheduled hours.</p>
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #ddd;">
-                        <th style="padding: 10px; text-align: left;">Time</th>
-                        <th style="padding: 10px; text-align: left;">Flow</th>
-                        <th style="padding: 10px; text-align: left;">At White Hole</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {actual_rows_html}
-                    {forecast_rows_html}
-                </tbody>
-            </table>
-            {forecast_note}
-        </div>
-        '''
+    rows = arrival_rows(timeline_data, forecast_timeline, current_time)
+    if rows:
+        water_timeline_html = render_arrivals(rows, current_time, wading_condition,
+                                              has_forecast=bool(forecast_timeline))
 
     # Build collapsible details
     details_html = ""
