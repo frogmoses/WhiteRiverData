@@ -46,6 +46,11 @@ WhiteRiverData/
 ├── water_quality.py         # USGS tailwater temperature / dissolved oxygen (gauges 07054527, 07054502)
 ├── prediction_log.py        # Per-run CSV of model predictions (predictions.csv) for later validation
 ├── generate_test_html.py    # Generates HTML for 8 water scenarios (visual inspection)
+├── scripts/
+│   ├── build_journal.py         # journal/entries/*.md → journal/build/{digest.md,index.json,catches.csv,catches_report.md}
+│   └── suncalc.py               # NOAA sunrise/sunset, copied from new-croton-fishing (catch windows)
+├── journal/                 # Trip notes + catch tables (see "The journal" below); build/ is gitignored
+│   ├── README.md, TEMPLATE.md, entries/
 ├── run_white_hole.sh        # Production script: pulls code, runs main.py, commits and pushes output
 ├── index.html               # Redirect to white_hole_conditions.html for GitHub Pages root
 ├── pyproject.toml           # Project config, dependencies (uv)
@@ -59,6 +64,7 @@ WhiteRiverData/
 │   ├── test_landmarks.py          # GPS-derived river miles, haversine, ordering
 │   ├── test_water_quality.py      # USGS JSON parsing, gauge preference, thresholds
 │   ├── test_prediction_log.py     # Prediction row contents, CSV append, opt-in from main
+│   ├── test_build_journal.py      # Journal parsing, catch vocabulary, model-row matching, crosswalk
 │   ├── test_formatters.py         # HTML/text output generation
 │   └── test_integration.py        # End-to-end scenarios, incl. timezone-aware data
 ```
@@ -189,6 +195,36 @@ appended to the bottom of the HTML page. Design rules:
   [--cfs N] [--out file.html]` previews any band/season without live data.
 - Regulations (Feb 2026): 2 rainbows under 14 in only, single hooking point with
   bait, one attended rod. Verified against AGFC Aug 2026; re-verify before edits.
+
+### The journal — the feedback loop (`journal/`)
+
+Same model as `new-croton-fishing/journal/` (its README and `build_journal.py` are the
+reference; do not diverge from it without reason): one Markdown file per note in
+`journal/entries/`, optional `---` front matter (date, title, tags, species, party, spot,
+cfs_reported, water_temp_f, coords, sky, wind — any invented key is kept), a free body that
+is never parsed, and a `## Catches` table in **this report's vocabulary**: species · size ·
+time (Central HH:MM) · spot · water (your read: rising/falling/steady/dead low) · boat
+(tie/drift/anchor/wade) · rig (WR rig/split-shot/float/direct/indicator/tightline/swing/dry) ·
+bait · lost. `uv run python scripts/build_journal.py` rebuilds `journal/build/` (gitignored)
+from scratch: the digest, `catches.csv`, and `catches_report.md`, which crosses every landed
+row against `FLOW_BANDS × {browns, rainbows}` so each block of `BAND_CONTENT` shows the fish
+behind it, and sets Brian's `water` read beside the model's `water_state` for that hour.
+
+Rules that matter:
+- **Not coupled to `predictions.csv`.** The builder attaches `model_*` columns by looking up
+  the run at or before the catch time (≤ `MODEL_MATCH_HOURS` = 2 h); the log has no journal
+  columns and never will. The model's flow is for White Hole; Gaston's/Cranor's are ±1 h.
+- Species → program is derived (`brown` → browns, everything else → rainbows & others), the
+  same split as the report. Rig and bait are classed by `RIG_CLASSES` / `BAIT_CLASSES`
+  (order matters: "San Juan worm" is a nymph, "dry-dropper" is not a dropper loop); an
+  unknown word warns, never fails. Malformed date/time/coords or an unterminated front
+  matter block refuses the build.
+- **The builder never edits the report.** Doctrine changes come from the rows, made by hand
+  in `fishing_report.py` with the row count in the commit message (and the inventory's AR
+  cells per the gear doctrine). Read `journal/build/digest.md` before any content change.
+- Sunset for the windows (dawn/midday/dusk/night) is computed at the White Hole pin from
+  `landmarks.py` via `scripts/suncalc.py`.
+- Voice intake (Croton's ssh + local-model path) is not wired here; entries are hand-written.
 
 ### Data Sources
 

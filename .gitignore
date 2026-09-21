@@ -18,3 +18,6 @@ vertical_flow_chart_*.png
 
 # Standalone fishing report previews
 fishing_report.html
+
+# Journal build outputs (regenerable: uv run python scripts/build_journal.py)
+journal/build/
