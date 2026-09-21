@@ -49,6 +49,7 @@ WhiteRiverData/
 ├── suncalc.py               # NOAA sunrise/sunset (copied from new-croton-fishing) — the one copy the page, report and journal share
 ├── scripts/
 │   └── build_journal.py         # journal/entries/*.md → journal/build/{digest.md,index.json,catches.csv,catches_report.md}
+├── research/                # WHITE_RIVER_RESEARCH_BRIEF.md (the tagged source layer) + archive/ (frozen snapshots, never sources)
 ├── journal/                 # Trip notes + catch tables (see "The journal" below); build/ is gitignored
 │   ├── README.md, TEMPLATE.md, entries/
 ├── run_white_hole.sh        # Production script: pulls code, runs main.py, commits and pushes output
@@ -204,6 +205,21 @@ appended to the bottom of the HTML page. Design rules:
   significant change with its White Hole ETA (falls as "falling ~start"), peak marked — the
   night-before read. Built on `water_calculator.group_forecast_runs`, which the page's
   timeline shares.
+- **The band picker (`BAND_PICKER`, `_band_picker_html`, `_band_panel_html`)**: ported from the
+  archived White Hole Book's flow selector (2026-09-21). `generate_fishing_report` builds
+  `report["bands"]` — one `_band_block` per `FLOW_BANDS` entry with the season's adds applied —
+  and the renderer emits a tap-to-pick strip plus one `<div class="wh-band-panel"
+  data-band=…>` per band (`<!-- band:key -->` marker before each; only the live band is
+  unhidden and badged "at White Hole now"; a small inline script toggles them, no
+  persistence so a reload always shows the live band). Where/boat/spin/fly and the per-program
+  Journal lines are per panel; Timing, season notes, regulations, gear and rigging stay
+  shared. The top-level `report["spin"]`/`["fly"]`/`["where"]`… remain the live band's for
+  compatibility. Section-purity tests iterate the panels.
+- **`research/archive/`**: frozen snapshots, never sources — currently
+  `WHITE_HOLE_BOOK_2026-08.html`, the claude.ai field-reference render of the brief plus an
+  Aug 2026 inventory snapshot (stale on gear ownership, "bottom rig" wording, sculpin sizes,
+  river miles). Its flow selector and rig diagram were ported into the report; nothing else
+  from it should be.
 - **`RIGGING_REFERENCE`**: static how-to content (White River rig build incl.
   the tippet-ring cartridge system, bait prep, boat strategy — tie/drift/anchor,
   tied-boat presentations, fly-from-boat, etiquette) rendered

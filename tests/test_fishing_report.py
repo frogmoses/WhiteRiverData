@@ -162,19 +162,24 @@ class TestSpinFlySeparation:
         html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
         assert "Spin Fishing" in html
         assert "Fly Fishing" in html
-        # Isolate the two blocks: spin runs until the fly header, fly runs
-        # until the season-notes section
-        spin_block = html.split("Spin Fishing", 1)[1].split("Fly Fishing", 1)[0]
-        fly_block = html.split("Fly Fishing", 1)[1].split("Season notes", 1)[0]
-        # Fly-only vocabulary stays out of the spin block
-        assert "Woolly Bugger" not in spin_block
-        assert "Zebra Midge" not in spin_block
-        assert "tippet" not in spin_block
-        # Spin-only vocabulary stays out of the fly block
-        assert "PowerBait" not in fly_block
-        assert "Kastmaster" not in fly_block
-        assert "Rooster Tail" not in fly_block
-        assert "White River rig" not in fly_block
+        # Every band renders as its own panel (marked <!-- band:key -->); in
+        # each, spin runs until the fly header and fly runs to the panel's end
+        import re
+        panels = re.split(r"<!-- band:\w+ -->", html)[1:]
+        assert len(panels) == 5
+        for panel in panels:
+            panel = panel.split("Season notes", 1)[0]
+            spin_block = panel.split("Spin Fishing", 1)[1].split("Fly Fishing", 1)[0]
+            fly_block = panel.split("Fly Fishing", 1)[1]
+            # Fly-only vocabulary stays out of the spin block
+            assert "Woolly Bugger" not in spin_block
+            assert "Zebra Midge" not in spin_block
+            assert "tippet" not in spin_block
+            # Spin-only vocabulary stays out of the fly block
+            assert "PowerBait" not in fly_block
+            assert "Kastmaster" not in fly_block
+            assert "Rooster Tail" not in fly_block
+            assert "White River rig" not in fly_block
 
     def test_high_band_fly_rod_cased(self):
         report = generate_fishing_report(20000, OCTOBER)
@@ -278,9 +283,18 @@ class TestSpeciesPrograms:
 
     @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000])
     def test_both_program_headers_render_in_each_section(self, cfs):
+        """Every band panel carries both program headers in spin and, where
+        the fly rod is out, in fly — so the live panel shows 2 of each."""
+        import re
         html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
-        assert html.count("trophy program") == 2   # once in spin, once in fly
-        assert html.count("numbers program") == 2
+        panels = re.split(r"<!-- band:\w+ -->", html)[1:]
+        assert len(panels) == 5
+        for panel in panels:
+            panel = panel.split("Season notes", 1)[0]
+            fly_cased = "stays cased" in panel
+            expected = 1 if fly_cased else 2
+            assert panel.count("trophy program") == expected
+            assert panel.count("numbers program") == expected
 
     def test_gear_check_is_seasonal(self):
         """Core packing list plus season-specific additions."""
@@ -711,3 +725,47 @@ class TestProvenance:
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         assert "Journal: 2 fish on record (2026-10-06) — sculpin at dawn" in html
         assert "no fish on record yet" in html      # the rainbows block is still empty
+
+
+class TestBandPicker:
+    """The tap-to-pick strip and per-band panels ported from the White Hole Book."""
+
+    def test_report_carries_every_band_in_order(self):
+        from fishing_report import FLOW_BANDS
+        report = generate_fishing_report(3300, OCTOBER)
+        assert [b["key"] for b in report["bands"]] == [key for _, _, key in FLOW_BANDS]
+        current = next(b for b in report["bands"] if b["key"] == "one_unit")
+        assert current["spin"] == report["spin"] and current["fly"] == report["fly"]
+
+    @pytest.mark.parametrize("cfs,key", [(750, "minimum"), (3300, "one_unit"), (6600, "two_three_units"),
+                                         (12000, "four_five_units"), (20000, "high")])
+    def test_live_band_selected_and_visible(self, cfs, key):
+        import re
+        html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
+        assert html.count('class="wh-flowpick"') == 1
+        pressed = re.findall(r'<button type="button" data-band="(\w+)" aria-pressed="true"', html)
+        assert pressed == [key]
+        panels = re.findall(r'<div class="wh-band-panel" data-band="(\w+)"( hidden)?>', html)
+        assert len(panels) == 5
+        assert [k for k, hidden in panels if not hidden] == [key]
+        assert "at White Hole now" in html
+        assert "<script>" in html
+
+    def test_evidence_lines_are_per_band(self, monkeypatch):
+        import fishing_report
+        monkeypatch.setitem(fishing_report.EVIDENCE, ("high", "browns"),
+                            {"fish": 1, "dates": ["2026-10-07"], "note": "swimbait in the slack"})
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        heavy = html.split("<!-- band:high -->", 1)[1]
+        assert "Journal: 1 fish on record (2026-10-07)" in heavy
+        minimum = html.split("<!-- band:minimum -->", 1)[1].split("<!-- band:one_unit -->", 1)[0]
+        assert "no fish on record yet" in minimum
+
+
+class TestRigDiagram:
+    def test_rig_reference_carries_the_drawing(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        rig = html.split("Building the White River rig (spin)", 1)[1].split("</details>", 1)[0]
+        assert "<svg" in rig and "2 mm tippet ring" in rig and "12 / 24 / 36 in" in rig
+        assert "20 / 32 / 44 in" in rig
+        assert "cartridge-class line" in rig

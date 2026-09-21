@@ -884,6 +884,45 @@ def water_notes(water_quality, season, current_time=None):
     return notes
 
 
+# Tap-to-pick labels for the band selector (ported from the White Hole Book's
+# flow selector, 2026-09-21): short name + the CFS range, in FLOW_BANDS order
+BAND_PICKER = {
+    "minimum": ("Min flow", "under 2,000"),
+    "one_unit": ("~1 unit", "2,000–5,000"),
+    "two_three_units": ("2–3 units", "5,000–10,000"),
+    "four_five_units": ("3–5 units", "10,000–16,500"),
+    "high": ("Heavy", "16,500+"),
+}
+
+
+def _band_block(band, season_content):
+    """Everything band-specific for one panel: content plus the season's adds."""
+    content = BAND_CONTENT[band]
+    return {
+        "key": band,
+        "label": content["label"],
+        "picker": BAND_PICKER[band],
+        "summary": content["summary"],
+        "sources": content["sources"],
+        "where": content["where"],
+        "boat": content["boat"],
+        "spin": {
+            "rig": content["spin"]["rig"],
+            "browns": list(content["spin"]["browns"]) + season_content["spin_add"]["browns"],
+            "rainbows": list(content["spin"]["rainbows"]) + season_content["spin_add"]["rainbows"],
+            "notes": list(content["spin"].get("notes", [])),
+        },
+        "fly": {
+            "setup": content["fly"]["setup"],
+            "browns": (list(content["fly"]["browns"]) + season_content["fly_add"]["browns"]
+                       if content["fly"]["browns"] else []),
+            "rainbows": (list(content["fly"]["rainbows"]) + season_content["fly_add"]["rainbows"]
+                         if content["fly"]["rainbows"] else []),
+        },
+        "evidence": {program: evidence_line(band, program) for program in ("browns", "rainbows")},
+    }
+
+
 def generate_fishing_report(white_hole_cfs, current_time,
                             timeline_data=None, forecast_timeline=None,
                             water_quality=None):
@@ -899,23 +938,16 @@ def generate_fishing_report(white_hole_cfs, current_time,
     season, in_window = get_effective_season(current_time)
 
     band = get_flow_band(white_hole_cfs)
-    content = BAND_CONTENT[band]
     season_content = SEASON_CONTENT[season]
     wading, boating = get_fishing_condition(white_hole_cfs)
 
-    spin = {
-        "rig": content["spin"]["rig"],
-        "browns": list(content["spin"]["browns"]) + season_content["spin_add"]["browns"],
-        "rainbows": list(content["spin"]["rainbows"]) + season_content["spin_add"]["rainbows"],
-        "notes": list(content["spin"].get("notes", [])),
-    }
-    fly = {
-        "setup": content["fly"]["setup"],
-        "browns": (list(content["fly"]["browns"]) + season_content["fly_add"]["browns"]
-                   if content["fly"]["browns"] else []),
-        "rainbows": (list(content["fly"]["rainbows"]) + season_content["fly_add"]["rainbows"]
-                     if content["fly"]["rainbows"] else []),
-    }
+    # Every band renders as a panel; the live one is shown, the rest sit
+    # behind the tap-to-pick strip so the whole ladder is on the page
+    bands = [_band_block(key, season_content) for _, _, key in FLOW_BANDS]
+    current = next(b for b in bands if b["key"] == band)
+    spin = current["spin"]
+    fly = current["fly"]
+    content = BAND_CONTENT[band]
 
     return {
         "in_window": in_window,
@@ -930,7 +962,8 @@ def generate_fishing_report(white_hole_cfs, current_time,
         "summary": content["summary"],
         "sources": content["sources"],
         "season_sources": season_content["sources"],
-        "evidence": {program: evidence_line(band, program) for program in ("browns", "rainbows")},
+        "evidence": current["evidence"],
+        "bands": bands,
         "where": content["where"],
         "boat": content["boat"],
         "timing": build_timing(white_hole_cfs, current_time,
@@ -1012,6 +1045,81 @@ def _species_block_html(browns, rainbows, evidence=None):
     return html
 
 
+PICKER_STYLE = '''<style>
+.wh-flowpick { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 10px; -webkit-overflow-scrolling: touch; }
+.wh-flowpick button { flex: 1 0 auto; min-width: 88px; cursor: pointer; font: inherit; background: #fff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 8px; color: #4a5568; text-align: center; line-height: 1.2; }
+.wh-flowpick button .t { display: block; font-weight: 700; font-size: 0.85em; }
+.wh-flowpick button .c { display: block; font-size: 0.7em; color: #718096; margin-top: 3px; }
+.wh-flowpick button[aria-pressed="true"] { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
+.wh-flowpick button[aria-pressed="true"] .c { color: rgba(255,255,255,.85); }
+.wh-band-panel[hidden] { display: none; }
+</style>'''
+
+PICKER_SCRIPT = '''<script>
+(function () {
+  var buttons = Array.prototype.slice.call(document.querySelectorAll(".wh-flowpick button"));
+  var panels = Array.prototype.slice.call(document.querySelectorAll(".wh-band-panel"));
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var key = b.getAttribute("data-band");
+      buttons.forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      panels.forEach(function (p) { p.hidden = p.getAttribute("data-band") !== key; });
+    });
+  });
+})();
+</script>'''
+
+
+def _band_picker_html(report):
+    """The tap-to-pick strip: every band, the live one pressed."""
+    buttons = "".join(
+        f'<button type="button" data-band="{b["key"]}" '
+        f'aria-pressed="{"true" if b["key"] == report["band"] else "false"}">'
+        f'<span class="t">{b["picker"][0]}</span><span class="c">{b["picker"][1]} CFS</span></button>'
+        for b in report["bands"]
+    )
+    return (f'{PICKER_STYLE}<h4 style="color: #2c3e50; margin: 18px 0 6px;">The playbook by flow</h4>'
+            f'<p style="color: #666; margin: 0 0 8px; font-size: 0.9em;">Tap a level. The live one is '
+            f'selected; the others are what to do when the water changes.</p>'
+            f'<div class="wh-flowpick" role="group" aria-label="Flow band">{buttons}</div>')
+
+
+def _band_panel_html(b, is_current):
+    """One band's where / boat / spin / fly, hidden unless it is the live band."""
+    spin_notes_html = ""
+    if b["spin"]["notes"]:
+        spin_notes_html = f'''
+            <p style="margin: 10px 0 4px;"><strong>Notes:</strong></p>
+            <ul style="margin: 0 0 0 5px;">{_items_html(b["spin"]["notes"])}</ul>'''
+    badge = ('<span style="margin-left: 8px; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; '
+             'background: #e6fffa; color: #319795;">at White Hole now</span>' if is_current else "")
+    return f'''
+        <!-- band:{b["key"]} -->
+        <div class="wh-band-panel" data-band="{b["key"]}"{"" if is_current else " hidden"}>
+        <p style="font-size: 1.05em; margin: 12px 0 4px;"><strong>{b["label"]}</strong>{badge}</p>
+        <p style="color: #444;">{b["summary"]}</p>
+        {sources_html(b["sources"])}
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Where to go</h4>
+        <ul style="margin: 0 0 0 5px;">{_items_html(b["where"])}</ul>
+
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Boat &amp; anchoring</h4>
+        <ul style="margin: 0 0 0 5px;">{_items_html(b["boat"])}</ul>
+
+        <div style="background-color: #f0f7f4; border-radius: 8px; padding: 15px; margin-top: 18px;">
+            <h4 style="color: #2c3e50; margin: 0 0 8px;">🎣 Spin Fishing</h4>
+            <p style="margin: 4px 0;"><strong>Rig:</strong> {b["spin"]["rig"]}</p>
+            {_species_block_html(b["spin"]["browns"], b["spin"]["rainbows"], b["evidence"])}
+            {spin_notes_html}
+        </div>
+
+        <div style="background-color: #f4f2f7; border-radius: 8px; padding: 15px; margin-top: 12px;">
+            <h4 style="color: #2c3e50; margin: 0 0 8px;">🪶 Fly Fishing (9 ft 5-wt)</h4>
+            <p style="margin: 4px 0;"><strong>Setup:</strong> {b["fly"]["setup"]}</p>
+            {_species_block_html(b["fly"]["browns"], b["fly"]["rainbows"], b["evidence"])}
+        </div>
+        </div>'''
+
+
 def render_fishing_report_html(report):
     """
     Render the fishing report as a collapsible section for the conditions
@@ -1026,18 +1134,8 @@ def render_fishing_report_html(report):
             Off-season preview — the next trip window is {window}. This is that window's playbook run against the current flow.</p>'''
 
     timing_html = _items_html(report["timing"])
-    where_html = _items_html(report["where"])
-    boat_html = _items_html(report["boat"])
     season_html = _items_html(report["season_notes"])
     regs_html = _items_html(report["regulations"])
-
-    spin = report["spin"]
-    fly = report["fly"]
-    spin_notes_html = ""
-    if spin["notes"]:
-        spin_notes_html = f'''
-            <p style="margin: 10px 0 4px;"><strong>Notes:</strong></p>
-            <ul style="margin: 0 0 0 5px;">{_items_html(spin["notes"])}</ul>'''
 
     return f'''
     <details class="timeline-box">
@@ -1049,30 +1147,13 @@ def render_fishing_report_html(report):
         {preview_html}
         <p style="font-size: 1.1em; margin: 10px 0;"><strong>{report["band_label"]}</strong>
             — {report["cfs"]:,} CFS at White Hole ({report["generators"]})</p>
-        <p style="color: #444;">{report["summary"]}</p>
-        {sources_html(report["sources"])}
         {_map_links_html()}
-        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Where to go</h4>
-        <ul style="margin: 0 0 0 5px;">{where_html}</ul>
-
-        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Boat &amp; anchoring</h4>
-        <ul style="margin: 0 0 0 5px;">{boat_html}</ul>
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Timing</h4>
         <ul style="margin: 0 0 0 5px;">{timing_html}</ul>
 
-        <div style="background-color: #f0f7f4; border-radius: 8px; padding: 15px; margin-top: 18px;">
-            <h4 style="color: #2c3e50; margin: 0 0 8px;">🎣 Spin Fishing</h4>
-            <p style="margin: 4px 0;"><strong>Rig:</strong> {spin["rig"]}</p>
-            {_species_block_html(spin["browns"], spin["rainbows"], report["evidence"])}
-            {spin_notes_html}
-        </div>
-
-        <div style="background-color: #f4f2f7; border-radius: 8px; padding: 15px; margin-top: 12px;">
-            <h4 style="color: #2c3e50; margin: 0 0 8px;">🪶 Fly Fishing (9 ft 5-wt)</h4>
-            <p style="margin: 4px 0;"><strong>Setup:</strong> {fly["setup"]}</p>
-            {_species_block_html(fly["browns"], fly["rainbows"], report["evidence"])}
-        </div>
+        {_band_picker_html(report)}
+        {"".join(_band_panel_html(b, b["key"] == report["band"]) for b in report["bands"])}
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Season notes</h4>
         <ul style="margin: 0 0 0 5px;">{season_html}</ul>
@@ -1092,6 +1173,7 @@ def render_fishing_report_html(report):
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Rigging &amp; techniques (reference)</h4>
         {_rigging_html(report["rigging"])}
+        {PICKER_SCRIPT}
 
         <p style="color: #999; font-size: 0.8em; margin-top: 15px;">
             Each block names its sources above. The research brief tags every claim by
