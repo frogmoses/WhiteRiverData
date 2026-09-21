@@ -10,7 +10,9 @@ from water_calculator import (
     format_generators,
     calculate_timeline,
     calculate_forecast_timeline,
-    get_flow
+    get_flow,
+    significant_change, recession_window, annotate_changes,
+    find_incoming_change, clock,
 )
 
 
@@ -472,3 +474,95 @@ class TestCalculateForecastTimeline:
         ]
         result = calculate_forecast_timeline(forecast_data, base_time)
         assert len(result) == 6
+
+
+
+class TestSignificantChange:
+    def test_rule_is_relative_and_absolute(self):
+        assert significant_change(771, 1708) == "rising"
+        assert significant_change(14331, 15115) is None   # +5%: not a rise
+        assert significant_change(1000, 1400) is None     # +40% but < 500 CFS
+        assert significant_change(17464, 5989) == "falling"
+        assert significant_change(None, 5000) is None
+
+
+class TestRecessionWindow:
+    def test_window_is_bracketed_by_the_two_travel_times(self, base_time):
+        start, end = recession_window(base_time, 17464, 5989)
+        assert start == base_time + timedelta(hours=calculate_travel_time(17464))
+        assert end == base_time + timedelta(hours=calculate_travel_time(5989))
+        assert start < end
+
+    def test_small_cut_collapses_toward_a_step(self, base_time):
+        start, end = recession_window(base_time, 1600, 750)
+        assert start == end  # both at the min-flow speed
+
+    def test_matches_his_place_rule_of_thumb(self, base_time):
+        """His Place: 15 miles below a 25,000 CFS cut, ~85% fall-out in
+        7.5 h. The bracket must contain that point."""
+        start, end = recession_window(base_time, 25000, 750, mile=15)
+        assert start < base_time + timedelta(hours=7.5) < end
+
+    def test_scales_with_mile(self, base_time):
+        _, end_gastons = recession_window(base_time, 17464, 750, mile=4.09)
+        _, end_white_hole = recession_window(base_time, 17464, 750)
+        assert end_gastons < end_white_hole
+
+
+class TestAnnotateChanges:
+    def _item(self, base_time, h, cfs):
+        return {'release_time': base_time + timedelta(hours=h), 'cfs': cfs,
+                'arrival_time': base_time + timedelta(hours=h + calculate_travel_time(cfs)),
+                'status': 'incoming', 'minutes_until': 60}
+
+    def test_tags_direction_and_recession(self, base_time):
+        items = [self._item(base_time, 0, 17464), self._item(base_time, 1, 5989),
+                 self._item(base_time, 2, 5989)]
+        annotate_changes(items, 'release_time')
+        assert [i['change'] for i in items] == [None, 'falling', None]
+        assert items[1]['recession_start'] < items[1]['arrival_time']
+        assert items[0]['recession_start'] is None and items[2]['recession_start'] is None
+
+    def test_previous_cfs_seeds_first_item(self, base_time):
+        items = [self._item(base_time, 0, 5989)]
+        annotate_changes(items, 'release_time', previous_cfs=17464)
+        assert items[0]['change'] == 'falling'
+
+    def test_timeline_and_forecast_carry_annotations(self, base_time):
+        data = [{'date_time': base_time - timedelta(hours=4), 'turbine_release': 17000},
+                {'date_time': base_time - timedelta(hours=1), 'turbine_release': 5000}]
+        timeline = calculate_timeline(data, base_time)
+        incoming = [i for i in timeline if i['status'] == 'incoming']
+        assert incoming and incoming[0]['change'] == 'falling'
+        assert incoming[0]['recession_start'] is not None
+
+        forecast = [{'hour': 1, 'mw': 7, 'cfs': 750,
+                     'start_time': base_time + timedelta(hours=1),
+                     'end_time': base_time + timedelta(hours=2)}]
+        result = calculate_forecast_timeline(forecast, base_time, previous_cfs=17000)
+        assert result[0]['change'] == 'falling'
+
+
+class TestFindIncomingChange:
+    def test_skips_same_level_plug_ahead_of_the_rise(self, base_time):
+        timeline = [
+            {'status': 'incoming', 'cfs': 779, 'minutes_until': 43},
+            {'status': 'incoming', 'cfs': 1708, 'minutes_until': 162},
+        ]
+        direction, item = find_incoming_change(timeline, 771)
+        assert direction == 'rising' and item['cfs'] == 1708
+
+    def test_ignores_current_and_arrived(self, base_time):
+        timeline = [{'status': 'current', 'cfs': 20000}, {'status': 'arrived', 'cfs': 20000}]
+        assert find_incoming_change(timeline, 750) == (None, None)
+
+    def test_none_when_nothing_incoming(self):
+        assert find_incoming_change(None, 750) == (None, None)
+
+
+class TestClock:
+    def test_prefixes_weekday_only_on_another_day(self):
+        ref = datetime(2026, 9, 20, 8, 0)
+        assert clock(datetime(2026, 9, 20, 16, 39), ref) == "4:39 PM"
+        assert clock(datetime(2026, 9, 21, 4, 39), ref) == "Mon 4:39 AM"
+        assert clock(datetime(2026, 9, 21, 14, 0), ref, minutes=False) == "Mon 2 PM"

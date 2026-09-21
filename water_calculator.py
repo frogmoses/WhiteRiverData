@@ -60,6 +60,63 @@ def calculate_travel_time(cfs):
 
     return distance / speed
 
+# A change in flow counts as significant when it is both relatively and
+# absolutely large — the thresholds shared by every rise/fall decision here
+SIGNIFICANT_RATIO = 1.2
+SIGNIFICANT_CFS = 500
+
+
+def significant_change(from_cfs, to_cfs):
+    """
+    Classify a flow change as "rising", "falling", or None (not significant),
+    using the >20% AND >500 CFS rule shared by the state, forecast, banner
+    and timeline logic.
+    """
+    if from_cfs is None or to_cfs is None:
+        return None
+    if to_cfs > from_cfs * SIGNIFICANT_RATIO and to_cfs - from_cfs > SIGNIFICANT_CFS:
+        return "rising"
+    if from_cfs > to_cfs * SIGNIFICANT_RATIO and from_cfs - to_cfs > SIGNIFICANT_CFS:
+        return "falling"
+    return None
+
+
+def recession_window(cut_time, from_cfs, to_cfs, mile=WHITE_HOLE_MILE):
+    """
+    When a cut in generation released at cut_time is felt at a point `mile`
+    miles below the dam.
+
+    Falling water is not a plug. The front of the cut travels at the speed
+    of the higher flow ahead of it, and the river is fully down only when
+    the slower low-flow water has made the trip — so the drop plays out as a
+    window bracketed by the two travel times rather than a single step. The
+    bracket agrees with His Place Resort's rule of thumb (distance in miles
+    ÷ 2 ≈ hours to ~85% fall-out): for their 15-mile / 25,000 CFS example
+    this gives a 3.3–8 h window against their quoted 7.5 h.
+
+    Returns (start, end): when the level begins dropping and when it is
+    fully down. For small cuts the window collapses toward the plug step.
+    """
+    fraction = mile / WHITE_HOLE_MILE
+    start = cut_time + timedelta(hours=calculate_travel_time(from_cfs) * fraction)
+    end = cut_time + timedelta(hours=calculate_travel_time(to_cfs) * fraction)
+    if start > end:
+        start = end
+    return start, end
+
+
+def clock(dt, reference=None, minutes=True):
+    """
+    Format a time for the page ("4:39 PM"), prefixed with the weekday when
+    it falls on a different day than `reference` ("Mon 4:39 PM") — needed
+    now that the schedule runs into tomorrow.
+    """
+    text = dt.strftime('%I:%M %p' if minutes else '%I %p').lstrip('0')
+    if reference is not None and dt.date() != reference.date():
+        text = f"{dt.strftime('%a')} {text}"
+    return text
+
+
 def determine_water_state(data, current_time):
     """Determine if water is rising, falling, or stable at White Hole."""
     # Get the most recent entries that would affect White Hole
@@ -89,12 +146,7 @@ def determine_water_state(data, current_time):
         last_cfs = recent_entries[-1]['turbine_release']
         
         # Check for significant change (more than 20% and at least 500 CFS)
-        if last_cfs > first_cfs * 1.2 and last_cfs - first_cfs > 500:
-            return "rising"
-        elif first_cfs > last_cfs * 1.2 and first_cfs - last_cfs > 500:
-            return "falling"
-        else:
-            return "stable"
+        return significant_change(first_cfs, last_cfs) or "stable"
     else:
         return "stable"  # Default if not enough data
 
@@ -185,9 +237,10 @@ def forecast_conditions(data, current_time):
                                 if get_flow(entry) is not None), None)
 
         if current_cfs is not None:
-            if latest_cfs > current_cfs * 1.2 and latest_cfs - current_cfs > 500:
+            change = significant_change(current_cfs, latest_cfs)
+            if change == "rising":
                 return "rising water expected soon"
-            elif current_cfs > latest_cfs * 1.2 and current_cfs - latest_cfs > 500:
+            elif change == "falling":
                 return "falling water expected soon"
             else:
                 return "stable conditions expected"
@@ -225,6 +278,9 @@ def calculate_timeline(data, current_time):
     - arrival_time: when it arrives/arrived at White Hole
     - status: 'arrived', 'current', or 'incoming'
     - minutes_until: minutes until arrival (for incoming water)
+    - change: 'rising', 'falling' or None versus the release before it
+    - recession_start: for a falling release, when the level starts dropping
+      at White Hole (arrival_time is then when it is fully down); else None
     """
     recent_entries = [entry for entry in data
                       if entry['date_time'] <= current_time
@@ -268,6 +324,7 @@ def calculate_timeline(data, current_time):
 
     # Sort by release time (oldest first for display)
     timeline.sort(key=lambda x: x['release_time'])
+    annotate_changes(timeline, 'release_time')
 
     # Filter to show only interesting entries (current + incoming)
     # Plus one "arrived" for context
@@ -282,7 +339,28 @@ def calculate_timeline(data, current_time):
     return filtered[-4:]  # Return at most 4 entries for the timeline
 
 
-def calculate_forecast_timeline(forecast_data, current_time=None):
+def annotate_changes(items, time_key, previous_cfs=None):
+    """
+    Tag each timeline item (sorted oldest first) with 'change' relative to
+    the release before it and, for falling water, 'recession_start' — the
+    start of the drop at White Hole, with the item's arrival_time marking
+    when it is fully down. previous_cfs seeds the comparison for the first
+    item (e.g. the latest actual reading ahead of a scheduled timeline).
+    """
+    prev = previous_cfs
+    for item in items:
+        change = significant_change(prev, item['cfs'])
+        item['change'] = change
+        if change == 'falling':
+            item['recession_start'], _ = recession_window(
+                item[time_key], prev, item['cfs'])
+        else:
+            item['recession_start'] = None
+        prev = item['cfs']
+    return items
+
+
+def calculate_forecast_timeline(forecast_data, current_time=None, previous_cfs=None):
     """
     Calculate forecast timeline from SWPA scheduled generation data.
 
@@ -298,6 +376,8 @@ def calculate_forecast_timeline(forecast_data, current_time=None):
         - arrival_time: estimated arrival at White Hole
         - wading: wading condition string
         - boating: boating condition string
+        - change / recession_start: as in calculate_timeline, versus the
+          scheduled hour before it (previous_cfs seeds the first hour)
     """
     if current_time is None:
         current_time = datetime.now()
@@ -326,4 +406,23 @@ def calculate_forecast_timeline(forecast_data, current_time=None):
             'boating': boating,
         })
 
+    timeline.sort(key=lambda x: x['scheduled_time'])
+    annotate_changes(timeline, 'scheduled_time', previous_cfs)
     return timeline
+
+
+def find_incoming_change(timeline_data, current_cfs):
+    """
+    The first incoming timeline item that significantly changes the flow at
+    White Hole — not merely the nearest incoming plug, which may be a
+    same-level reading ahead of the real rise or drop.
+
+    Returns (direction, item) or (None, None).
+    """
+    for item in timeline_data or []:
+        if item.get('status') != 'incoming':
+            continue
+        direction = significant_change(current_cfs, item['cfs'])
+        if direction:
+            return direction, item
+    return None, None

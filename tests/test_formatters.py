@@ -417,22 +417,70 @@ class TestWaterTimelineRendering:
         assert '2,951 CFS' in html
         assert '2701 generation + 250 min flow' in html
 
-    def test_forecast_limited_to_4_hours(self, base_time, normal_conditions_data):
-        """Forecast section should show at most 4 hours."""
+    def _hour(self, base_time, h, cfs, wading='excellent wading'):
+        return {
+            'scheduled_time': base_time + timedelta(hours=h),
+            'hour': h, 'mw': 7, 'cfs': cfs,
+            'generation_cfs': max(cfs - 250, 0), 'min_flow_cfs': 250,
+            'generators': '0-1 generators',
+            'arrival_time': base_time + timedelta(hours=h + 3.7),
+            'wading': wading, 'boating': 'low for boating',
+        }
+
+    def test_forecast_shows_whole_schedule_grouped(self, base_time, normal_conditions_data):
+        """Regression: the old 4-row cap hid the afternoon surge behind four
+        rows of the same morning flow. The whole schedule renders, with
+        consecutive same-flow hours collapsed into one run."""
+        forecast_timeline = (
+            [self._hour(base_time, h, 723) for h in range(1, 7)]
+            + [self._hour(base_time, 7, 8352, 'no wading')]
+            + [self._hour(base_time, h, 19493, 'no wading') for h in range(8, 11)]
+        )
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
+        assert html.count('faf5ff') == 3
+        assert '19,493 CFS' in html
+        assert '8,352 CFS' in html
+        # A run is labelled with its span, a single hour with its start
+        assert f"{(base_time + timedelta(hours=1)).strftime('%I %p').lstrip('0')}–" in html
+
+    def test_forecast_rows_are_chronological_with_tomorrow_divider(self, base_time, normal_conditions_data):
         forecast_timeline = [
-            {
-                'scheduled_time': base_time + timedelta(hours=h),
-                'hour': h, 'mw': 7, 'cfs': 723,
-                'generation_cfs': 473, 'min_flow_cfs': 250,
-                'generators': '0-1 generators',
-                'arrival_time': base_time + timedelta(hours=h + 3.7),
-                'wading': 'excellent wading', 'boating': 'low for boating',
-            }
-            for h in range(1, 9)  # 8 hours of forecast
+            self._hour(base_time, 20, 723),
+            self._hour(base_time, 26, 8352, 'no wading'),  # 02:00 tomorrow
         ]
         html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
-        # Count forecast rows (each has the light purple background)
-        assert html.count('faf5ff') == 4
+        tomorrow = base_time + timedelta(days=1)
+        assert tomorrow.strftime('%A') in html
+        table = html[html.index('Scheduled (SWPA forecast)'):]
+        assert table.index('723 CFS') < table.index('8,352 CFS')
+        # Times on the other day carry a weekday prefix
+        assert tomorrow.strftime('%a') in html
+
+    def test_falling_forecast_row_shows_recession_window(self, base_time, normal_conditions_data):
+        high = self._hour(base_time, 1, 17464, 'no wading')
+        low = self._hour(base_time, 2, 5989, 'no wading')
+        low['change'] = 'falling'
+        low['recession_start'] = low['arrival_time'] - timedelta(minutes=30)
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=[high, low])
+        start = low['recession_start'].strftime('%I:%M %p').lstrip('0')
+        down = low['arrival_time'].strftime('%I:%M %p').lstrip('0')
+        assert f'falling ~{start}, down ~{down}' in html
+
+    def test_short_recession_window_collapses_to_one_time(self, base_time, normal_conditions_data):
+        low = self._hour(base_time, 2, 750)
+        low['change'] = 'falling'
+        low['recession_start'] = low['arrival_time'] - timedelta(minutes=2)
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=[low])
+        assert 'falling ~' not in html
+
+    def test_scheduled_alert_names_the_peak_and_day(self, base_time, normal_conditions_data):
+        forecast_timeline = [
+            self._hour(base_time, 3, 8352, 'no wading'),
+            self._hour(base_time, 27, 19493, 'no wading'),
+        ]
+        html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
+        assert 'HIGH WATER SCHEDULED' in html
+        assert 'peaking near 19,493 CFS' in html
 
     def test_forecast_wading_condition_shown(self, base_time, normal_conditions_data):
         """Forecast rows should show wading condition."""
@@ -499,6 +547,50 @@ class TestWaterTimelineRendering:
                                wading_condition="excellent wading")
         assert 'HIGH WATER SCHEDULED' in html
         assert 'HIGHER WATER SCHEDULED' not in html
+
+    def test_rising_banner_uses_the_plug_that_rises(self, base_time, normal_conditions_data):
+        """Regression (live page 2026-09-20 08:00): a same-level plug 43 min
+        out was reported as the rise while the real rise was 162 min out."""
+        timeline_data = [
+            {'release_time': base_time - timedelta(hours=3), 'cfs': 779,
+             'generators': '0-1 generators', 'arrival_time': base_time + timedelta(minutes=43),
+             'status': 'incoming', 'minutes_until': 43, 'change': None, 'recession_start': None},
+            {'release_time': base_time - timedelta(hours=1), 'cfs': 1708,
+             'generators': '0-1 generators', 'arrival_time': base_time + timedelta(minutes=162),
+             'status': 'incoming', 'minutes_until': 162, 'change': 'rising', 'recession_start': None},
+        ]
+        html = generate_html_summary(
+            current_time=base_time, white_hole_cfs=771, generators_equivalent=0.2,
+            water_state="rising", wading_condition="excellent wading",
+            boating_condition="low for boating", recent_trend="increased",
+            forecast="rising water expected soon",
+            latest_entry=normal_conditions_data[0], relevant_entry=normal_conditions_data[0],
+            recent_data=normal_conditions_data, timeline_data=timeline_data,
+        )
+        assert 'RISING WATER arriving in ~162 minutes (1,708 CFS)' in html
+        assert '~43 minutes' not in html
+
+    def test_falling_banner_shows_recession_window(self, base_time, normal_conditions_data):
+        start = base_time + timedelta(minutes=81)
+        down = base_time + timedelta(minutes=111)
+        timeline_data = [
+            {'release_time': base_time - timedelta(hours=1), 'cfs': 5989,
+             'generators': '1-2 generators', 'arrival_time': down,
+             'status': 'incoming', 'minutes_until': 111, 'change': 'falling',
+             'recession_start': start},
+        ]
+        html = generate_html_summary(
+            current_time=base_time, white_hole_cfs=14331, generators_equivalent=4.3,
+            water_state="falling", wading_condition="no wading",
+            boating_condition="high water", recent_trend="decreased",
+            forecast="falling water expected soon",
+            latest_entry=normal_conditions_data[0], relevant_entry=normal_conditions_data[0],
+            recent_data=normal_conditions_data, timeline_data=timeline_data,
+        )
+        s = start.strftime('%I:%M %p').lstrip('0')
+        d = down.strftime('%I:%M %p').lstrip('0')
+        assert f'FALLING WATER — starts dropping ~{s}, fully down ~{d}' in html
+        assert f'Falls from ~{s}, fully down ~{d}' in html
 
     def test_rising_banner_handles_zero_minutes_until(self, base_time, normal_conditions_data):
         """Regression: minutes_until == 0 (arriving now) is real data, not

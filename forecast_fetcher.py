@@ -148,35 +148,50 @@ def parse_schedule_html(html_content, target_date=None):
     return schedule
 
 
-def get_swpa_forecast(current_time=None):
+def _fetch_schedule(target_date):
     """
-    Fetch and parse the SWPA generation schedule for Bull Shoals Dam.
+    Fetch and parse the SWPA day-of-week page for target_date.
 
-    Returns only future hours (hours that haven't ended yet).
-    Returns an empty list if the fetch fails or the page is for a
-    different date than expected (stale schedule).
+    Returns the parsed schedule, or [] when the fetch fails or the page's
+    schedule date (from the <pre> header) is not target_date. The day pages
+    persist for a week, so a missed post would otherwise serve last week's
+    schedule under today's name.
     """
-    if current_time is None:
-        current_time = datetime.now(SWPA_TIMEZONE)
-
-    url = get_swpa_schedule_url(current_time)
-
+    url = get_swpa_schedule_url(target_date)
     try:
         response = requests.get(url, timeout=15)
         response.raise_for_status()
     except requests.RequestException as e:
-        print(f"Error fetching SWPA schedule: {e}")
+        print(f"Error fetching SWPA schedule {url}: {e}")
         return []
 
-    # The day-of-week page is only valid if its title carries today's date;
-    # a stale page would otherwise be presented as today's schedule
     page_date = get_schedule_date_from_html(response.text)
-    if page_date is not None and page_date.date() != current_time.date():
-        print(f"SWPA schedule is stale (page date {page_date.date()}, "
-              f"expected {current_time.date()}); skipping forecast")
+    if page_date is None:
+        print(f"SWPA schedule {url} has no recognizable schedule date; skipping")
+        return []
+    if page_date.date() != target_date.date():
+        print(f"SWPA schedule {url} is for {page_date.date()}, "
+              f"not {target_date.date()}; skipping")
         return []
 
-    schedule = parse_schedule_html(response.text, current_time)
+    return parse_schedule_html(response.text, target_date)
+
+
+def get_swpa_forecast(current_time=None):
+    """
+    Fetch and parse the SWPA generation schedule for Bull Shoals Dam.
+
+    Returns the remaining hours of today's schedule followed by tomorrow's
+    full schedule once SWPA has posted it (normally by ~5 p.m. Central;
+    Friday's post covers the weekend). Each page is validated against the
+    date it is supposed to carry, so a stale page is dropped rather than
+    re-anchored to the wrong day. Returns [] if nothing valid is available.
+    """
+    if current_time is None:
+        current_time = datetime.now(SWPA_TIMEZONE)
+
+    schedule = _fetch_schedule(current_time)
+    schedule += _fetch_schedule(current_time + timedelta(days=1))
 
     # Filter to future hours only (where end_time is still in the future)
     future = [entry for entry in schedule if entry['end_time'] > current_time]
@@ -184,19 +199,33 @@ def get_swpa_forecast(current_time=None):
     return future
 
 
+# Schedule-date line inside the <pre> block, e.g.
+# "PROJECTED LOADING SCHEDULE      TUESDAY SEPTEMBER 15, 2026      CALICO ROCK TEMP:  98"
+SCHEDULE_DATE_RE = re.compile(
+    r'PROJECTED LOADING SCHEDULE\s+[A-Z]+\s+([A-Z]+)\s+(\d{1,2}),\s*(\d{4})',
+    re.IGNORECASE)
+
+
 def get_schedule_date_from_html(html_content):
-    """Extract the schedule date from the HTML title tag."""
+    """
+    Extract the schedule's own date from the <pre> header line.
+
+    The page <title> also carries a date, but it is the CMS render date —
+    every day-of-week page shows today's date there, including last
+    week's leftovers — so it says nothing about which day the schedule
+    covers. Only the "PROJECTED LOADING SCHEDULE <DAY> <MONTH> <DD>, <YYYY>"
+    line inside the <pre> block is authoritative. Returns None when absent.
+    """
     soup = BeautifulSoup(html_content, 'html.parser')
-    title = soup.find('title')
-    if not title:
+    pre = soup.find('pre')
+    if not pre:
         return None
 
-    # Title format: "Generation Schedule,WEDNESDAY,APRIL 08, 2026"
-    text = title.get_text()
-    match = re.search(r'(\w+)\s+(\d{1,2}),\s*(\d{4})', text)
-    if match:
-        try:
-            return datetime.strptime(f"{match.group(1)} {match.group(2)} {match.group(3)}", "%B %d %Y")
-        except ValueError:
-            return None
-    return None
+    match = SCHEDULE_DATE_RE.search(pre.get_text())
+    if not match:
+        return None
+    try:
+        return datetime.strptime(
+            f"{match.group(1).title()} {match.group(2)} {match.group(3)}", "%B %d %Y")
+    except ValueError:
+        return None

@@ -388,6 +388,34 @@ class TestTiming:
         assert "RISE EN ROUTE" in timing
         assert "12,000" in timing
 
+    def test_en_route_picks_the_plug_that_changes_the_band(self):
+        """Regression: a same-level plug ahead of the real rise must not
+        hide it (the nearest-only logic did)."""
+        timeline_data = [
+            {"release_time": OCTOBER - timedelta(hours=3), "cfs": 800,
+             "generators": "0-1 generators", "arrival_time": OCTOBER + timedelta(minutes=40),
+             "status": "incoming", "minutes_until": 40, "change": None, "recession_start": None},
+            {"release_time": OCTOBER - timedelta(hours=1), "cfs": 12000,
+             "generators": "3-4 generators", "arrival_time": OCTOBER + timedelta(hours=1.5),
+             "status": "incoming", "minutes_until": 90, "change": "rising", "recession_start": None},
+        ]
+        timing = " ".join(build_timing(750, OCTOBER, timeline_data, None))
+        assert "RISE EN ROUTE" in timing and "12,000" in timing
+
+    def test_drop_en_route_is_a_window(self):
+        start = OCTOBER + timedelta(minutes=70)
+        down = OCTOBER + timedelta(minutes=110)
+        timeline_data = [{
+            "release_time": OCTOBER - timedelta(hours=1), "cfs": 750,
+            "generators": "0-1 generators", "arrival_time": down,
+            "status": "incoming", "minutes_until": 110, "change": "falling",
+            "recession_start": start,
+        }]
+        timing = " ".join(build_timing(13000, OCTOBER, timeline_data, None))
+        assert "DROP EN ROUTE" in timing
+        assert start.strftime("%I:%M %p").lstrip("0") in timing
+        assert down.strftime("%I:%M %p").lstrip("0") in timing
+
     def test_scheduled_rise_uses_travel_model(self):
         scheduled = OCTOBER + timedelta(hours=2)
         forecast = [{
@@ -408,6 +436,32 @@ class TestTiming:
         }]
         timing = " ".join(build_timing(13000, OCTOBER, None, forecast))
         assert "SCHEDULED DROP" in timing
+        # Falling water is a window per spot, bracketed by the two travel
+        # times (from the flow being replaced to the new flow)
+        from fishing_report import spot_recession_windows
+        for name, start, end in spot_recession_windows(scheduled, 13000, 750):
+            assert start < end
+            assert f"{name} ~{start.strftime('%I:%M %p').lstrip('0')}–{end.strftime('%I:%M %p').lstrip('0')}" in timing
+
+    def test_scheduled_drop_uses_the_hour_before_it_as_the_from_flow(self):
+        first = OCTOBER + timedelta(hours=1)
+        second = OCTOBER + timedelta(hours=2)
+        forecast = [
+            {"scheduled_time": first, "cfs": 16000, "arrival_time": first + timedelta(hours=2)},
+            {"scheduled_time": second, "cfs": 750, "arrival_time": second + timedelta(hours=3.7)},
+        ]
+        # Current flow is already high, so the first hour is no change (<2000
+        # CFS) and the drop's window must start from 16,000 CFS water, not 15,000
+        from fishing_report import _find_flow_change
+        direction, entry, from_cfs = _find_flow_change(15000, forecast)
+        assert direction == "drop" and entry["cfs"] == 750 and from_cfs == 16000
+
+    def test_scheduled_change_tomorrow_carries_the_day(self):
+        scheduled = OCTOBER + timedelta(days=1, hours=2)
+        forecast = [{"scheduled_time": scheduled, "cfs": 13504,
+                     "arrival_time": scheduled + timedelta(hours=2.4)}]
+        timing = " ".join(build_timing(750, OCTOBER, None, forecast))
+        assert f"at {scheduled.strftime('%a')} 2 PM" in timing
 
     def test_no_change_no_alerts(self):
         forecast = [{
