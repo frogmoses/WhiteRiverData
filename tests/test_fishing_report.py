@@ -626,3 +626,28 @@ class TestWaterNotes:
         for when in (OCTOBER, APRIL):
             html = render_fishing_report_html(generate_fishing_report(750, when))
             assert "53–56" not in html and "annual warmest" not in html
+
+
+class TestLightWindows:
+    def test_timing_names_the_days_low_light_windows(self):
+        from datetime import datetime as dt
+        from zoneinfo import ZoneInfo
+        import suncalc
+        from fishing_report import SPOT_COORDS
+        when = dt(2026, 10, 5, 12, 0, tzinfo=ZoneInfo("America/Chicago"))
+        timing = " ".join(build_timing(750, when, None, None))
+        assert "Low light today" in timing
+        lat, lon = SPOT_COORDS["White Hole"]
+        rise, set_ = suncalc.sun_times(when.date(), lat, lon, when.tzinfo)
+        assert f"sunrise {rise.strftime('%I:%M %p').lstrip('0')}" in timing
+        assert f"sunset {set_.strftime('%I:%M %p').lstrip('0')}" in timing
+
+    def test_naive_time_uses_central(self):
+        timing = " ".join(build_timing(750, OCTOBER, None, None))
+        assert "Low light today" in timing
+
+    def test_regulations_do_not_call_it_an_emergency(self):
+        report = generate_fishing_report(750, OCTOBER)
+        regs = " ".join(report["regulations"])
+        assert "emergency management" not in regs
+        assert "until further notice" in regs
