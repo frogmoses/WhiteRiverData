@@ -1,14 +1,74 @@
 # White River Data
 
-Real-time water condition monitoring for White Hole on the White River near Bull Shoals Dam, Arkansas. Tracks flow conditions for wading and boating safety.
+Live water conditions and a flow-driven fishing report for the White Hole on the White
+River below Bull Shoals Dam, Arkansas.
 
-## Live Report
+**The page:** https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
 
-https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
+It rebuilds every hour on the hour. All times on it are Central, the dam's time.
 
-Updates hourly via a Raspberry Pi that commits fresh data to this repo, served by GitHub Pages. All times on the report are Central time (the dam's timezone).
+## Reading the page
 
-## Run Locally
+Top to bottom:
+
+| Section | What it tells you |
+|---|---|
+| **Banner** | Can you wade right now, and is a rise or a drop on its way. A third line names the day's scheduled peak when high water is coming. |
+| **Current Conditions** | The flow at White Hole now, wading and boating verdicts, sunrise and sunset with the low-light windows, and the tailwater's temperature and oxygen from the USGS gauge with a trout verdict (low oxygen means land fish fast). |
+| **Arrivals at White Hole** | The water on its way to you, in the order it gets there. The top row is what is in front of you now. "Released" rows are the dam's hourly readings, "scheduled" rows are SWPA's generation plan for the rest of today and, once posted around 5 PM, tomorrow. Falling water shows as a window: when the level starts dropping and when it is fully down. |
+| **Water Flow Progression** | The chart: which release is at which landmark right now, dam to White Hole, with map pins for each landmark. |
+| **Fishing Report** | Collapsed by default. Timing around the generation changes, then a tap-to-pick strip with a playbook for every flow band: where to go, boat handling, spin and fly tackle split into a browns program and a rainbows program. Season notes, regulations, a gear check, and the rigging reference follow. |
+
+Wading verdicts by flow at White Hole:
+
+| CFS | Wading | Boating |
+|---|---|---|
+| under 2,000 | Excellent | Low water |
+| 2,000 to 5,000 | Still wadable | Ideal |
+| 5,000 to 10,000 | No wading | Ideal |
+| over 10,000 | No wading | High water |
+
+Travel times come from His Place Resort's observational table and have not yet been
+checked against the river. Judge wading safety on site.
+
+## After a trip
+
+Write the trip up and let the fishing report learn from it:
+
+```bash
+cp journal/TEMPLATE.md journal/entries/2026-10-06-first-morning.md
+```
+
+Fill the front matter and the catch table (one row per fish, with the clock time), then:
+
+```bash
+uv run python scripts/build_journal.py
+```
+
+You get `journal/build/catches_report.md`: every fish with the flow model's numbers for
+that hour attached, summarised by program, band, spot, rig, bait and light window, and
+crossed against the report's flow-band and species-program blocks so each block of advice
+shows how many fish stand behind it. The format is in `journal/README.md`.
+
+Two things only you can add. Clock times for when a rise reached you or a drop started
+and finished are the first real check the travel model has ever had; a line in the entry
+body is enough. And fish counts per block go into `EVIDENCE` in `fishing_report.py` by
+hand, from the catch report, so the page can say "Journal: 3 fish on record" instead of
+"no fish on record yet".
+
+## Occasionally
+
+| Task | Command | You get |
+|---|---|---|
+| Preview the fishing report for any flow or season | `uv run python fishing_report.py --season fall --cfs 750` | `fishing_report.html`, expanded |
+| Check the report's gear against the tackle inventory | `uv run python scripts/audit_gear_inventory.py` | Drift findings, or "0 findings"; exit 1 on drift |
+| Render the page for eight water scenarios | `uv run python generate_test_html.py` | `white_hole_conditions_{scenario}.html` and charts |
+| Run the tests | `uv run pytest` | 379 tests, offline |
+
+The gear audit reads `~/CodeProjects/new-croton-fishing/reference/tackle-inventory.md`,
+the single inventory of record, and is skipped where that file is absent.
+
+## Running the page yourself
 
 ```bash
 uv sync
@@ -16,79 +76,23 @@ playwright install chromium
 uv run python main.py
 ```
 
-This scrapes current dam data, calculates conditions at White Hole, and produces:
+That fetches the dam, the SWPA schedule and the USGS gauges live and writes
+`white_hole_conditions.html` and `vertical_flow_chart.png` into the repo root, the same
+files the Raspberry Pi commits every hour. Restore them with `git checkout` if the run was
+not meant to be committed. Production runs also append one row of predictions to
+`predictions.csv`, the log the travel model will eventually be checked against.
 
-| Output | Description |
-|--------|-------------|
-| `white_hole_conditions.html` | Report with headline banner, water timeline, SWPA generation forecast, and condition details |
-| `vertical_flow_chart.png` | Chart showing dam-to-White Hole flow progression |
-| `predictions.csv` | Production only: one row per run of what the model predicted, for later validation |
+## Where the numbers come from
 
-## Generate Test Scenarios
-
-```bash
-uv run python generate_test_html.py
-```
-
-Produces HTML and chart files for 8 water scenarios (normal, rising, falling, high, low, flood, fluctuating, sudden jump/drop). Open them in a browser to visually inspect output under different conditions.
-
-## How It Works
-
-Water released at Bull Shoals Dam takes roughly 1.5–4 hours (faster at higher flows) to travel 7 miles downstream to White Hole. The system:
-
-1. Scrapes the USACE Bull Shoals Dam data page for hourly total releases (turbine + spillway, in CFS)
-2. Calculates travel time based on flow rate using generator band interpolation
-3. Determines which past release is currently affecting White Hole
-4. Fetches the SWPA generation schedule for today and, once posted (~5 PM), tomorrow, to forecast scheduled releases and their arrival times
-5. Treats falling water as a window rather than a step: the drop starts when the front of a cut arrives at the higher flow's speed and is fully down when the slower low-flow water has made the trip
-6. Reports wading/boating conditions and flags incoming changes, naming the day's scheduled peak
-7. Reads tailwater temperature and dissolved oxygen from the USGS gauges below the dam and shows them with trout-relevant verdicts (low oxygen: land fish fast)
-
-| CFS Range | Wading | Boating |
-|-----------|--------|---------|
-| < 2,000 | Excellent | Low water |
-| 2,000 - 5,000 | Still wadable | Ideal |
-| 5,000 - 10,000 | No wading | Ideal |
-| > 10,000 | No wading | High water |
-
-## Fishing Report
-
-The page ends with a collapsible flow-driven fishing report for the
-Gaston's-to-Cranor's-Island reach (collapsed by default — tap to expand): where
-to go, boat and anchoring strategy, timing around generation changes, and
-separate spin and fly sections keyed to the current flow band. During trip
-windows (March–April, September–October) it shows that season's playbook;
-other months preview the upcoming window's playbook against current flow.
-Generate it standalone any time:
-
-```bash
-uv run python fishing_report.py --season fall --cfs 750
-```
-
-Omit the flags to use live dam data and today's date (writes `fishing_report.html`).
-
-Travel-time speeds come from [His Place Resort's White River guide](https://www.hisplaceresort.net/white-river-info), which cautions that they are observational estimates — don't rely on this report alone to judge safe wading.
-
-## Trip Journal
-
-Post-trip notes and a per-fish catch table live in `journal/entries/` (copy
-`journal/TEMPLATE.md`; format in `journal/README.md`). The builder attaches the flow
-model's numbers to each catch by its clock time and reports which of the fishing
-report's flow-band and species-program blocks have fish behind them:
-
-```bash
-uv run python scripts/build_journal.py        # writes journal/build/ (gitignored)
-```
-
-## Running Tests
-
-```bash
-uv run pytest              # run all tests
-uv run pytest --cov        # with coverage report
-```
+- **USACE** hourly releases at Bull Shoals Dam, the flow the whole page is built on.
+- **SWPA** hourly generation schedules, converted to flow, for what is coming.
+- **USGS** gauges below the dam for water temperature and dissolved oxygen. There is no
+  discharge gauge near White Hole, which is why the model is unverified.
+- **His Place Resort** for the travel-time table and the fall-out rule of thumb.
+- The **research brief** in `research/WHITE_RIVER_RESEARCH_BRIEF.md` for the fishing
+  content, every claim tagged by confidence. Each block on the page names its sources.
 
 ## License
 
-Source code is MIT-licensed. The generated report content (the conditions
-page, chart, and fishing report) is © Brian Carroll, all rights reserved —
-see [LICENSE](LICENSE).
+Source code is MIT-licensed. The generated report content (the conditions page, chart,
+and fishing report) is © Brian Carroll, all rights reserved — see [LICENSE](LICENSE).
