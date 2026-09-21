@@ -69,6 +69,17 @@ Omit the flags to use live dam data and today's date (writes `fishing_report.htm
 
 Travel-time speeds come from [His Place Resort's White River guide](https://www.hisplaceresort.net/white-river-info), which cautions that they are observational estimates — don't rely on this report alone to judge safe wading.
 
+## Trip Journal
+
+Post-trip notes and a per-fish catch table live in `journal/entries/` (copy
+`journal/TEMPLATE.md`; format in `journal/README.md`). The builder attaches the flow
+model's numbers to each catch by its clock time and reports which of the fishing
+report's flow-band and species-program blocks have fish behind them:
+
+```bash
+uv run python scripts/build_journal.py        # writes journal/build/ (gitignored)
+```
+
 ## Running Tests
 
 ```bash
