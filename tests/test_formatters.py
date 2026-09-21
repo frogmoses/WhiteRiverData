@@ -303,9 +303,9 @@ class TestGenerateHtmlSummary:
             timeline_data=timeline_data
         )
 
-        assert 'Water Timeline' in html
+        assert 'Arrivals at White Hole' in html
         assert 'AT WHITE HOLE NOW' in html
-        assert 'Arrives' in html
+        assert 'in 30 min' in html
         assert '8000' in html or '8,000' in html
 
     def test_html_responsive_design(self, base_time, normal_conditions_data):
@@ -357,7 +357,7 @@ class TestWaterTimelineRendering:
     def test_no_timeline_when_no_data(self, base_time, normal_conditions_data):
         """Timeline should not appear when both sources are empty."""
         html = self._make_html(base_time, normal_conditions_data, forecast_timeline=None, timeline_data=[])
-        assert 'Water Timeline' not in html
+        assert 'Arrivals at White Hole' not in html
 
     def test_timeline_with_only_actual_data(self, base_time, normal_conditions_data):
         """Timeline should show actual section even without forecast."""
@@ -370,9 +370,9 @@ class TestWaterTimelineRendering:
             }
         ]
         html = self._make_html(base_time, normal_conditions_data, timeline_data=timeline_data)
-        assert 'Water Timeline' in html
-        assert 'Actual (dam readings)' in html
-        assert 'Scheduled (SWPA forecast)' not in html
+        assert 'Arrivals at White Hole' in html
+        assert '>released ' in html
+        assert '>scheduled ' not in html
 
     def test_timeline_with_only_forecast_data(self, base_time, normal_conditions_data):
         """Timeline should show forecast section even without actual."""
@@ -387,9 +387,9 @@ class TestWaterTimelineRendering:
             }
         ]
         html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
-        assert 'Water Timeline' in html
-        assert 'Scheduled (SWPA forecast)' in html
-        assert 'Actual (dam readings)' not in html
+        assert 'Arrivals at White Hole' in html
+        assert '>scheduled ' in html
+        assert '>released ' not in html
 
     def test_merged_timeline_shows_both(self, base_time, normal_conditions_data):
         """Timeline should show both forecast and actual sections."""
@@ -412,10 +412,11 @@ class TestWaterTimelineRendering:
             }
         ]
         html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline, timeline_data=timeline_data)
-        assert 'Scheduled (SWPA forecast)' in html
-        assert 'Actual (dam readings)' in html
+        assert '>scheduled ' in html
+        assert '>released ' in html
         assert '2,951 CFS' in html
-        assert '2701 generation + 250 min flow' in html
+        # the water at White Hole now leads, the scheduled water follows
+        assert html.index('AT WHITE HOLE NOW') < html.index('>scheduled ')
 
     def _hour(self, base_time, h, cfs, wading='excellent wading'):
         return {
@@ -443,6 +444,35 @@ class TestWaterTimelineRendering:
         # A run is labelled with its span, a single hour with its start
         assert f"{(base_time + timedelta(hours=1)).strftime('%I %p').lstrip('0')}–" in html
 
+    def test_measured_hour_trumps_its_scheduled_row(self, base_time, normal_conditions_data):
+        """Once the dam has reported an hour, that hour's scheduled row is
+        dropped instead of contradicting the reading."""
+        timeline_data = [{
+            'release_time': base_time - timedelta(hours=1), 'cfs': 2518,
+            'generators': '0-1 generators', 'arrival_time': base_time + timedelta(hours=2.5),
+            'status': 'incoming', 'minutes_until': 150, 'change': None, 'recession_start': None,
+        }]
+        forecast_timeline = [
+            self._hour(base_time, -1, 1600),      # the hour already reported
+            self._hour(base_time, 0, 4301, 'still wadable'),
+        ]
+        html = self._make_html(base_time, normal_conditions_data,
+                               forecast_timeline=forecast_timeline, timeline_data=timeline_data)
+        assert '1,600 CFS' not in html
+        assert '4,301 CFS' in html and '2,518 CFS' in html
+
+    def test_rows_sort_by_arrival_not_release(self, base_time, normal_conditions_data):
+        """A faster, later release that overtakes a slow one lists first."""
+        slow = {'release_time': base_time - timedelta(hours=1), 'cfs': 750,
+                'generators': '0-1 generators', 'arrival_time': base_time + timedelta(hours=2.7),
+                'status': 'incoming', 'minutes_until': 162, 'change': None, 'recession_start': None}
+        fast = self._hour(base_time, 0, 18818, 'no wading')
+        fast['arrival_time'] = base_time + timedelta(hours=2.1)   # six units overtake min flow
+        html = self._make_html(base_time, normal_conditions_data,
+                               forecast_timeline=[fast], timeline_data=[slow])
+        table = html[html.index('Arrivals at White Hole'):]
+        assert table.index('18,818 CFS') < table.index('750 CFS')
+
     def test_forecast_rows_are_chronological_with_tomorrow_divider(self, base_time, normal_conditions_data):
         forecast_timeline = [
             self._hour(base_time, 20, 723),
@@ -451,7 +481,7 @@ class TestWaterTimelineRendering:
         html = self._make_html(base_time, normal_conditions_data, forecast_timeline=forecast_timeline)
         tomorrow = base_time + timedelta(days=1)
         assert tomorrow.strftime('%A') in html
-        table = html[html.index('Scheduled (SWPA forecast)'):]
+        table = html[html.index('Arrivals at White Hole'):]
         assert table.index('723 CFS') < table.index('8,352 CFS')
         # Times on the other day carry a weekday prefix
         assert tomorrow.strftime('%a') in html
@@ -590,7 +620,7 @@ class TestWaterTimelineRendering:
         s = start.strftime('%I:%M %p').lstrip('0')
         d = down.strftime('%I:%M %p').lstrip('0')
         assert f'FALLING WATER — starts dropping ~{s}, fully down ~{d}' in html
-        assert f'Falls from ~{s}, fully down ~{d}' in html
+        assert f'falling ~{s}, down ~{d}' in html
 
     def test_rising_banner_handles_zero_minutes_until(self, base_time, normal_conditions_data):
         """Regression: minutes_until == 0 (arriving now) is real data, not
