@@ -92,6 +92,41 @@ row keeps your `water` read for exactly that reason. It also computes `vs_sunset
 `-90` before, `+45` after) and a `window` (dawn / midday / dusk / night / other) from sunset
 at White Hole.
 
+### The stage table
+
+There is no discharge gauge between the dam and Norfork (checked against the USGS site
+catalog 2026-09-21: Flippin 07055000 ran daily 1928–81, Cotter never had a continuous
+record), so the travel model has never been checked against the river. The dock post at
+the White Hole boat dock is the gauge: the dock floats, so the mark the deck sits at on
+its post is the stage, and the jetty upstream of it does not change the level in the
+eddy, only the current. Tape or paint the post every 6 in and read it.
+
+The template carries a second table under `## Stage`. One row per reading:
+
+| Column | What goes in it |
+|---|---|
+| `time` | Central `HH:MM`, same rules as a catch |
+| `reading` | the mark the deck sits at — a number in whatever unit the post is marked in, the same unit every time (`14`, `14 in`, `2.5`). A row with a time and no reading is fine (`water` says what you saw) |
+| `water` | `rising`, `falling`, `steady`, `dead low` — your read at that moment. **Leave it blank and the builder derives it** from the reading before it in the same entry (`water_source` = `derived`), so a plain series of numbers is enough |
+| `note` | anything — "first push, foam line", "boats in both slips" |
+
+Read the post every 15–20 minutes across a predicted arrival (the page says "arriving
+~2:40 PM"). The first reading that moves is the observed arrival, bracketed by the reading
+before it; for a drop the series traces the recession, which is what the window model
+claims to predict.
+
+### What the builder does with stage rows
+
+Every reading gets the same `model_cfs` / `model_band` / `model_state` as a catch, plus the
+run's `model_next_change` / `model_next_start` / `model_next_down`. Then, per entry, each
+change of direction (a row that says or derives `rising` or `falling` after one that did
+not) is an **event**, and the builder finds the prediction it tests: among runs in the six
+hours before it, the one whose arrival in that direction lies closest to it — a `measured`
+prediction (the model saw the water leave the dam) beats a `scheduled` one (it only had
+the SWPA schedule). `stage_report.md` sets them side by side with the delta in minutes,
+positive when the water came later than predicted. It also lists steady readings against
+the model's flow for that hour: once that fills in, a glance at the post reads as a CFS.
+
 ## Build it
 
 ```bash
@@ -107,6 +142,8 @@ Outputs land in `journal/build/` (gitignored, regenerable — rebuilt from scrat
 | `index.json` | The same thing structured, for scripts |
 | `catches.csv` | One row per fish, with the model's numbers attached |
 | `catches_report.md` | The rows summarised by program, band, spot, rig, bait, water and window — and **crossed against the report's flow bands and programs**, so each block of advice shows how many fish stand behind it |
+| `stage.csv` | One row per dock-post reading, with the model's numbers attached |
+| `stage_report.md` | **Predicted vs observed** for every rise or drop seen at the dock, the raw readings beside the model, and reading-vs-flow as the seed of a rating curve |
 
 ## What the builder will complain about
 
@@ -114,8 +151,9 @@ Outputs land in `journal/build/` (gitignored, regenerable — rebuilt from scrat
 `time` that is not `HH:MM`, or `coords` that are not two numbers.
 
 **Warns and continues**: an entry with no resolvable date, a species, rig or bait the
-vocabulary does not know, a catch with no `predictions.csv` row near its time (the log
-started 2026-09-20, and the Pi may have been down), or `coords` far from the river.
+vocabulary does not know, a catch or reading with no `predictions.csv` row near its time
+(the log started 2026-09-20, and the Pi may have been down), a stage reading with no
+leading number, a `water` word it cannot class, or `coords` far from the river.
 
 ## Doctrine changes come from here
 

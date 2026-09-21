@@ -13,6 +13,12 @@ regenerable):
     catches_report.md  the rows summarised by program, band, spot, rig, bait, water and
                        window, and crossed against the report's flow bands × species
                        programs so each block of advice shows the fish behind it
+    stage.csv          one row per reading from every entry's "## Stage" table — the dock
+                       post at White Hole read as a staff gauge — with the model's numbers
+                       for that hour attached
+    stage_report.md    every observed rise or drop against the arrival the model had
+                       predicted for it (the travel model's only validation), the raw
+                       readings beside the model, and reading-vs-flow as a rating-curve seed
 
 Same model as new-croton-fishing/scripts/build_journal.py, with this river's vocabulary.
 Deliberately NOT coupled to predictions.csv: the log says what the model predicted, the
@@ -51,6 +57,10 @@ WHITE_HOLE_LAT, WHITE_HOLE_LON = dict(LANDMARK_COORDS)["The White Hole"]
 # A catch's model row is the run at or before its time, no older than this
 MODEL_MATCH_HOURS = 2
 
+# A stage event (a rise or drop seen at the dock) is matched against the run, within this
+# many hours before it, whose predicted arrival lies closest to the observation
+EVENT_MATCH_HOURS = 6
+
 # Fields split on commas into lists; everything else is kept as the string typed
 LIST_FIELDS = ("tags", "species")
 
@@ -62,10 +72,15 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 FILENAME_DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 TIME_RE = re.compile(r"^~?\s*(\d{1,2}):(\d{2})\s*([ap]\.?m\.?)?$", re.I)
 CATCH_HEADING_RE = re.compile(r"^#{1,6}\s*catches\b", re.I)
+STAGE_HEADING_RE = re.compile(r"^#{1,6}\s*stage\b", re.I)
+READING_RE = re.compile(r"^\s*([-+]?\d+(?:\.\d+)?)")
 
 CSV_COLUMNS = ["date", "time", "species", "program", "size", "spot", "spot_name", "water",
                "boat", "rig", "rig_class", "bait", "bait_class", "lost", "vs_sunset", "window",
                "model_cfs", "model_band", "model_state", "model_temp_f", "model_do", "file"]
+STAGE_COLUMNS = ["date", "time", "reading", "reading_value", "water", "water_source", "note",
+                 "model_cfs", "model_band", "model_state", "model_next_change",
+                 "model_next_start", "model_next_down", "file"]
 
 # The report's two species programs (fishing_report.py): browns vs rainbows & others
 SPECIES_GROUPS = [
@@ -281,7 +296,7 @@ def parse_time(value, path):
         return None
     m = TIME_RE.match(t)
     if not m:
-        errors.append("%s: Catches time must be HH:MM (Central) -> got %r" % (path, value))
+        errors.append("%s: table time must be HH:MM (Central) -> got %r" % (path, value))
         return None
     hh, mm = int(m.group(1)), int(m.group(2))
     ampm = (m.group(3) or "").lower()
@@ -290,17 +305,18 @@ def parse_time(value, path):
     if ampm.startswith("a") and hh == 12:
         hh = 0
     if not (0 <= hh < 24 and 0 <= mm < 60):
-        errors.append("%s: Catches time out of range -> %r" % (path, value))
+        errors.append("%s: table time out of range -> %r" % (path, value))
         return None
     return datetime.time(hh, mm)
 
 
-def parse_catch_table(body):
-    """Rows of the first '## Catches' table, keyed by the header's column names."""
+def parse_table(body, heading_re, key):
+    """Rows of the first table under a heading matching heading_re, keyed by the header's
+    column names; a row without a `key` cell is skipped."""
     lines = body.splitlines()
     start = None
     for i, line in enumerate(lines):
-        if CATCH_HEADING_RE.match(line.strip()):
+        if heading_re.match(line.strip()):
             start = i + 1
             break
     if start is None:
@@ -322,10 +338,18 @@ def parse_catch_table(body):
         if all(re.fullmatch(r":?-+:?", c) for c in cells if c):
             continue
         row = dict(zip(header, cells))
-        if not row.get("species"):
+        if not row.get(key):
             continue
         rows.append(row)
     return rows
+
+
+def parse_catch_table(body):
+    return parse_table(body, CATCH_HEADING_RE, "species")
+
+
+def parse_stage_table(body):
+    return parse_table(body, STAGE_HEADING_RE, "time")
 
 
 def sun_for(date_str):
@@ -462,6 +486,130 @@ def collect_catches(entries, predictions):
             })
     rows.sort(key=lambda r: (r["date"], r["time"]))
     return rows
+
+
+# ---------------------------------------------------------------------------
+# Stage: the dock post at White Hole, read as a staff gauge
+# ---------------------------------------------------------------------------
+
+def _parse_iso(text):
+    try:
+        return datetime.datetime.fromisoformat(text).astimezone(TZ)
+    except (TypeError, ValueError):
+        return None
+
+
+def collect_stage(entries, predictions):
+    """One row per reading, in time order, with the model's numbers for that hour.
+
+    `water` is your read (rising / falling / steady / dead low); when it is blank it is
+    derived from the reading against the previous one in the same entry (water_source
+    'derived'), so a plain series of numbers still yields the events."""
+    rows = []
+    for e in entries:
+        table = parse_stage_table(e["body"])
+        if not table:
+            continue
+        if not e["date"]:
+            warnings.append("%s: Stage rows on an undated entry are skipped" % e["file"])
+            continue
+        day = datetime.date.fromisoformat(e["date"])
+        prev = None
+        for r in table:
+            clock = parse_time(r.get("time", ""), e["file"])
+            if clock is None:
+                continue
+            when = datetime.datetime.combine(day, clock, tzinfo=TZ)
+            reading = r.get("reading", "")
+            m = READING_RE.match(reading)
+            value = float(m.group(1)) if m else None
+            if reading and value is None:
+                warnings.append("%s: Stage reading %r has no leading number - kept as text only"
+                                % (e["file"], reading))
+            water = classify(r.get("water", ""), WATER_CLASSES)
+            source = "typed" if water else ""
+            if r.get("water") and not water:
+                warnings.append("%s: Stage water %r is not rising / falling / steady / dead low"
+                                % (e["file"], r["water"]))
+                water = r["water"]
+                source = "typed"
+            if not water and value is not None and prev is not None and prev["reading_value"] != "":
+                before = float(prev["reading_value"])
+                water = "rising" if value > before else "falling" if value < before else "steady"
+                source = "derived"
+            model = model_for(when, predictions)
+            if model is None and predictions:
+                warnings.append("%s: no predictions.csv run within %d h before %s - stage row "
+                                "keeps no model numbers" % (e["file"], MODEL_MATCH_HOURS,
+                                                            when.strftime("%Y-%m-%d %H:%M")))
+            row = {
+                "date": e["date"],
+                "time": clock.strftime("%H:%M"),
+                "reading": reading,
+                "reading_value": "" if value is None else ("%g" % value),
+                "water": water,
+                "water_source": source,
+                "note": r.get("note", ""),
+                "model_cfs": model["white_hole_cfs"] if model else "",
+                "model_band": band_label(model["white_hole_cfs"]) if model else "",
+                "model_state": model["water_state"] if model else "",
+                "model_next_change": model.get("next_change", "") if model else "",
+                "model_next_start": model.get("next_change_start", "") if model else "",
+                "model_next_down": model.get("next_change_down", "") if model else "",
+                "file": e["file"],
+                "_when": when,
+            }
+            rows.append(row)
+            prev = row
+    rows.sort(key=lambda r: (r["date"], r["time"]))
+    return rows
+
+
+def stage_events(rows):
+    """The moments the water was first seen rising or falling, per entry: each is the
+    reading that carries the new state, bracketed by the reading before it."""
+    events = []
+    prev = None
+    for r in rows:
+        if prev is not None and prev["file"] != r["file"]:
+            prev = None
+        state = r["water"]
+        if state in ("rising", "falling") and (prev is None or prev["water"] != state):
+            events.append({"direction": state, "row": r, "observed": r["_when"],
+                           "after": prev["_when"] if prev else None})
+        prev = r
+    return events
+
+
+def prediction_for_event(event, predictions):
+    """The prediction this observation tests: among runs in the EVENT_MATCH_HOURS before
+    it, the one whose next-change arrival (measured readings first, then the SWPA
+    schedule) in the same direction lies closest to the observed time."""
+    obs = event["observed"]
+    direction = event["direction"]
+    window = [r for r in predictions
+              if obs - datetime.timedelta(hours=EVENT_MATCH_HOURS) <= r["_when"] <= obs]
+    best = None
+    for source, change_col, cfs_col, start_col, down_col in (
+            ("measured", "next_change", "next_change_cfs", "next_change_start", "next_change_down"),
+            ("scheduled", "scheduled_change", "scheduled_change_cfs", "scheduled_arrival", None)):
+        for r in window:
+            if r.get(change_col) != direction:
+                continue
+            start = _parse_iso(r.get(start_col, ""))
+            if start is None:
+                continue
+            gap = abs((obs - start).total_seconds())
+            if best is None or gap < best["gap"]:
+                best = {"source": source, "run": r["_when"], "start": start,
+                        "down": _parse_iso(r.get(down_col, "")) if down_col else None,
+                        "from_cfs": r.get("white_hole_cfs", ""), "to_cfs": r.get(cfs_col, ""),
+                        "gap": gap}
+        if best is not None:
+            break
+    if best is not None:
+        best["delta_min"] = int(round((obs - best["start"]).total_seconds() / 60))
+    return best
 
 
 # ---------------------------------------------------------------------------
@@ -605,6 +753,101 @@ def write_catches(csv_path, md_path, rows):
     return len(landed), len(lost)
 
 
+def _clock(dt):
+    return dt.strftime("%H:%M") if dt else "?"
+
+
+def write_stage(csv_path, md_path, rows, predictions):
+    with open(csv_path, "w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=STAGE_COLUMNS)
+        w.writeheader()
+        for r in rows:
+            w.writerow({k: r.get(k, "") for k in STAGE_COLUMNS})
+
+    events = stage_events(rows)
+    dates = sorted({r["date"] for r in rows})
+    L = ["# Stage — the dock post against the travel model", "",
+         "Generated by `scripts/build_journal.py` from the `## Stage` tables in "
+         "`journal/entries/`. **Do not edit** — rebuilt every run. Columns and rules: "
+         "`journal/README.md`.", "",
+         "**%d reading%s** across %d date%s; **%d event%s** (a rise or drop first seen at the "
+         "dock)." % (len(rows), "" if len(rows) == 1 else "s", len(dates),
+                     "" if len(dates) == 1 else "s", len(events),
+                     "" if len(events) == 1 else "s"), "",
+         "The travel model has never been checked against the river — there is no discharge "
+         "gauge between the dam and Norfork. These readings are that check. An event's "
+         "prediction is the run, within %d h before it, whose arrival for the same direction "
+         "lies closest to it: `measured` when the model saw the water leave the dam, "
+         "`scheduled` when it only had the SWPA schedule. `delta` is observed minus predicted "
+         "— positive means the water came later than the model said." % EVENT_MATCH_HOURS, ""]
+
+    L += ["## Predicted vs observed", ""]
+    if events:
+        L += ["| date | event | observed | predicted | delta | model CFS | run |",
+              "|---|---|---|---|---|---|---|"]
+        for ev in events:
+            pred = prediction_for_event(ev, predictions)
+            observed = ("between %s and %s" % (_clock(ev["after"]), _clock(ev["observed"]))
+                        if ev["after"] else "by %s" % _clock(ev["observed"]))
+            if pred:
+                predicted = _clock(pred["start"])
+                if ev["direction"] == "falling" and pred["down"]:
+                    predicted = "falling %s, down %s" % (predicted, _clock(pred["down"]))
+                predicted += " (%s)" % pred["source"]
+                d = pred["delta_min"]
+                delta = "%+d min (%s)" % (d, "late" if d > 0 else "early" if d < 0 else "on time")
+                cfs = "%s → %s" % (pred["from_cfs"] or "?", pred["to_cfs"] or "?")
+                run = _clock(pred["run"])
+            else:
+                predicted, delta, cfs, run = "no prediction", "—", "—", "—"
+            L.append("| %s | %s | %s | %s | %s | %s | %s |" % (
+                ev["row"]["date"], ev["direction"], observed, predicted, delta, cfs, run))
+        L.append("")
+    else:
+        L += ["No rise or drop observed yet. A row whose `water` says `rising` or `falling` "
+              "after one that did not (or a reading that moves) makes an event.", ""]
+
+    L += ["## Readings", ""]
+    if rows:
+        for date in dates:
+            day = [r for r in rows if r["date"] == date]
+            L += ["### %s (%s)" % (date, day[0]["file"]), "",
+                  "| time | reading | water | model CFS | model state | note |",
+                  "|---|---|---|---|---|---|"]
+            for r in day:
+                water = r["water"] + (" *(derived)*" if r["water_source"] == "derived" else "")
+                L.append("| %s | %s | %s | %s | %s | %s |" % (
+                    r["time"], r["reading"] or "—", water or "—", r["model_cfs"] or "—",
+                    r["model_state"] or "—", r["note"] or ""))
+            L.append("")
+    else:
+        L += ["No readings yet.", ""]
+
+    # Steady readings against the model's flow: the start of a stage-discharge rating
+    steady = [r for r in rows if r["reading_value"] != "" and r["model_cfs"]
+              and r["water"] in ("steady", "dead low")]
+    L += ["## Reading vs model flow", "",
+          "Steady readings only (a reading taken mid-change belongs to no flow). Sorted by the "
+          "model's White Hole CFS for that hour; once this fills in, a glance at the post "
+          "reads as a flow.", ""]
+    if steady:
+        L += ["| model CFS | band | readings |", "|---|---|---|"]
+        by_cfs = {}
+        for r in steady:
+            by_cfs.setdefault((int(float(r["model_cfs"])), r["model_band"]), []).append(r)
+        for (cfs, band), rs in sorted(by_cfs.items()):
+            readings = ", ".join("%s (%s %s)" % (r["reading_value"], r["date"], r["time"])
+                                 for r in rs)
+            L.append("| %d | %s | %s |" % (cfs, band, readings))
+        L.append("")
+    else:
+        L += ["Nothing to pair yet.", ""]
+
+    with open(md_path, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(L).rstrip() + "\n")
+    return len(events)
+
+
 def build(entry_dir=ENTRY_DIR, out_dir=OUT_DIR, predictions_path=PREDICTIONS,
           check_only=False):
     """Parse, validate, and (unless check_only) write everything. Returns a summary dict."""
@@ -615,6 +858,7 @@ def build(entry_dir=ENTRY_DIR, out_dir=OUT_DIR, predictions_path=PREDICTIONS,
     entries = load_entries(entry_dir)
     predictions = load_predictions(predictions_path)
     catches = collect_catches(entries, predictions)
+    stage = collect_stage(entries, predictions)
 
     for w in warnings:
         print("WARNING  " + w)
@@ -627,10 +871,10 @@ def build(entry_dir=ENTRY_DIR, out_dir=OUT_DIR, predictions_path=PREDICTIONS,
     by_tag = group_by(entries, "tags")
     by_species = group_by(entries, "species")
     summary = {"entries": len(entries), "tags": len(by_tag), "species": len(by_species),
-               "catches": len(catches), "warnings": len(warnings)}
-    print("journal OK: %d entries, %d tags, %d species, %d catch rows, %d warnings"
-          % (summary["entries"], summary["tags"], summary["species"], summary["catches"],
-             summary["warnings"]))
+               "catches": len(catches), "stage": len(stage), "warnings": len(warnings)}
+    print("journal OK: %d entries, %d tags, %d species, %d catch rows, %d stage readings, "
+          "%d warnings" % (summary["entries"], summary["tags"], summary["species"],
+                           summary["catches"], summary["stage"], summary["warnings"]))
     if check_only:
         return summary
 
@@ -639,20 +883,26 @@ def build(entry_dir=ENTRY_DIR, out_dir=OUT_DIR, predictions_path=PREDICTIONS,
     index = os.path.join(out_dir, "index.json")
     catches_csv = os.path.join(out_dir, "catches.csv")
     catches_md = os.path.join(out_dir, "catches_report.md")
+    stage_csv = os.path.join(out_dir, "stage.csv")
+    stage_md = os.path.join(out_dir, "stage_report.md")
 
     write_digest(digest, entries, by_tag, by_species)
     with open(index, "w", encoding="utf-8") as fh:
         json.dump({"entries": entries,
                    "tags": {k: [e["file"] for e in v] for k, v in by_tag.items()},
                    "species": {k: [e["file"] for e in v] for k, v in by_species.items()},
-                   "catches": catches},
+                   "catches": catches,
+                   "stage": [{k: r[k] for k in STAGE_COLUMNS} for r in stage]},
                   fh, indent=1, default=str)
     n_landed, n_lost = write_catches(catches_csv, catches_md, catches)
+    n_events = write_stage(stage_csv, stage_md, stage, predictions)
 
     for p in (digest, index):
         print("wrote %s" % p)
     print("wrote %s  (%d landed, %d lost)" % (catches_csv, n_landed, n_lost))
     print("wrote %s" % catches_md)
+    print("wrote %s  (%d readings, %d events)" % (stage_csv, len(stage), n_events))
+    print("wrote %s" % stage_md)
     return summary
 
 

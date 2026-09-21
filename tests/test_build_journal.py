@@ -18,6 +18,7 @@ spec.loader.exec_module(bj)
 PREDICTIONS = """run_time,latest_reading_time,latest_dam_cfs,white_hole_cfs,white_hole_release_time,water_state,forecast,next_change,next_change_cfs,next_change_release_time,next_change_start,next_change_down,scheduled_change,scheduled_change_cfs,scheduled_time,scheduled_arrival,water_temp_f,dissolved_oxygen_mg_l,feed_failed
 2026-10-06T07:00-05:00,2026-10-06T06:00-05:00,771,750,2026-10-06T03:00-05:00,stable,stable conditions expected,,,,,,rising,8352,2026-10-06T14:00-05:00,2026-10-06T16:39-05:00,57.2,5.1,0
 2026-10-06T08:00-05:00,2026-10-06T07:00-05:00,771,750,2026-10-06T04:00-05:00,stable,stable conditions expected,,,,,,rising,8352,2026-10-06T14:00-05:00,2026-10-06T16:39-05:00,57.4,5.0,0
+2026-10-06T15:00-05:00,2026-10-06T14:00-05:00,771,750,2026-10-06T11:00-05:00,stable,stable conditions expected,,,,,,rising,8352,2026-10-06T14:00-05:00,2026-10-06T16:39-05:00,57.9,4.9,0
 2026-10-06T17:00-05:00,2026-10-06T16:00-05:00,14331,8109,2026-10-06T14:00-05:00,rising,rising water expected soon,rising,12891,2026-10-06T15:00-05:00,2026-10-06T17:21-05:00,,,,,,58.3,4.5,0
 """
 
@@ -42,6 +43,31 @@ Launched at 0700. Gin clear.
 | rainbow |  | 8:50 am | White Hole | dead low | tie | float | 1/16 jig white grub | x |
 | brown | 22 | 17:30 | Cranor's | rising | drift | direct | Countdown | |
 | rainbow | 11 | 22:10 | White Hole | falling | tie | WR rig | shrimp | |
+
+## Stage
+
+| time | reading | water | note |
+|---|---|---|---|
+| 07:10 | 14 in | dead low | dock post, tape mark |
+| 16:20 | 14 | steady | |
+| 16:40 | 16 | rising | first push, foam line |
+| 17:00 | 22 | | |
+| 17:30 | 30 | rising | |
+"""
+
+STAGE_ONLY = """---
+date: 2026-10-07
+title: Reading the post
+---
+
+## Stage
+
+| time | reading | water | note |
+|---|---|---|---|
+| 06:30 | 40 | | |
+| 07:05 | 36 | | dropping |
+| 07:40 | 31 | | |
+| 08:10 | 31 | | |
 """
 
 
@@ -54,8 +80,8 @@ def journal(tmp_path):
     return tmp_path
 
 
-def _rows(tmp_path):
-    with open(tmp_path / "build" / "catches.csv", newline="", encoding="utf-8") as f:
+def _rows(tmp_path, name="catches.csv"):
+    with open(tmp_path / "build" / name, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
@@ -63,8 +89,9 @@ class TestBuild:
     def test_builds_all_outputs(self, journal):
         summary = bj.build(str(journal / "entries"), str(journal / "build"),
                            str(journal / "predictions.csv"))
-        assert summary["entries"] == 1 and summary["catches"] == 5
-        for name in ("digest.md", "index.json", "catches.csv", "catches_report.md"):
+        assert summary["entries"] == 1 and summary["catches"] == 5 and summary["stage"] == 5
+        for name in ("digest.md", "index.json", "catches.csv", "catches_report.md",
+                     "stage.csv", "stage_report.md"):
             assert (journal / "build" / name).exists()
 
     def test_check_writes_nothing(self, journal):
@@ -79,6 +106,7 @@ class TestBuild:
         assert summary["entries"] == 0 and summary["catches"] == 0
         assert "No entries yet" in (tmp_path / "build" / "digest.md").read_text()
         assert "No landed fish" in (tmp_path / "build" / "catches_report.md").read_text()
+        assert "No readings yet" in (tmp_path / "build" / "stage_report.md").read_text()
 
 
 class TestCatchRows:
@@ -124,6 +152,87 @@ class TestCatchRows:
         assert "| 2–3 units (5,000–10,000 CFS) | browns | 1 |" in report
         assert "Hooked and lost" in report
         assert "| rising | rising | 1 |" in report      # your read vs the model
+
+
+class TestStage:
+    def test_rows_and_derived_direction(self, journal):
+        bj.build(str(journal / "entries"), str(journal / "build"), str(journal / "predictions.csv"))
+        by_time = {r["time"]: r for r in _rows(journal, "stage.csv")}
+        assert by_time["07:10"]["reading_value"] == "14" and by_time["07:10"]["water"] == "dead low"
+        assert by_time["07:10"]["water_source"] == "typed"
+        assert by_time["07:10"]["model_cfs"] == "750"
+        # blank water cell: derived from the reading before it
+        assert by_time["17:00"]["water"] == "rising" and by_time["17:00"]["water_source"] == "derived"
+        assert by_time["17:30"]["model_next_change"] == "rising"
+
+    def test_event_matches_prediction(self, journal):
+        bj.build(str(journal / "entries"), str(journal / "build"), str(journal / "predictions.csv"))
+        rows = bj.collect_stage(bj.load_entries(str(journal / "entries")),
+                                bj.load_predictions(str(journal / "predictions.csv")))
+        events = bj.stage_events(rows)
+        assert [e["direction"] for e in events] == ["rising"]     # 17:00 continues, not a new event
+        ev = events[0]
+        assert ev["observed"].strftime("%H:%M") == "16:40"
+        assert ev["after"].strftime("%H:%M") == "16:20"
+        pred = bj.prediction_for_event(ev, bj.load_predictions(str(journal / "predictions.csv")))
+        # no run saw the water leave the dam before 16:40 -> the SWPA schedule's 16:39 arrival
+        assert pred["source"] == "scheduled"
+        assert pred["start"].strftime("%H:%M") == "16:39" and pred["delta_min"] == 1
+        assert pred["to_cfs"] == "8352"
+
+    def test_measured_prediction_preferred_and_closest(self, tmp_path):
+        entries = tmp_path / "entries"
+        entries.mkdir()
+        (entries / "2026-10-06-x.md").write_text(ENTRY, encoding="utf-8")
+        # a later run that saw the release: arrival 17:21, plus a stale scheduled one
+        extra = ("2026-10-06T16:00-05:00,2026-10-06T15:00-05:00,8352,750,2026-10-06T12:00-05:00,"
+                 "stable,rising water expected soon,rising,8352,2026-10-06T14:00-05:00,"
+                 "2026-10-06T16:45-05:00,,rising,12891,2026-10-06T15:00-05:00,2026-10-06T17:21-05:00,58.0,4.8,0\n")
+        (tmp_path / "predictions.csv").write_text(PREDICTIONS + extra, encoding="utf-8")
+        preds = bj.load_predictions(str(tmp_path / "predictions.csv"))
+        rows = bj.collect_stage(bj.load_entries(str(entries)), preds)
+        pred = bj.prediction_for_event(bj.stage_events(rows)[0], preds)
+        assert pred["source"] == "measured"
+        assert pred["start"].strftime("%H:%M") == "16:45" and pred["delta_min"] == -5
+
+    def test_report_tables(self, journal):
+        bj.build(str(journal / "entries"), str(journal / "build"), str(journal / "predictions.csv"))
+        report = (journal / "build" / "stage_report.md").read_text()
+        assert "| 2026-10-06 | rising | between 16:20 and 16:40 | 16:39 (scheduled) | +1 min (late) | 750 → 8352 | 15:00 |" in report
+        assert "| 750 | Minimum flow (dead low) | 14 (2026-10-06 07:10)" in report   # rating seed
+        assert "16 (2026-10-06 16:40)" not in report.split("## Reading vs model flow")[1]  # mid-rise excluded
+
+    def test_series_without_water_column_yields_drop_event(self, tmp_path):
+        entries = tmp_path / "entries"
+        entries.mkdir()
+        (entries / "2026-10-07-post.md").write_text(STAGE_ONLY, encoding="utf-8")
+        (tmp_path / "predictions.csv").write_text(PREDICTIONS, encoding="utf-8")
+        summary = bj.build(str(entries), str(tmp_path / "build"), str(tmp_path / "predictions.csv"))
+        assert summary["stage"] == 4
+        rows = bj.collect_stage(bj.load_entries(str(entries)), [])
+        assert [r["water"] for r in rows] == ["", "falling", "falling", "steady"]
+        events = bj.stage_events(rows)
+        assert len(events) == 1 and events[0]["direction"] == "falling"
+        assert events[0]["observed"].strftime("%H:%M") == "07:05"
+        report = (tmp_path / "build" / "stage_report.md").read_text()
+        assert "| 2026-10-07 | falling | between 06:30 and 07:05 | no prediction |" in report
+
+    def test_bad_stage_time_refuses(self, tmp_path):
+        entries = tmp_path / "entries"
+        entries.mkdir()
+        (entries / "2026-10-06-x.md").write_text(ENTRY.replace("| 16:40 |", "| four forty |"),
+                                                 encoding="utf-8")
+        with pytest.raises(SystemExit):
+            bj.build(str(entries), str(tmp_path / "build"), str(tmp_path / "predictions.csv"))
+
+    def test_unnumbered_reading_warns_only(self, tmp_path, capsys):
+        entries = tmp_path / "entries"
+        entries.mkdir()
+        (entries / "2026-10-06-x.md").write_text(ENTRY.replace("| 14 in |", "| below the tape |"),
+                                                 encoding="utf-8")
+        summary = bj.build(str(entries), str(tmp_path / "build"), str(tmp_path / "predictions.csv"))
+        assert "no leading number" in capsys.readouterr().out
+        assert summary["stage"] == 5
 
 
 class TestValidation:

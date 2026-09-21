@@ -18,7 +18,7 @@ summarised in the "Key Calculations" entries below.
 |---|---|---|
 | `uv run python main.py` | `main.generate_white_hole_summary` twice (text, then html); `__main__` also saves the outage cache and appends the prediction log | `white_hole_conditions.html`, `vertical_flow_chart.png`, `last_good_data.json`, `predictions.csv` (repo root) |
 | `uv run python fishing_report.py [--season fall\|spring] [--cfs N] [--out f]` | `fishing_report.main` → `generate_fishing_report` + `render_fishing_report_html`, expanded | `fishing_report.html` (gitignored) |
-| `uv run python scripts/build_journal.py [--check]` | `build_journal.build` | `journal/build/{digest.md,index.json,catches.csv,catches_report.md}` (gitignored) |
+| `uv run python scripts/build_journal.py [--check]` | `build_journal.build` | `journal/build/{digest.md,index.json,catches.csv,catches_report.md,stage.csv,stage_report.md}` (gitignored) |
 | `uv run python scripts/audit_gear_inventory.py [inventory.md]` | `inventory_audit.audit` | stdout; exit 1 on drift, 2 when the inventory file is absent |
 | `uv run python generate_test_html.py` | `generate_white_hole_summary` over 8 fixture scenarios | `white_hole_conditions_{scenario}.html` + charts (gitignored) |
 | `uv run pytest` | the suite, offline, from a tmp dir | — |
@@ -130,7 +130,7 @@ unused (an open item from the review).
 ### Key Calculations and Parameter Locations
 
 - **Flow selection** (`water_calculator.get_flow`): total_release with turbine_release fallback.
-- **Travel time** (`water_calculator.calculate_travel_time`): 7-mile distance (`landmarks.WHITE_HOLE_MILE`), speed piecewise-linear between `SPEED_ANCHORS` — (band-midpoint CFS, mph) pairs at 3300 CFS per generator, 1.875–4.75 mph, clamped outside the anchored range. Sourced from His Place Resort's observational table; each band's average anchors at the band midpoint. Rising water is treated as a plug that arrives whole. **Never validated against the river**: no discharge gauge exists near White Hole; `predictions.csv` plus on-site clock times are the intended check.
+- **Travel time** (`water_calculator.calculate_travel_time`): 7-mile distance (`landmarks.WHITE_HOLE_MILE`), speed piecewise-linear between `SPEED_ANCHORS` — (band-midpoint CFS, mph) pairs at 3300 CFS per generator, 1.875–4.75 mph, clamped outside the anchored range. Sourced from His Place Resort's observational table; each band's average anchors at the band midpoint. Rising water is treated as a plug that arrives whole. **Never validated against the river.** No instrument can: the USGS site catalog (checked 2026-09-21, active and inactive) has no discharge gauge between the dam and 07057370 near Norfork (~RM 49, just above the North Fork confluence, so it carries the Buffalo and Crooked Creek but not Norfork Dam) — Flippin 07055000 ran daily 1928–81, Cotter 07055500 never had a continuous record, 07054502/07054527 are temp/DO only. The check is the journal's `## Stage` table: the floating dock at White Hole read against its post as a staff gauge (the upstream jetty changes the eddy's current, not its level), crossed against `predictions.csv` by `build_journal.py` into `stage_report.md`'s predicted-vs-observed table.
 - **Falling water** (`water_calculator.recession_window`): a cut is a window, not a step — it starts when the front of the cut arrives at the speed of the *higher* flow it replaces and is fully down when the slower low-flow water has made the trip (`start = cut + tt(from_cfs)·mile/7`, `end = cut + tt(to_cfs)·mile/7`). The bracket contains His Place's rule of thumb (distance ÷ 2 ≈ hours to ~85% fall-out; their 15-mile/25,000 CFS example → 7.5 h sits inside the model's 3.3–8 h). `annotate_changes` tags every timeline/forecast item with `change` ('rising'/'falling'/None vs the item before it, seeded by `previous_cfs`) and `recession_start`; the page and the fishing report render drops as "falling ~start, down ~end" (windows under 10 min collapse to one time — `formatters.MIN_RECESSION_WINDOW`). The current-flow determination and the chart still use plug arrival.
 - **Significant change** (`water_calculator.significant_change`): >20% AND >500 CFS, shared by water state, forecast wording, timeline tags, and the banner. `find_incoming_change` returns the first *incoming* timeline item that meets it — the banner's "RISING WATER arriving in ~N minutes" and the fishing report's RISE/DROP EN ROUTE must use that, never the nearest incoming plug (a same-level reading often sits ahead of the real change; live regression 2026-09-20).
 - **Water state** (`water_calculator.determine_water_state`): compares first vs last of the 3 most recent arrival-adjusted entries by the significant-change rule.
@@ -271,6 +271,15 @@ Rules that matter:
 - **Not coupled to `predictions.csv`.** The builder attaches `model_*` columns by looking up
   the run at or before the catch time (≤ `MODEL_MATCH_HOURS` = 2 h); the log has no journal
   columns and never will. The model's flow is for White Hole; Gaston's/Cranor's are ±1 h.
+- **`## Stage` table** (time · reading · water · note): dock-post readings at White Hole.
+  `collect_stage` derives `water` from consecutive readings when the cell is blank;
+  `stage_events` takes each change of direction per entry as an observed rise/drop,
+  bracketed by the reading before it; `prediction_for_event` picks, from the runs within
+  `EVENT_MATCH_HOURS` (6) before it, the arrival in that direction closest to it —
+  `next_change_start` (measured) first, `scheduled_arrival` as the fallback — and
+  `stage_report.md` reports the delta in minutes (positive = later than predicted) plus
+  steady readings vs model CFS as a rating-curve seed. This is the travel model's only
+  validation path; read it before touching `SPEED_ANCHORS`.
 - Species → program is derived (`brown` → browns, everything else → rainbows & others), the
   same split as the report. Rig and bait are classed by `RIG_CLASSES` / `BAIT_CLASSES`
   (order matters: "San Juan worm" is a nymph, "dry-dropper" is not a dropper loop); an
