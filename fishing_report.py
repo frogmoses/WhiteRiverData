@@ -36,6 +36,7 @@ from water_calculator import (
     recession_window, clock
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
+from water_quality import describe as describe_water_quality
 
 # Reach landmarks, miles below the dam. Gaston's and White Hole come from the
 # GPS-derived chart model (landmarks.py); Cranor's Island extends it downstream
@@ -378,14 +379,18 @@ BAND_CONTENT = {
     },
 }
 
+# What to say about temperature/oxygen when the USGS reading is unavailable
+WATER_FALLBACK_NOTES = {
+    "fall": "USGS tailwater reading unavailable — fall is the oxygen sag as the lake turns over: land fish fast, keep them wet",
+    "spring": "USGS tailwater reading unavailable — expect cold, oxygen-rich water; slow the presentation down",
+}
+
 SEASON_CONTENT = {
     "fall": {
         "label": "Fall (September–October): pre-spawn browns",
         "notes": [
             "Browns are staging pre-spawn — aggression without redds. They've shifted to eating big: sculpin here run 5–6 in, so don't fish small for them",
             "Stage points: upper ends of holes (trophy browns found in as little as 5 ft), shoal-tail drop-offs, undercut banks and wood",
-            "Water is at its annual warmest (~53–56°F) — the highest-metabolism window; fish will chase",
-            "Dissolved oxygen is at its seasonal low: land fish fast, keep them wet",
             "Typical pattern: minimum flow through the morning, generation arriving afternoon/evening — run downstream early, fish the low water, work back up on the rise",
             "Rainbow forage: sowbug/scud > midge > worms-on-the-rise; brown forage: sculpin > crawdad > everything else",
             "Not a dry-fly month — nymphs and streamers; hoppers on warm afternoons are the exception",
@@ -743,14 +748,32 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
     return timing
 
 
+def water_notes(water_quality, season, current_time=None):
+    """
+    Measured temperature/oxygen lines for the season notes (from the USGS
+    gauges), or the season's generic fallback when no reading is available.
+    """
+    temp_line, do_line = describe_water_quality(water_quality)
+    if not temp_line and not do_line:
+        return [WATER_FALLBACK_NOTES[season]]
+    source = water_quality["site_label"]
+    when = clock(water_quality["observed"], current_time) if current_time else ""
+    notes = [line for line in (temp_line, do_line) if line]
+    notes[-1] += f" ({source}, {when})" if when else f" ({source})"
+    return notes
+
+
 def generate_fishing_report(white_hole_cfs, current_time,
-                            timeline_data=None, forecast_timeline=None):
+                            timeline_data=None, forecast_timeline=None,
+                            water_quality=None):
     """
     Build the structured fishing report for current conditions.
 
     Always returns a full report. Outside the trip windows (March-April,
     September-October) the upcoming window's playbook is shown with
     'in_window' False so the renderer can label it as a preview.
+    water_quality is the USGS reading from water_quality.get_water_quality
+    (None when unavailable) and leads the season notes.
     """
     season, in_window = get_effective_season(current_time)
 
@@ -790,7 +813,7 @@ def generate_fishing_report(white_hole_cfs, current_time,
                                timeline_data, forecast_timeline),
         "spin": spin,
         "fly": fly,
-        "season_notes": season_content["notes"],
+        "season_notes": water_notes(water_quality, season, current_time) + season_content["notes"],
         "regulations": REGULATIONS,
         "gear_check": {
             "spin": GEAR_CHECK["spin"] + season_content["gear_add"]["spin"],
@@ -999,7 +1022,16 @@ def main():
         except Exception as e:
             print(f"Warning: no SWPA forecast: {e}")
 
-    report = generate_fishing_report(cfs, current_time, timeline_data, forecast_timeline)
+    water_quality = None
+    if args.cfs is None:
+        try:
+            from water_quality import get_water_quality
+            water_quality = get_water_quality(current_time)
+        except Exception as e:
+            print(f"Warning: no USGS water quality: {e}")
+
+    report = generate_fishing_report(cfs, current_time, timeline_data, forecast_timeline,
+                                     water_quality=water_quality)
     section = render_fishing_report_html(report)
     # The standalone page exists to read the report — render it expanded
     section = section.replace('<details class="timeline-box">',

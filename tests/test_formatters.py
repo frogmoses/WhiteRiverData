@@ -698,3 +698,46 @@ class TestFeedFailedBanner:
             **self._summary_kwargs(base_time), feed_failed=True, stale_hours=5.0)
         assert "Live dam feed unavailable" in text
         assert "5.0 hours old" in text
+
+
+class TestWaterQualityBlock:
+    WQ = {"site": "07054527", "site_label": "USGS gauge at Cane Island",
+          "temp_c": 14.6, "temp_f": 58.3, "do_mg_l": 4.5,
+          "observed": None, "age_hours": 0.5, "do_status": "low", "temp_status": "prime"}
+
+    def _html(self, base_time, normal_conditions_data, wq):
+        return generate_html_summary(
+            current_time=base_time, white_hole_cfs=750, generators_equivalent=0.2,
+            water_state="stable", wading_condition="excellent wading",
+            boating_condition="low for boating", recent_trend="steady",
+            forecast="stable conditions expected",
+            latest_entry=normal_conditions_data[0], relevant_entry=normal_conditions_data[0],
+            recent_data=normal_conditions_data, timeline_data=[], water_quality=wq)
+
+    def test_pills_and_source(self, base_time, normal_conditions_data):
+        wq = dict(self.WQ, observed=base_time - timedelta(minutes=30))
+        html = self._html(base_time, normal_conditions_data, wq)
+        assert "Water 58.3°F" in html and "Oxygen 4.5 mg/L" in html
+        assert "LOW" in html
+        assert "USGS-07054527" in html
+        assert "as of" in html and "h old" not in html
+
+    def test_stale_reading_shows_age(self, base_time, normal_conditions_data):
+        wq = dict(self.WQ, observed=base_time - timedelta(hours=5), age_hours=5.0)
+        html = self._html(base_time, normal_conditions_data, wq)
+        assert "reading is 5.0 h old" in html
+
+    def test_absent_without_reading(self, base_time, normal_conditions_data):
+        html = self._html(base_time, normal_conditions_data, None)
+        assert "Tailwater" not in html
+
+    def test_text_summary_carries_lines(self, base_time, normal_conditions_data):
+        wq = dict(self.WQ, observed=base_time)
+        text = generate_text_summary(
+            current_time=base_time, white_hole_cfs=750, generators_equivalent=0.2,
+            water_state="stable", wading_condition="excellent wading",
+            boating_condition="low for boating", recent_trend="steady",
+            forecast="stable conditions expected",
+            latest_entry=normal_conditions_data[0], relevant_entry=normal_conditions_data[0],
+            water_quality=wq)
+        assert "Water 58.3°F" in text and "Oxygen 4.5 mg/L" in text
