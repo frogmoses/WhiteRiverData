@@ -338,6 +338,7 @@ class TestRiggingReference:
 
     EXPECTED_TITLES = [
         "Building the White River rig (spin)",
+        "The split-shot rig (spin)",
         "Bait prep (spin)",
         "Boat strategy — tie, drift, or anchor",
         "Presentations from a tied boat (spin)",
@@ -769,3 +770,12 @@ class TestRigDiagram:
         assert "<svg" in rig and "2 mm tippet ring" in rig and "12 / 24 / 36 in" in rig
         assert "20 / 32 / 44 in" in rig
         assert "cartridge-class line" in rig
+
+    def test_split_shot_rig_has_its_own_drawing(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        rig = html.split("The split-shot rig (spin)", 1)[1].split("</details>", 1)[0]
+        assert "<svg" in rig and "split shot ~12 in above the hook" in rig
+        assert "#1 drop-shot hook" in rig and "8 lb fluoro" in rig
+        # the livebait exception moved out of the Y block
+        wr = html.split("Building the White River rig (spin)", 1)[1].split("</details>", 1)[0]
+        assert "livebait drift exception" not in wr

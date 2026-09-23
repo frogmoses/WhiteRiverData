@@ -630,6 +630,54 @@ SPIN_RIG_SVG = '''
 </p>'''
 
 
+# The split-shot drift rig — the livebait exception to the Y. Same drawing
+# conventions as SPIN_RIG_SVG: ink for line and hook, orange for the one
+# thing that makes this rig what it is (the pinched shot), literal colours.
+SPLIT_SHOT_RIG_SVG = '''
+<svg viewBox="0 0 420 316" role="img" aria-labelledby="ssrigttl"
+     style="width:100%;max-width:430px;height:auto;display:block;margin:10px auto 0;">
+  <title id="ssrigttl">The split-shot drift rig: main line to a small swivel or tied direct, then a
+  single 8 lb fluorocarbon leader running straight to a number 1 drop-shot hook, with one or two
+  split shot pinched about a foot above the hook; a sculpin hooked through the lips swims at the
+  opening between two boulders on the bottom</title>
+  <g fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round">
+    <path d="M60 10 L60 44"/>
+    <ellipse cx="60" cy="52" rx="5" ry="8" stroke-width="1.4"/>
+    <path d="M60 60 C 90 120, 150 170, 214 196"/>
+    <path d="M222 199 C 262 214, 296 226, 318 236"/>
+  </g>
+  <g fill="#c05621" stroke="none">
+    <circle cx="218" cy="197" r="6.5"/>
+    <circle cx="207" cy="192" r="6.5" opacity=".45"/>
+  </g>
+  <path d="M0 262 C 60 256, 120 268, 180 260 S 300 268, 420 258"
+        fill="none" stroke="#cbd5e0" stroke-width="2.5"/>
+  <g fill="#cbd5e0" stroke="none" opacity=".85">
+    <ellipse cx="290" cy="262" rx="30" ry="18"/>
+    <ellipse cx="368" cy="264" rx="34" ry="20"/>
+    <circle cx="90" cy="270" r="9"/>
+  </g>
+  <path d="M318 236 l0 12 a9 9 0 1 0 -13 -6"
+        fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M312 242 c -14 -4, -24 4, -30 6 c 8 4, 20 8, 32 2 z" fill="#2b6cb0" stroke="none"/>
+  <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" fill="#718096">
+    <text x="74" y="28">main line, as spooled</text>
+    <text x="74" y="56">size 10 swivel — or tie direct</text>
+    <text x="118" y="112" fill="#2b6cb0">leader 8 lb fluoro, 30–40 in</text>
+    <text x="118" y="126" fill="#2b6cb0">no Y, no bell — straight to the hook</text>
+    <text x="412" y="168" text-anchor="end" fill="#c05621">split shot ~12 in above the hook</text>
+    <text x="412" y="182" text-anchor="end" fill="#c05621">stack a second as the push demands</text>
+    <text x="8" y="292">#1 drop-shot hook · sculpin through the lips</text>
+    <text x="412" y="308" text-anchor="end">swims at the opening between the rocks</text>
+  </g>
+</svg>
+<p style="font-size: 0.82em; color: #718096; text-align: center; margin: 8px auto 4px; max-width: 430px; line-height: 1.5;">
+  The livebait exception: no dropper loop and no bell, so nothing hangs below the bait to plant in
+  the rock. A pinched shot rides over what a bell snags in, and the sculpin swims where a brown
+  expects to see one. This is browns-program tackle, so it never goes out on the 4&nbsp;lb spool.
+</p>'''
+
+
 RIGGING_REFERENCE = [
     {
         "title": "Building the White River rig (spin)",
@@ -648,7 +696,19 @@ RIGGING_REFERENCE = [
             "Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. Improved clinch at the ring on both sides — a Palomar won't thread a 2 mm ring with a 3 ft leader",
             "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7 · 3–5 units #6 · heavy #4 — then adjust one size by the calibration rule",
             "Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
-            "The livebait drift exception (sculpin, minnows) — skip the Y entirely: leader straight to the hook, split shot pinched ~a foot up (stack shot as the current demands). A pinched shot rides over what a hanging bell snags in, and the bait swims naturally",
+        ],
+    },
+    {
+        "title": "The split-shot rig (spin)",
+        "intro": "The livebait drift exception — sculpin and minnows skip the Y entirely. "
+                 "One straight leader, a pinched shot, and the bait swimming free.",
+        "figure": SPLIT_SHOT_RIG_SVG,
+        "items": [
+            "Leader straight from the swivel (or tied direct) to a #1 drop-shot hook — no dropper loop, no bell. This rig fishes the browns program's baits, so the leader is the 8 lb fluoro spool",
+            "Pinch one split shot about a foot above the hook; stack a second or third as the current demands. Calibrate like the Y: it should tick bottom on the swing and slip when the tip lifts, never plant",
+            "A pinched shot rides over what a hanging bell snags in, and the bait swims naturally — the whole reason this rig exists",
+            "Sculpin: hooked through the lips, presented at the openings around the base of big rocks — where they live and where a brown expects to see one. Legal to catch your own (Bait prep below)",
+            "Minnows, from 1 unit up: 3 in, hooked through both lips, cast quartering upstream and drifted naturally past structure and drop-offs, feeding line to stretch the drift — drift speed is the whole game; at 3–5 units stack shot to match the push and work the bank lane",
         ],
     },
     {
