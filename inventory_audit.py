@@ -71,12 +71,13 @@ OWNED_GEAR = [
     ("2 mm tippet rings", r"tippet ring", r"2 mm tippet rings ×\d"),
     ("#16 orthodontic rubber bands", r"rubber band", r"orthodontic elastics"),
     ("worm blower", r"worm blower", r"Magic 1004 Worm Blower"),
+    ("Z-Man TRD CrawZ (the soft craw)", r"soft craw|TRD CrawZ", r"TRD CrawZ 2\.5\" Mudbug"),
 ]
 
 # Named by the report as things to buy or verify — must NOT be presented as owned
 BUY_OR_VERIFY = [
     r"dip net", r"VersiLeader|polyleader",
-    r"soft craw", r"8 lb fluorocarbon \(~\$", r"4 lb clear/green mono",
+    r"8 lb fluorocarbon \(~\$", r"4 lb clear/green mono",
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory section)
@@ -99,7 +100,7 @@ GEAR_TOKENS = re.compile(
     r"Trout Magnet|Zoom|Smithwick|Recon|5-wt|VersiLeader|polyleader|Airlock|Thingamabobber|"
     r"tippet ring|worm blower|dip net|20 lb fluoro|30 lb fluoro|suspending perch|"
     r"Woolly Bugger|Girdle Bug|Sunday Special|Zebra|Ruby Midge|San Juan|Soft Hackle|"
-    r"Elk Hair|indicator|soft craw|2 in white grub|orange bead|rig bead|rubber band"
+    r"Elk Hair|indicator|soft craw|TRD CrawZ|2 in white grub|orange bead|rig bead|rubber band"
 )
 
 PRUNED_MARKER = re.compile(r"\*\*Pruned", re.I)

@@ -457,7 +457,7 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: half a green-pumpkin Senko on the 1/10 oz Ned head (tied direct), or a soft craw plastic if bought (see gear check — not owned)",
+                "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: the Z-Man TRD CrawZ 2.5 in Mudbug on the 1/10 oz Ned head, tied direct (both bought 2026-09-28 for this presentation), with half a green-pumpkin Senko on the same head as the fallback",
             ],
             "rainbows": [
                 "Orange scented-garlic PowerBait is the named fall color",
@@ -474,7 +474,7 @@ SEASON_CONTENT = {
         "gear_add": {
             "spin": [
                 "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
-                "Optional: a bag of soft craw/hellgrammite plastics (~$5, not owned) to upgrade the Ned-head crawdad presentation",
+                "The soft craw upgrade is bought, not optional any more: Z-Man TRD CrawZ 2.5 in Mudbug x12 plus tungsten 1/10 oz mushroom heads x5 (2026-09-28) — pack both for the Ned-head crawdad presentation",
             ],
             "fly": [
                 "A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor",
