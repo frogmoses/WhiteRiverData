@@ -474,7 +474,7 @@ SEASON_CONTENT = {
         "gear_add": {
             "spin": [
                 "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
-                "Optional: a bag of soft craw/hellgrammite plastics (~$5, not owned) to upgrade the Ned-head crawdad presentation",
+                "Optional: a bag of soft craw/hellgrammite plastics in the 2–2.75 in finesse size (~$5, not owned) to upgrade the Ned-head crawdad presentation — match the half-Senko profile the 1/10 oz Ned head already carries; a 3.5 in flipping craw overpowers a light Ned head, slows the fall and kills the action the rig runs on",
             ],
             "fly": [
                 "A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor",
