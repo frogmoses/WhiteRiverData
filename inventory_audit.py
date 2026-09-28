@@ -88,6 +88,9 @@ OWNED_GEAR = [
 # wolf; the note on a row says which near-miss it is deliberately not matching.
 BUY_OR_VERIFY = [
     ("hand dip net", r"dip net", r"dip net"),
+    # decided 2026-09-28: the Cherrywood stops travelling and a rod matching its
+    # blank is bought for Dad's. Owned when the rack grows an AR row for it.
+    ("resident browns rod at Dad's", r"browns rod", r"AR \|[^|]*medium spinning"),
     # fly gear is uninventoried by Brian's standing decision — nothing to find
     ("fast-sinking VersiLeader/polyleader", r"VersiLeader|polyleader", None),
     # NOT matched on purpose: the shelf's 8 lb P-Line Floroclear is fluoro-COATED
@@ -119,6 +122,7 @@ GEAR_TOKENS = re.compile(
     r"swivel|bell sinker|oz bell|bank sinker|egg sinker|split shot|rubber-core|Cherrywood|"
     r"Black Max|Presso|St\. Croix|Exceler|President|XPS|Phoebe|Dardevle|Spinnie|Thomas|"
     r"Trout Magnet|Zoom|Smithwick|Recon|5-wt|VersiLeader|polyleader|Airlock|Thingamabobber|"
+    r"browns rod|"
     r"tippet ring|worm blower|dip net|20 lb fluoro|30 lb fluoro|suspending perch|"
     r"Woolly Bugger|Girdle Bug|Sunday Special|Zebra|Ruby Midge|San Juan|Soft Hackle|"
     r"Elk Hair|indicator|soft craw|TRD CrawZ|Maxima|Chameleon|2 in white grub|orange bead|rig bead|rubber band"
