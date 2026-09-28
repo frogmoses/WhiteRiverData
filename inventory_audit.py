@@ -67,12 +67,16 @@ OWNED_GEAR = [
     ("rig beads", r"orange bead|rig bead", r"rig beads"),
     ("20 lb fluoro (butt / universal leader)", r"20 lb fluoro", r"20-lb fluoro universal"),
     ("30 lb fluoro (bite leader)", r"30 lb fluoro", r"30-lb fluoro bite"),
+    # bought 2026-09-28 — all three came off the buy list below
+    ("2 mm tippet rings", r"tippet ring", r"2 mm tippet rings ×\d"),
+    ("#16 orthodontic rubber bands", r"rubber band", r"orthodontic elastics"),
+    ("worm blower", r"worm blower", r"Magic 1004 Worm Blower"),
 ]
 
 # Named by the report as things to buy or verify — must NOT be presented as owned
 BUY_OR_VERIFY = [
-    r"tippet ring", r"worm blower", r"dip net", r"VersiLeader|polyleader",
-    r"soft craw", r"8 lb fluorocarbon \(~\$", r"4 lb clear/green mono", r"rubber band",
+    r"dip net", r"VersiLeader|polyleader",
+    r"soft craw", r"8 lb fluorocarbon \(~\$", r"4 lb clear/green mono",
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory section)
