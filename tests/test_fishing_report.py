@@ -368,7 +368,8 @@ class TestRiggingReference:
         rig = next(s for s in report["rigging"]
                    if s["title"].startswith("Building"))
         text = " ".join(rig["items"])
-        assert "dropper loop" in text
+        assert "surgeon's loop" in text
+        assert "nothing is cut" in text
         assert "#10 = 1/8 oz" in text
 
     def test_spin_fly_blocks_stay_separate(self):
