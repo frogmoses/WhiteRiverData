@@ -532,7 +532,7 @@ REGULATIONS = [
 GEAR_CHECK = {
     "spin": [
         "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the cartridge-tying material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
-        "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
+        "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — Brian's call 2026-09-28, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the cartridge wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
         "2 mm tippet rings — OWNED, a 50-pack (2026-09-28), so the cartridge rig is buildable. What is left is an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
         "Marabou jigs: the inventory records their hooks as failed inspection (2026-08-28) — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
