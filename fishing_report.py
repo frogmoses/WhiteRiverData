@@ -531,7 +531,7 @@ REGULATIONS = [
 # each season appends its own gear_add items in generate_fishing_report
 GEAR_CHECK = {
     "spin": [
-        "Rainbow program leader: 4 lb clear/green mono (~$4) — the owned 20/30 lb fluoro is rope in this water",
+        "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the cartridge-tying material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
         "Brown program leader: a spool of 8 lb fluorocarbon (~$8) — 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
         "2 mm tippet rings — OWNED, a 50-pack (2026-09-28), so the cartridge rig is buildable. What is left is an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",

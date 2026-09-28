@@ -22,8 +22,8 @@ class TestRegistry:
 
     def test_buy_items_are_not_registered_as_owned(self):
         text = report_text()
-        for pat in BUY_OR_VERIFY:
-            assert re.search(pat, text), f"buy/verify pattern {pat!r} no longer in the report"
+        for label, pat, _ in BUY_OR_VERIFY:
+            assert re.search(pat, text), f"buy/verify pattern {pat!r} no longer in the report ({label})"
             assert not any(re.search(m, pat) for _, m, _ in OWNED_GEAR)
 
     def test_no_pruned_names_in_the_report(self):
@@ -56,6 +56,29 @@ class TestInventoryLogic:
                             [("unicorn", r"unicorn", r"unicorn")])
         findings = inventory_findings(self.SAMPLE)
         assert findings and findings[0].startswith("missing:")
+
+    def test_buy_item_the_inventory_now_carries_is_flagged(self, monkeypatch):
+        """The reverse drift: the report still says buy, the shelf says owned.
+        This is what went unnoticed on 2026-09-28 until someone read both."""
+        monkeypatch.setattr(inventory_audit, "OWNED_GEAR", [])
+        monkeypatch.setattr(inventory_audit, "BUY_OR_VERIFY",
+                            [("a Kastmaster", r"Kastmaster", r"Kastmaster ×\d")])
+        findings = inventory_findings(self.SAMPLE)
+        assert findings and findings[0].startswith("bought:")
+
+    def test_buy_item_still_unbought_is_silent(self, monkeypatch):
+        monkeypatch.setattr(inventory_audit, "OWNED_GEAR", [])
+        monkeypatch.setattr(inventory_audit, "BUY_OR_VERIFY",
+                            [("a dip net", r"dip net", r"dip net"),
+                             ("uninventoried fly line", r"polyleader", None)])
+        assert inventory_findings(self.SAMPLE) == []
+
+    def test_bought_check_ignores_pruned_rows(self, monkeypatch):
+        """A buy item that matches only a pruned paragraph is still unbought."""
+        monkeypatch.setattr(inventory_audit, "OWNED_GEAR", [])
+        monkeypatch.setattr(inventory_audit, "BUY_OR_VERIFY",
+                            [("the XPS spoon", r"XPS", r"XPS")])
+        assert inventory_findings(self.SAMPLE) == []
 
     def test_failed_inspection_requires_gear_check_mention(self, monkeypatch):
         monkeypatch.setattr(inventory_audit, "OWNED_GEAR",

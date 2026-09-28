@@ -180,12 +180,17 @@ appended to the bottom of the page. Design rules:
   the inventory file manually; never edit it from here. Fresh bait is bought in Arkansas.
 - **The drift test (2026-09-21)**: `inventory_audit.py` holds three registries —
   `OWNED_GEAR` (label, how the report mentions it, how its inventory row reads),
-  `BUY_OR_VERIFY` (named as not owned) and `UNINVENTORIED` (fly gear) — and `GEAR_TOKENS`,
-  the brand/hardware words that count as gear. `tests/test_gear_inventory.py` fails when the
-  report names gear no registry covers, when a registered item is no longer mentioned, or —
-  only where the inventory file exists (this workstation; skipped on the Pi and in CI) —
-  when an owned item has no live row, matches only a "Pruned on repack day" paragraph, or
-  its row says "failed inspection" without the gear check saying so.
+  `BUY_OR_VERIFY` (named as not owned, each with the inventory row that would mean it HAS
+  been bought — None for uninventoried categories) and `UNINVENTORIED` (fly gear) — and
+  `GEAR_TOKENS`, the brand/hardware words that count as gear. `tests/test_gear_inventory.py`
+  fails when the report names gear no registry covers, when a registered item is no longer
+  mentioned, or — only where the inventory file exists (this workstation; skipped on the Pi
+  and in CI) — when an owned item has no live row, matches only a "Pruned on repack day"
+  paragraph, its row says "failed inspection" without the gear check saying so, or **a buy
+  item now has a live inventory row** (the drift that runs the other way: the report still
+  says buy it, the shelf says owned. Added 2026-09-28 after four items flipped unnoticed;
+  it found a fifth on its first run, the rainbow cartridge mono). Keep a buy item's row
+  pattern tight — a loose one matches a near-miss on the shelf and cries wolf.
   `scripts/audit_gear_inventory.py` runs the same audit from the shell (exit 1 on drift) for
   the Croton side. **Naming new gear in the report means registering it in the same
   commit.** The first run caught four drifts from the 2026-08-28 repack (pruned XPS ⅜ oz and

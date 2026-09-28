@@ -13,7 +13,10 @@ script the Croton side can run after an inventory edit.
 Three registries below:
   OWNED_GEAR      — what the report names as owned: how the report says it
                     (`mention`) and how to find its inventory row (`row`)
-  BUY_OR_VERIFY   — named by the report as NOT owned (gear-check buy items)
+  BUY_OR_VERIFY   — named by the report as NOT owned (gear-check buy items),
+                    each with the inventory row that would mean it HAS been
+                    bought (None where the category is uninventoried by
+                    decision, so there is nothing to look for)
   UNINVENTORIED   — fly gear, which Brian keeps out of the inventory for now
 
 `audit()` returns a list of findings; an empty list is a clean audit.
@@ -72,12 +75,27 @@ OWNED_GEAR = [
     ("#16 orthodontic rubber bands", r"rubber band", r"orthodontic elastics"),
     ("worm blower", r"worm blower", r"Magic 1004 Worm Blower"),
     ("Z-Man TRD CrawZ (the soft craw)", r"soft craw|TRD CrawZ", r"TRD CrawZ 2\.5\" Mudbug"),
+    # found by the 'bought' check on its first run, 2026-09-28: the rainbow
+    # cartridge tier was on the buy list while the shelf held it three ways
+    ("Maxima Chameleon 4 lb (rainbow cartridges)", r"Maxima|Chameleon", r"Chameleon 4 lb"),
 ]
 
-# Named by the report as things to buy or verify — must NOT be presented as owned
+# Named by the report as things to buy or verify — must NOT be presented as
+# owned. Third field: what the row would look like once it IS bought, so the
+# audit notices a buy item the inventory has quietly taken delivery of (that
+# is how the 2026-09-28 purchase went unnoticed until someone read both files).
+# Keep these TIGHT — a loose pattern matches a near-miss on the shelf and cries
+# wolf; the note on a row says which near-miss it is deliberately not matching.
 BUY_OR_VERIFY = [
-    r"dip net", r"VersiLeader|polyleader",
-    r"8 lb fluorocarbon \(~\$", r"4 lb clear/green mono",
+    ("hand dip net", r"dip net", r"dip net"),
+    # fly gear is uninventoried by Brian's standing decision — nothing to find
+    ("fast-sinking VersiLeader/polyleader", r"VersiLeader|polyleader", None),
+    # NOT matched on purpose: the shelf's 8 lb P-Line Floroclear is fluoro-COATED
+    # copolymer (the Croton drop-shot leader spool), and the Maxima 8 lb wheels
+    # are mono. The browns cartridge spec is 100% fluorocarbon, which the shelf
+    # carries only at 15 lb. Widen this if the doctrine ever accepts the coating.
+    ("8 lb fluorocarbon spool (browns cartridges)", r"8 lb fluorocarbon \(~\$",
+     r"100% fluorocarbon[^|]*\| \*\*8 lb\*\*"),
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory section)
@@ -100,7 +118,7 @@ GEAR_TOKENS = re.compile(
     r"Trout Magnet|Zoom|Smithwick|Recon|5-wt|VersiLeader|polyleader|Airlock|Thingamabobber|"
     r"tippet ring|worm blower|dip net|20 lb fluoro|30 lb fluoro|suspending perch|"
     r"Woolly Bugger|Girdle Bug|Sunday Special|Zebra|Ruby Midge|San Juan|Soft Hackle|"
-    r"Elk Hair|indicator|soft craw|TRD CrawZ|2 in white grub|orange bead|rig bead|rubber band"
+    r"Elk Hair|indicator|soft craw|TRD CrawZ|Maxima|Chameleon|2 in white grub|orange bead|rig bead|rubber band"
 )
 
 PRUNED_MARKER = re.compile(r"\*\*Pruned", re.I)
@@ -155,7 +173,7 @@ def registry_findings(text=None):
     for label, mention, _ in OWNED_GEAR:
         if not re.search(mention, text):
             findings.append(f"registry: '{label}' is registered as owned but the report no longer mentions it")
-    covered = ([m for _, m, _ in OWNED_GEAR] + BUY_OR_VERIFY + UNINVENTORIED)
+    covered = ([m for _, m, _ in OWNED_GEAR] + [m for _, m, _ in BUY_OR_VERIFY] + UNINVENTORIED)
     for token in sorted(set(GEAR_TOKENS.findall(text))):
         if not any(re.search(pat, token) for pat in covered):
             findings.append(f"unregistered: the report names '{token}' but no registry covers it "
@@ -188,6 +206,15 @@ def inventory_findings(inventory_text, text=None):
         if any(FAILED_MARKER.search(line) for line in hit_lines) and not re.search(mention, gear_check):
             findings.append(f"inspect: the inventory says '{label}' failed hook inspection; "
                             "the gear check must say so")
+    # The reverse drift: the report is still telling Brian to buy something the
+    # inventory now carries. Cheaper to catch here than by reading both files.
+    for label, _, row in BUY_OR_VERIFY:
+        if row is None:
+            continue
+        if any(re.search(row, p) for p in live):
+            findings.append(f"bought: '{label}' is on the report's buy/verify list, but the "
+                            "inventory carries a live row for it — move it to OWNED_GEAR and "
+                            "reword the gear check")
     return findings
 
 

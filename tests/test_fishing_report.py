@@ -595,10 +595,12 @@ class TestGearDoctrine:
     def test_not_owned_items_flagged(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
         spin = " ".join(gear["spin"])
-        # The worm blower, the tippet rings and the rubber bands were bought
-        # 2026-09-28 and now say OWNED; the leader spools are still the buy list
+        # The worm blower, the tippet rings, the rubber bands and the soft craw
+        # were bought 2026-09-28, and the rainbow leader turned out to be owned
+        # all along; all five now say OWNED. The browns fluoro spool is what is
+        # left of the spin buy list
         assert "Worm blower" in spin and "OWNED" in spin
-        assert "4 lb clear/green mono (~$4)" in spin
+        assert "8 lb fluorocarbon (~$8)" in spin
         assert "staged at Dad's" in spin
         fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
         assert "soft craw" in fall_spin.lower()
