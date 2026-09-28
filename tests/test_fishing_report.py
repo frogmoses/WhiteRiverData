@@ -603,13 +603,14 @@ class TestGearDoctrine:
         fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
         assert "soft craw" in fall_spin.lower()
 
-    def test_soft_craw_not_presented_as_owned(self):
-        """Brian doesn't own soft craw plastics — the fall crawdad bullet
-        must lead with the owned option (half Senko on the Ned head)."""
+    def test_soft_craw_leads_the_crawdad_bullet(self):
+        """The soft craw was bought 2026-09-28, so the fall crawdad bullet
+        leads with it and keeps the half Senko as the fallback."""
         fall = generate_fishing_report(750, OCTOBER)
         craw = [item for item in fall["spin"]["browns"] if "crawdad" in item.lower()]
-        assert craw and "green-pumpkin Senko" in craw[0]
-        assert "not owned" in craw[0]
+        assert craw and "TRD CrawZ" in craw[0]
+        assert "green-pumpkin Senko" in craw[0]
+        assert "not owned" not in craw[0]
 
     def test_fly_gear_marked_unverified(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
