@@ -93,7 +93,10 @@ BUY_OR_VERIFY = [
     # NOT matched on purpose: the shelf's 8 lb P-Line Floroclear is fluoro-COATED
     # copolymer (the Croton drop-shot leader spool), and the Maxima 8 lb wheels
     # are mono. The browns cartridge spec is 100% fluorocarbon, which the shelf
-    # carries only at 15 lb. Widen this if the doctrine ever accepts the coating.
+    # carries only at 15 lb. Brian was asked whether the coating should count and
+    # said no, keep the spec (2026-09-28) — so this stays tight and the item stays
+    # on the buy list until a real 8 lb fluorocarbon spool has a row. Settled;
+    # don't re-open it from the fact that an 8 lb fluoro-ish line is owned.
     ("8 lb fluorocarbon spool (browns cartridges)", r"8 lb fluorocarbon \(~\$",
      r"100% fluorocarbon[^|]*\| \*\*8 lb\*\*"),
 ]
