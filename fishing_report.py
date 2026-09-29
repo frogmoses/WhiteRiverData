@@ -574,19 +574,18 @@ GEAR_CHECK = {
 SPIN_RIG_SVG = '''
 <svg viewBox="0 0 420 356" role="img" aria-labelledby="rigttl"
      style="width:100%;max-width:430px;height:auto;display:block;margin:10px auto 0;">
-  <title id="rigttl">The White River rig as His Place Resort ties it, with the tippet-ring
-  cartridge system: one uncut 8 lb fluorocarbon strand with a surgeon's loop tied in the middle
-  that the main line clinches to, a short 7 inch leg to the bell sinker on one side, and an 8 inch
-  stub ending in a 2 mm tippet ring on the other, with a swappable pre-tied cartridge clinched to
-  that ring running down to the hook, where the bait rides up off the bottom</title>
+  <title id="rigttl">The White River rig built as the tippet-ring cartridge system: main line to a
+  barrel swivel, then a permanent 8 lb fluorocarbon base carrying a 12 inch butt and a dropper loop
+  that splits into a short sinker leg with a bell sinker and an 8 inch stub ending in a 2 mm tippet
+  ring; a swappable pre-tied cartridge clinches to that ring and runs down to the hook, where the
+  bait rides up off the bottom</title>
   <g fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round">
-    <path d="M100 4 L100 30"/>
-    <circle cx="100" cy="36" r="5" stroke-width="1.4"/>
-    <path d="M100 36 C 78 54, 78 86, 100 100"/>
-    <path d="M100 36 C 122 54, 122 86, 100 100"/>
-    <circle cx="100" cy="105" r="6" stroke-width="1.4"/>
-    <path d="M96 111 L83 246"/>
-    <path d="M105 111 C 128 132, 152 152, 176 164"/>
+    <path d="M100 10 L100 44"/>
+    <ellipse cx="100" cy="52" rx="5" ry="8" stroke-width="1.4"/>
+    <path d="M100 60 L100 88"/>
+    <circle cx="100" cy="95" r="6" stroke-width="1.4"/>
+    <path d="M97 101 L83 246"/>
+    <path d="M104 101 C 128 126, 152 148, 176 163"/>
   </g>
   <path d="M83 246 l-11 30 h22 z" fill="#4a5568" stroke="none"/>
   <g fill="none" stroke="#2d3748">
@@ -605,11 +604,12 @@ SPIN_RIG_SVG = '''
         fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
   <circle cx="323" cy="248" r="9" fill="#2b6cb0" stroke="none"/>
   <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" fill="#718096">
-    <text x="132" y="20">main line, as spooled</text>
-    <text x="132" y="42">clinch it to the loop</text>
-    <text x="132" y="78">surgeon's loop, left whole</text>
-    <text x="2" y="180" fill="#2b6cb0">7 in</text>
-    <text x="2" y="232">bell #10&#8211;#4</text>
+    <text x="114" y="28">main line, as spooled</text>
+    <text x="114" y="56">size 10 barrel swivel</text>
+    <text x="114" y="80" fill="#2b6cb0">12 in butt</text>
+    <text x="114" y="99">dropper loop</text>
+    <text x="2" y="180" fill="#2b6cb0">6–10 in</text>
+    <text x="2" y="232">bell #10–#4</text>
     <text x="142" y="126" fill="#2b6cb0">8 in stub</text>
     <text x="196" y="160">2 mm tippet ring</text>
     <text x="112" y="252" fill="#c05621">cartridge  12 / 24 / 36 in</text>
@@ -618,15 +618,15 @@ SPIN_RIG_SVG = '''
   </g>
   <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#718096">
     <path d="M8 314 l22 0" fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
-    <text x="38" y="318">permanent base &#183; 8 lb fluoro &#183; stays on the rod</text>
+    <text x="38" y="318">permanent base · 8 lb fluoro · stays on the rod</text>
     <path d="M8 338 l22 0" fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round"/>
-    <text x="38" y="342">cartridge &#183; clinched on &#183; 4 lb rainbows, 8 lb browns</text>
+    <text x="38" y="342">cartridge · clinched on · 4 lb rainbows, 8 lb browns</text>
   </g>
 </svg>
 <p style="font-size: 0.82em; color: #718096; text-align: center; margin: 8px auto 4px; max-width: 430px; line-height: 1.5;">
-  One strand, nothing cut. The main line clinches to the loop, so a fish pulls through unbroken
-  leader to the hook and the bell hangs on the short branch. A snag costs the cartridge and never
-  the base, the ring or the bell.
+  The base never comes off the rod. A hook snag costs the cartridge and never the base, the ring or
+  the bell, which is why a 4&nbsp;lb rainbow cartridge hangs under an 8&nbsp;lb base. The base sits
+  more than 20&nbsp;in above the bait, so the fish only ever inspects cartridge-class line.
 </p>'''
 
 
@@ -680,22 +680,18 @@ SPLIT_SHOT_RIG_SVG = '''
 
 RIGGING_REFERENCE = [
     {
-        "title": "Building the White River rig (spin)",
-        "intro": "Not a Carolina rig and not a true three-way — one uncut piece of leader "
-                 "with a loop tied in the middle for the main line, hanging as a short "
-                 "weight leg and a long hook leg (the \"Y\"). Tied as His Place does it.",
+        "title": "The White River rig (spin)",
+        "intro": "The tippet-ring cartridge system: a permanent base that stays on the "
+                 "rod, and a swappable pre-tied hook leader — the cartridge — clinched to "
+                 "the ring. The diagram is the rig. What follows is how to size it, tune "
+                 "it and fish it, not how to tie it.",
         "figure": SPIN_RIG_SVG,
         "items": [
-            "Start with 30 in of leader — His Place's own spec, and since nothing is cut it is the finished rig. 4 lb for the rainbow program, 8 lb for browns (His Place ties their shop version lighter still, in low-vis green)",
-            "Bell on one end, hook on the other, both on a six-turn improved clinch: six wraps up the standing line, the tag back through the small loop at the eye, then back through the loop you just made. Wet it before you seat it — a dry knot in mono is what lets go on a big fish",
-            "Then tie a surgeon's loop in the standing line 7 in from the bell end: form a small loop, pass it through itself twice, wet and seat. It stays whole — nothing is cut, and there is no tag. The rig now hangs as a Y: a 7 in weighted leg and a ~22 in hook leg",
-            "Your main line clinches straight to that loop — no swivel, which is how His Place rigs it. The load path is main line → loop → unbroken leader → hook, so the only knot a fish tests is the one joining you to the rig, and the bell sits out on the short branch",
-            "Tune the hook leg, not the weight leg: faster water → shorten to 18–24 in (a long leader lays flat); minimum flow → lengthen to 30–48 in. His Place says six to eight inches on the weight leg \"depending on the water\", but on a base you tie once and leave on the rod, pick 7 in and stop thinking about it. Snaggy bottom → the rubber-band breakaway below",
+            "Tune the hook leg, never the weight leg. The cartridge ladder does it without retying anything: a 12, 24 or 36 in cartridge gives a hook leg of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Faster water wants it shorter, because a long leader lays flat; minimum flow wants it long. Trim to tune, swap up when the water drops",
+            "The cartridge picks the species program — each program's 'Leader' spec applies to the cartridge, not the base: 4 lb mono = rainbows, 8 lb fluoro = browns. The base sits 20+ in above the bait, so the fish only inspects cartridge-class line, and a lighter cartridge under a heavier base is automatically sacrificial: a hook snag costs the cartridge, never the base, the ring or the bell",
             "The rubber-band breakaway, what it actually looks like: finish the bell end with a small overhand loop instead of clinching it to the bell. Girth-hitch a #16 orthodontic rubber band (the ¼ in dental elastic) through that loop, then pass the band's free end through the bell's eye and back over the bell — a second girth hitch. No knots in the band and nothing else holding the sinker; fishing, the band lies slack and the bell hangs as if tied. Hung up, point the rod at the snag and pull steadily: the band stretches, snaps, and the rig comes back whole minus one bell — hitch on a fresh band and bell and cast again. Check it on the tailgate before the first cast: pull the bell against the tied rig by hand and make sure the band lets go before anything else does; a band that out-pulls the 4 lb cartridge has defeated the point. Sized for the #10–#7 bells; a #6 or #4 bell for the 3+ unit bands stretches the band on the cast, so up there clinch the bell direct and accept that a bad hang costs the base",
-            "The tippet-ring upgrade — fixes the one-piece rig's can't-lengthen problem: tie a permanent 8 lb fluoro base — bell on a 7 in leg, surgeon's loop in the middle for the main line, then an 8 in stub ending in a 2 mm tippet ring instead of a hook, about 20 in of line all in and clinch pre-tied hook leaders ('cartridges') to the ring. Cartridge ladder: 12, 24 or 36 in for hook legs of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Trim to tune; swap up when the water drops",
-            "On the ring rig, the cartridge picks the species program — each program's 'Leader' spec applies to the cartridge: 4 lb mono = rainbows, 8 lb fluoro = browns. The 8 lb base sits 20+ in above the bait, so the fish inspects only cartridge-class line, and a 4 lb cartridge under the 8 lb base is automatically sacrificial: hook snags cost the cartridge, never the base, ring or bell",
-            "Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. Improved clinch at the ring on both sides — a Palomar won't thread a 2 mm ring with a 3 ft leader",
-            "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7 · 3–5 units #6 · heavy #4 — then adjust one size by the calibration rule",
+            "Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. An evening's work that turns a mid-drift re-rig into a ten-second swap",
+            "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7–#6 · 4+ units #6–#4. Calibrate on the water: it should tick bottom on the swing and slip when the tip lifts, never plant",
             "Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
         ],
     },
