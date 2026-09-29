@@ -337,7 +337,7 @@ class TestRiggingReference:
     """Static rigging/techniques reference after the gear check."""
 
     EXPECTED_TITLES = [
-        "Building the White River rig (spin)",
+        "The White River rig (spin)",
         "The split-shot rig (spin)",
         "Bait prep (spin)",
         "Boat strategy — tie, drift, or anchor",
@@ -363,14 +363,28 @@ class TestRiggingReference:
         for title in self.EXPECTED_TITLES:
             assert title in html
 
-    def test_rig_build_content(self):
+    def test_rig_reference_content(self):
+        """The rig block is the diagram plus how to SIZE, tune and fish the rig.
+        Brian's call 2026-09-29: the tying steps came out — the drawing shows
+        the construction and prose describing it only drifted from the picture."""
         report = generate_fishing_report(750, OCTOBER)
         rig = next(s for s in report["rigging"]
-                   if s["title"].startswith("Building"))
+                   if s["title"].startswith("The White River rig"))
         text = " ".join(rig["items"])
-        assert "surgeon's loop" in text
-        assert "nothing is cut" in text
         assert "#10 = 1/8 oz" in text
+        assert "Tune the hook leg" in text
+
+    def test_rig_block_carries_no_tying_steps(self):
+        """Guard on the 2026-09-29 decision. The rubber-band breakaway keeps its
+        girth-hitch — that is the band, not the rig — but no knot-by-knot build
+        comes back, and the rig prose names no outside shop."""
+        report = generate_fishing_report(750, OCTOBER)
+        rig = next(s for s in report["rigging"]
+                   if s["title"].startswith("The White River rig"))
+        text = " ".join([rig["intro"] or ""] + rig["items"])
+        for banned in ("surgeon's loop", "improved clinch", "six-turn",
+                       "nothing is cut", "His Place"):
+            assert banned not in text, banned
 
     def test_spin_fly_blocks_stay_separate(self):
         report = generate_fishing_report(750, OCTOBER)
@@ -567,15 +581,16 @@ class TestCartridgeRig:
     def test_cartridge_system_documented(self):
         report = generate_fishing_report(750, OCTOBER)
         rig = next(s for s in report["rigging"]
-                   if s["title"].startswith("Building"))
+                   if s["title"].startswith("The White River rig"))
         text = " ".join(rig["items"])
-        assert "tippet-ring upgrade" in text
-        assert "8 lb fluoro base" in text
-        # The ladder and its band mapping
+        # The ladder and its band mapping — the tuning knob, which survived the
+        # 2026-09-29 removal of the tying steps
         assert "12, 24 or 36 in" in text
         assert "20, 32 or 44 in" in text
         # Species selection moves to the cartridge
         assert "4 lb mono = rainbows, 8 lb fluoro = browns" in text
+        # and the sacrificial logic that makes the system worth having
+        assert "costs the cartridge" in text
 
     def test_rings_in_both_gear_lists(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
@@ -773,7 +788,7 @@ class TestBandPicker:
 class TestRigDiagram:
     def test_rig_reference_carries_the_drawing(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
-        rig = html.split("Building the White River rig (spin)", 1)[1].split("</details>", 1)[0]
+        rig = html.split("The White River rig (spin)", 1)[1].split("</details>", 1)[0]
         assert "<svg" in rig and "2 mm tippet ring" in rig and "12 / 24 / 36 in" in rig
         assert "20 / 32 / 44 in" in rig
         assert "cartridge-class line" in rig
@@ -784,5 +799,5 @@ class TestRigDiagram:
         assert "<svg" in rig and "split shot ~12 in above the hook" in rig
         assert "#1 drop-shot hook" in rig and "8 lb fluoro" in rig
         # the livebait exception moved out of the Y block
-        wr = html.split("Building the White River rig (spin)", 1)[1].split("</details>", 1)[0]
+        wr = html.split("The White River rig (spin)", 1)[1].split("</details>", 1)[0]
         assert "livebait drift exception" not in wr
