@@ -224,7 +224,7 @@ BAND_CONTENT = {
             "rainbows": [
                 "Leader: 4 lb mono — this is 'the lighter the better' water, and the fish won't test it",
                 "PowerBait pink or white floating worm / Mice Tail on the White River rig: floats ~a foot off bottom from a #4 light-wire Aberdeen (keep the hook leg mono — fluoro sinks and kills the lift)",
-                "Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (survive current far better than dough), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg",
+                "Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (they stay on the hook in current), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg",
                 "Float rig — the highest-leverage method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
                 "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges",
             ],
@@ -279,7 +279,7 @@ BAND_CONTENT = {
             ],
             "rainbows": [
                 "Leader: 4 lb mono",
-                "Crawler stubs, PowerBait, shrimp on the White River rig through the seams",
+                "Crawler stubs, Power Eggs or a Mice Tail, shrimp on the White River rig through the seams",
                 "1/4 oz spoons — Kastmaster chrome or blue/chrome, the gold Kastmaster or the gold Cleo. Gold in bright sun, silver under cloud",
                 "1/4 oz Rooster Tail (flame/chartreuse) or Mepps Aglia #3, quartering upstream, sink first, steady retrieve — the take comes on the swing (Black Fury #3 on dark days)",
                 "Float rig in the slower lanes, still effective to ~2 units",
@@ -460,7 +460,7 @@ SEASON_CONTENT = {
                 "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: the Z-Man TRD CrawZ 2.5 in Mudbug on the 1/10 oz Ned head, tied direct (both bought 2026-09-28 for this presentation), with half a green-pumpkin Senko on the same head as the fallback",
             ],
             "rainbows": [
-                "Orange scented-garlic PowerBait is the named fall color",
+                "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough (his call 2026-09-29)",
             ],
         },
         "fly_add": {
@@ -538,10 +538,10 @@ GEAR_CHECK = {
         "Marabou jigs: the inventory records their hooks as failed inspection (2026-08-28) — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
         "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics (2026-09-28) — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the cartridge does",
         "Quick weight changes (the river demands them): finish the rig's sinker leg with a small loop or cheap snap so bells swap without re-tying — skip rubber-core sinkers, they nick light mono and drop off",
-        "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for PowerBait)",
+        "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
         "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
         "Worm blower — OWNED (Magic 1004, 2026-09-28); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
-        "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, PowerBait (pink/white floating worms or Mice Tails; orange-garlic in fall), Power Eggs, cocktail shrimp, corn — plus mini marshmallows for flotation",
+        "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay (2026-09-29)",
         "Respool the AR rod pair (staged at Dad's) before fishing — the inventory's rod rack now carries their specs and a per-rod respool pick (recorded 2026-08-26; the spools stay unknown-test until the respool actually happens): the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main",
         "The browns rod stops travelling — Brian's call 2026-09-28. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the cartridge rule is unchanged, the main out-tests the 8 lb browns cartridge so break-offs happen at the cartridge. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
     ],
@@ -692,7 +692,7 @@ RIGGING_REFERENCE = [
             "The rubber-band breakaway, what it actually looks like: finish the bell end with a small overhand loop instead of clinching it to the bell. Girth-hitch a #16 orthodontic rubber band (the ¼ in dental elastic) through that loop, then pass the band's free end through the bell's eye and back over the bell — a second girth hitch. No knots in the band and nothing else holding the sinker; fishing, the band lies slack and the bell hangs as if tied. Hung up, point the rod at the snag and pull steadily: the band stretches, snaps, and the rig comes back whole minus one bell — hitch on a fresh band and bell and cast again. Check it on the tailgate before the first cast: pull the bell against the tied rig by hand and make sure the band lets go before anything else does; a band that out-pulls the 4 lb cartridge has defeated the point. Sized for the #10–#7 bells; a #6 or #4 bell for the 3+ unit bands stretches the band on the cast, so up there clinch the bell direct and accept that a bad hang costs the base",
             "Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. An evening's work that turns a mid-drift re-rig into a ten-second swap",
             "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7–#6 · 4+ units #6–#4. Calibrate on the water: it should tick bottom on the swing and slip when the tip lifts, never plant",
-            "Hook by bait: PowerBait #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
+            "Hook by bait: eggs or Mice Tail #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
         ],
     },
     {
