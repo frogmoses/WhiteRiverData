@@ -617,7 +617,9 @@ class TestGearDoctrine:
         # left of the spin buy list
         assert "Worm blower" in spin and "OWNED" in spin
         assert "8 lb fluorocarbon (~$8)" in spin
-        assert "staged at Dad's" in spin
+        # The rods live at Dad's, the reels travel and are respooled at home
+        # (2026-09-29) — the gear check must keep that split visible
+        assert "live at Dad's" in spin and "the reels travel" in spin
         fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
         assert "soft craw" in fall_spin.lower()
 
