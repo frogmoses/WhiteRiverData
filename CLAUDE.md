@@ -140,6 +140,27 @@ unused (an open item from the review).
 - **MW→CFS** (`forecast_fetcher.mw_to_cfs`): linear via `BSD_FULL_MW = 391`, `BSD_FULL_CFS = 26400` (validated ±5% against actuals), plus `BSD_MIN_FLOW_CFS = 250` base flow, floored at `BSD_MIN_TOTAL_CFS = 750` — the dam never runs below its minimum-flow release (~750 observed, ~850 per His Place). Entry `min_flow_cfs` is `cfs - generation_cfs` so a breakdown always sums.
 - **Forecast validity and horizon** (`forecast_fetcher.get_swpa_forecast`): fetches today's day-of-week page **and tomorrow's** (posted by ~5 p.m.; Friday covers the weekend), validating each against the date in the `<pre>` header line (`PROJECTED LOADING SCHEDULE <DAY> <MONTH> <DD>, <YYYY>`, `SCHEDULE_DATE_RE`). A page that is undated or dated for another day is dropped — the day pages persist for a week, so a missed post would otherwise serve last week's schedule. **Never validate against the `<title>`**: its date is the CMS render date and every one of the seven pages carries *today's* date there (verified 2026-09-20). Returns remaining today + all of tomorrow, chronological.
 - **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
+- **Two kinds of outage, worded differently** (`data_fetcher.OUTAGE_FETCH_FAILED` /
+  `OUTAGE_NO_DATA_PUBLISHED`, `formatters.outage_headline`/`outage_sentence`): the error
+  sentinel carries a `reason`. A failed fetch (DNS, TLS, site down) is ours to chase and
+  reads "LIVE DAM FEED UNAVAILABLE"; a page that loads with every row dashed is the Corps'
+  telemetry and reads "DAM TELEMETRY OUT", which no retry or cache can repair. Added
+  2026-10-03 after Bull Shoals published nothing but `----` from 01OCT2026 2050 for ~36 h
+  while the page said only "unable to retrieve data", which read as a bug here.
+  `formatters` mirrors the `no_data_published` literal rather than importing
+  `data_fetcher` (Playwright import chain); `tests/test_formatters.py` asserts the two
+  never drift.
+- **Schedule-only page** (`formatters.generate_schedule_only_html` /
+  `generate_schedule_only_text`, chosen in `main.generate_white_hole_summary`): when there
+  are no readings AND no cache inside `MAX_CACHE_AGE_HOURS`, the page no longer collapses
+  to an error screen. It renders what does not depend on a dam reading — the SWPA
+  schedule (arrival-adjusted, via `_scheduled_now` for the flow "now"), the USGS
+  temperature/oxygen pills, the light windows and the full fishing report — under a red
+  banner naming the outage. **Every flow figure on that page is scheduled, never
+  measured**, tagged "SCHEDULED — NOT MEASURED" in the HTML and "SCHEDULED (not
+  measured)" in the text; a test asserts "AT WHITE HOLE NOW" never appears there. A
+  usable cache still wins over the schedule (measured water beats a plan), and with both
+  feeds down it is still the error page.
 - **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails, `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed`), plus the stale banner once the cache ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the error page. The cache is **committed** by `run_white_hole.sh` (its `git stash -u` would destroy an untracked copy). Motivated by the Aug 27 2026 army.mil DNS outage.
 - **DNS fallback** (`data_fetcher.get_bull_shoals_data`): on `ERR_NAME_NOT_RESOLVED`, `resolve_via_doh` asks cloudflare-dns.com for the A record and Chromium is relaunched with `--host-resolver-rules=MAP host ip` (the existing `--ignore-certificate-errors` covers a mismatched cert on the pinned IP). Other errors are not retried. Added 2026-09-21 after the Pi's resolver failed army.mil; the Pi's resolver was also fixed (see Deployment).
 - **Water quality** (`water_quality.get_water_quality`): one call to the USGS instantaneous-values service for gauges 07054527 (near Fairview, beside the Cane Island pin — preferred) and 07054502 (0.7 mi below the dam — fallback): water temperature and dissolved oxygen, 15-minute, **no discharge**. Thresholds: DO <5 mg/L low / <6 marginal; temp <50°F cold / 50–62 prime / 62–68 warm / ≥68 hot (commonly cited trout ranges — verify before tightening). Rendered as pills under Current Conditions (`formatters.generate_water_quality_html`, age shown past `STALE_READING_HOURS`), in the text summary, and as the first lines of the fishing report's season notes (`fishing_report.water_notes`; a per-season fallback sentence when the fetch fails — the old fixed "~53–56°F" note contradicted the live gauge). Fetch failure never blanks the page.

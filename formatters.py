@@ -8,6 +8,11 @@ from fishing_report import light_windows_for
 
 from landmarks import LANDMARK_COORDS
 
+# Mirrors data_fetcher.OUTAGE_NO_DATA_PUBLISHED. Kept as a literal so this
+# module stays free of the Playwright import chain; tests/test_formatters.py
+# asserts the two never drift apart.
+OUTAGE_NO_DATA_PUBLISHED = "no_data_published"
+
 
 def generate_landmark_map_links():
     """Clickable map pins for the chart's landmarks, dam to White Hole."""
@@ -99,6 +104,23 @@ def generate_water_quality_html(water_quality, current_time):
     return f'''
         <div class="condition-pills" style="margin-top: 12px;">{"".join(pills)}</div>
         <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
+
+
+def outage_headline(reason):
+    """The banner headline for an outage, by its reason (data_fetcher)."""
+    if reason == OUTAGE_NO_DATA_PUBLISHED:
+        return "DAM TELEMETRY OUT"
+    return "LIVE DAM FEED UNAVAILABLE"
+
+
+def outage_sentence(reason):
+    """One sentence saying what is broken and whose problem it is."""
+    if reason == OUTAGE_NO_DATA_PUBLISHED:
+        return ("The USACE page is up, but Bull Shoals is publishing no readings \u2014 "
+                "every row in its table is blank. Nothing here can fix that; it comes "
+                "back when the Corps' telemetry does.")
+    return ("The USACE page could not be reached, so there are no dam readings "
+            "this run. Retried automatically every hour.")
 
 
 def _effective_time(row):
@@ -248,7 +270,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
                            stale_hours=None, feed_failed=False, fishing_report_html="",
-                           water_quality=None):
+                           water_quality=None, feed_reason=None):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -328,9 +350,9 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     # is being served from the last-good-data cache)
     feed_failed_banner_html = ""
     if feed_failed:
-        feed_failed_banner_html = '''
+        feed_failed_banner_html = f'''
     <div style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; font-weight: 500;">
-        ⚠️ LIVE DAM FEED UNAVAILABLE — Showing the last successfully retrieved readings. Conditions may have changed since.
+        ⚠️ {outage_headline(feed_reason)} — Showing the last readings retrieved before it stopped. Conditions may have changed since.
     </div>'''
 
     # Stale-data warning banner (shown when the USACE feed has stalled)
@@ -607,6 +629,147 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     return html
 
 
+def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
+                                fishing_report_html="", water_quality=None,
+                                feed_reason=None, last_reading_time=None):
+    """
+    The page with no measured flow: an outage banner, what the SWPA schedule
+    says the dam is doing, and everything that does not depend on a dam
+    reading (temperature/oxygen, light windows, the fishing report).
+
+    Rendered when there are no usable readings AND the last-good cache is gone
+    or too old. Every flow figure here is SCHEDULED, never measured, and the
+    page says so in the places a reader would otherwise assume a reading.
+    """
+    wading, boating = get_fishing_condition(scheduled_cfs)
+    water_quality_html = generate_water_quality_html(water_quality, current_time)
+
+    sun_html = ""
+    light = light_windows_for(current_time)
+    if light:
+        sun_html = (f'<p style="color: #718096; font-size: 0.9em; margin: 10px 0 0;">'
+                    f'\u2600\ufe0f Sunrise {clock(light["sunrise"])} \u00b7 Sunset {clock(light["sunset"])} '
+                    f'<small>\u2014 low light: dawn until {clock(light["dawn"][1])}, '
+                    f'dusk from {clock(light["dusk"][0])}</small></p>')
+
+    arrivals_html = ""
+    rows = arrival_rows([], forecast_timeline, current_time)
+    if rows:
+        arrivals_html = render_arrivals(rows, current_time, wading, has_forecast=True)
+
+    last_reading_html = ""
+    if last_reading_time is not None:
+        last_reading_html = (f'<p style="color: #718096; font-size: 0.9em;">Last reading the dam '
+                             f'published: {last_reading_time.strftime("%a %b %d, %-I:%M %p")} '
+                             f'\u2014 too old to show as current.</p>')
+
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Hole Conditions - {current_time.strftime('%Y-%m-%d %H:%M')}</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7fafc;
+        }}
+        h1 {{ color: #2c3e50; margin-bottom: 5px; }}
+        h2 {{ color: #2c3e50; font-size: 1.2em; margin: 25px 0 10px; }}
+        .subtitle {{ color: #718096; margin-bottom: 20px; }}
+        .card {{
+            background: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }}
+        .scheduled-flow {{ font-size: 2em; font-weight: bold; color: #553c9a; }}
+        .tag {{
+            display: inline-block;
+            background: #ede9fe;
+            color: #553c9a;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            vertical-align: middle;
+        }}
+        table {{ width: 100%; border-collapse: collapse; }}
+        .footer {{ color: #a0aec0; font-size: 0.8em; text-align: center; margin-top: 30px; }}
+    </style>
+</head>
+<body>
+    <h1>White Hole Conditions</h1>
+    <p class="subtitle">{current_time.strftime('%A, %B %d, %Y at %-I:%M %p')} Central</p>
+
+    <div style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;">
+        <div style="font-weight: 700; font-size: 1.1em; margin-bottom: 6px;">\u26a0\ufe0f {outage_headline(feed_reason)} \u2014 NO MEASURED FLOW</div>
+        <div>{outage_sentence(feed_reason)}</div>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-top: 0;">What the dam is scheduled to run</h2>
+        <p><span class="scheduled-flow">{scheduled_cfs:,} CFS</span>
+           <span class="tag">SCHEDULED \u2014 NOT MEASURED</span></p>
+        <p>{format_generators(scheduled_cfs)} \u00b7 Wading: <strong>{wading}</strong> \u00b7 Boating: <strong>{boating}</strong></p>
+        <p style="color: #718096; font-size: 0.9em;">From the SWPA generation schedule, which is still
+           publishing. Treat it as the dam's plan, not as the river: a schedule change, a spill, or
+           non-power release would not show up here while the readings are out.</p>
+        {water_quality_html}
+        {sun_html}
+        {last_reading_html}
+    </div>
+
+    {arrivals_html}
+
+    {fishing_report_html}
+
+    <div class="footer">
+        Generated {current_time.strftime('%Y-%m-%d %H:%M')} Central \u00b7 schedule from SWPA \u00b7
+        readings from USACE Bull Shoals (out)
+    </div>
+</body>
+</html>'''
+
+
+def generate_schedule_only_text(current_time, forecast_timeline, scheduled_cfs,
+                                water_quality=None, feed_reason=None,
+                                last_reading_time=None):
+    """The text twin of generate_schedule_only_html."""
+    wading, boating = get_fishing_condition(scheduled_cfs)
+    temp_line, do_line = describe_water_quality(water_quality)
+    water_quality_text = "".join(f"{line}\n" for line in (temp_line, do_line) if line)
+    last_reading_text = ""
+    if last_reading_time is not None:
+        last_reading_text = (f"Last reading the dam published: "
+                             f"{last_reading_time.strftime('%Y-%m-%d %H:%M')} (too old to show as current)\n")
+    schedule_lines = ""
+    for run in group_forecast_runs(forecast_timeline or [])[:6]:
+        schedule_lines += (f"- {clock(run['start_time'], current_time, minutes=False)}: "
+                           f"{run['cfs']:,} CFS scheduled, at White Hole ~"
+                           f"{clock(run['arrival_time'], current_time)}\n")
+    return f"""
+WHITE HOLE CURRENT CONDITIONS SUMMARY
+Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
+
+WARNING: {outage_headline(feed_reason).capitalize()} — no measured flow.
+{outage_sentence(feed_reason)}
+{last_reading_text}
+SCHEDULED (not measured), from SWPA:
+- Now: {scheduled_cfs:,} CFS, {format_generators(scheduled_cfs)}
+- Wading: {wading}
+- Boating: {boating}
+{schedule_lines}{water_quality_text}
+"""
+
+
 def generate_error_html(error_message, current_time=None):
     """Generate an HTML error page."""
     if current_time is None:
@@ -677,6 +840,7 @@ def save_html_summary(html_content, filename="white_hole_conditions.html"):
 def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                          wading_condition, boating_condition, recent_trend, forecast,
                          latest_entry, relevant_entry, stale_hours=None, feed_failed=False,
+                         feed_reason=None,
                          water_quality=None):
     """Generate a text version of the White Hole summary."""
     # Calculate travel time for the summary
@@ -685,7 +849,8 @@ def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, w
     water_quality_text = "".join(f"{line}\n" for line in (temp_line, do_line) if line)
     stale_warning = ""
     if feed_failed:
-        stale_warning += "\nWARNING: Live dam feed unavailable — showing the last successfully retrieved readings.\n"
+        stale_warning += (f"\nWARNING: {outage_headline(feed_reason).capitalize()} — "
+                          "showing the last readings retrieved before it stopped.\n")
     if stale_hours is not None:
         stale_warning += f"\nWARNING: Dam data is delayed — latest reading is {stale_hours:.1f} hours old.\n"
     summary = f"""

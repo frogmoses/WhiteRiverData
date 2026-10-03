@@ -377,3 +377,112 @@ class TestOutageFallback:
             output_format="html", data=self._error_sentinel(now), current_time=now)
         assert "LIVE DAM FEED UNAVAILABLE" in html
         assert "headline-banner" in html
+
+
+@pytest.mark.integration
+class TestScheduleOnlyPage:
+    """
+    No measured flow and no usable cache: the page serves the SWPA schedule,
+    the gauges and the fishing report rather than an error screen, and names
+    which outage it is (Bull Shoals published dashes for 36 h from
+    01OCT2026 2050 while the page said only "unable to retrieve").
+    """
+
+    CENTRAL = ZoneInfo("America/Chicago")
+
+    def _sentinel(self, now, reason):
+        from data_fetcher import get_error_data
+        sentinel = get_error_data(reason)
+        sentinel[0]['date_time'] = now
+        return sentinel
+
+    def _schedule(self, now, hours):
+        """SWPA-shaped hourly entries: (hour offset, cfs) pairs."""
+        base = now.replace(minute=0, second=0, microsecond=0)
+        return [{'hour': base.hour + h + 1, 'mw': cfs / 67.5, 'cfs': cfs,
+                 'generation_cfs': cfs - 250, 'min_flow_cfs': 250,
+                 'start_time': base + timedelta(hours=h),
+                 'end_time': base + timedelta(hours=h + 1)}
+                for h, cfs in hours]
+
+    def _patch(self, monkeypatch, now, hours):
+        import main
+        monkeypatch.setattr(main, "get_swpa_forecast",
+                            lambda current_time: self._schedule(now, hours))
+        monkeypatch.setattr(main, "get_water_quality", lambda current_time: None)
+
+    def test_text_serves_the_schedule_and_names_the_outage(self, monkeypatch):
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=self.CENTRAL)
+        self._patch(monkeypatch, now, [(0, 750), (8, 10378)])
+
+        text = generate_white_hole_summary(
+            output_format="text",
+            data=self._sentinel(now, OUTAGE_NO_DATA_PUBLISHED), current_time=now)
+
+        assert "Dam telemetry out" in text
+        assert "publishing no readings" in text
+        assert "SCHEDULED (not measured)" in text
+        assert "750 CFS" in text
+        assert "10,378 CFS" in text
+        # the old dead end must not come back
+        assert "cannot be determined" not in text
+
+    def test_html_carries_the_report_and_the_scheduled_tag(self, monkeypatch):
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=self.CENTRAL)
+        self._patch(monkeypatch, now, [(0, 750), (8, 10378)])
+
+        html = generate_white_hole_summary(
+            output_format="html",
+            data=self._sentinel(now, OUTAGE_NO_DATA_PUBLISHED), current_time=now)
+
+        assert "DAM TELEMETRY OUT" in html
+        assert "SCHEDULED &mdash; NOT MEASURED" in html or "SCHEDULED — NOT MEASURED" in html
+        assert "wh-band-panel" in html          # the fishing report rendered
+        assert "Arrivals at White Hole" in html  # schedule-only arrivals table
+
+    def test_fetch_failure_says_fetch_failure_not_telemetry(self, monkeypatch):
+        from data_fetcher import OUTAGE_FETCH_FAILED
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=self.CENTRAL)
+        self._patch(monkeypatch, now, [(0, 750)])
+
+        text = generate_white_hole_summary(
+            output_format="text",
+            data=self._sentinel(now, OUTAGE_FETCH_FAILED), current_time=now)
+
+        assert "Live dam feed unavailable" in text
+        assert "could not be reached" in text
+        assert "publishing no readings" not in text
+
+    def test_both_feeds_down_is_still_an_error_page(self, monkeypatch):
+        import main
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=self.CENTRAL)
+        monkeypatch.setattr(main, "get_swpa_forecast", lambda current_time: [])
+        monkeypatch.setattr(main, "get_water_quality", lambda current_time: None)
+
+        text = generate_white_hole_summary(
+            output_format="text",
+            data=self._sentinel(now, OUTAGE_NO_DATA_PUBLISHED), current_time=now)
+
+        assert "ERROR" in text and "schedule is unavailable too" in text
+
+    def test_a_usable_cache_still_wins_over_the_schedule(self, monkeypatch):
+        """The cache is measured water; the schedule is only a plan."""
+        from data_fetcher import save_last_good_data, OUTAGE_NO_DATA_PUBLISHED
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=self.CENTRAL)
+        self._patch(monkeypatch, now, [(0, 750)])
+        good = [{'date_time': now - timedelta(hours=h), 'elevation': 657.0,
+                 'tailwater': 450.0, 'generation': 100, 'turbine_release': 6600,
+                 'spillway_release': 0, 'total_release': 6600}
+                for h in range(4, 0, -1)]
+        save_last_good_data(good)
+
+        text = generate_white_hole_summary(
+            output_format="text",
+            data=self._sentinel(now, OUTAGE_NO_DATA_PUBLISHED), current_time=now)
+
+        assert "Dam telemetry out" in text
+        assert "SCHEDULED (not measured)" not in text
+        assert "6600 CFS" in text

@@ -1,4 +1,5 @@
 """Unit tests for data_fetcher.py parsing (no network required)."""
+import pytest
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -192,3 +193,47 @@ class TestDnsFallback:
                             lambda url, extra_args=(): (_ for _ in ()).throw(RuntimeError("net::ERR_NAME_NOT_RESOLVED")))
         monkeypatch.setattr(data_fetcher, "resolve_via_doh", lambda host: None)
         assert data_fetcher.get_bull_shoals_data()[0]["error"] is True
+
+
+@pytest.mark.unit
+class TestOutageReason:
+    """
+    The sentinel says WHY there are no readings: our fetch broke, or the dam
+    published a table of dashes (01OCT2026 2050 onward). The page words the
+    two differently, so the tag has to survive.
+    """
+
+    def test_error_data_defaults_to_fetch_failed(self):
+        from data_fetcher import get_error_data, OUTAGE_FETCH_FAILED
+        assert get_error_data()[0]['reason'] == OUTAGE_FETCH_FAILED
+
+    def test_error_data_carries_the_given_reason(self):
+        from data_fetcher import get_error_data, OUTAGE_NO_DATA_PUBLISHED
+        sentinel = get_error_data(OUTAGE_NO_DATA_PUBLISHED)
+        assert sentinel[0]['error'] is True
+        assert sentinel[0]['reason'] == OUTAGE_NO_DATA_PUBLISHED
+
+    def test_a_page_of_dashes_is_no_data_published_not_a_fetch_failure(self, monkeypatch):
+        """The live 2026-10-03 failure: page served fine, every row blank."""
+        import data_fetcher
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        dashes = """<pre>
+  Date       CS/CDT  (ft-NGVD29)  (ft-NGVD29)     (mwh)        (cfs)      (cfs)      (cfs)
+ 01OCT2026    2050       ----         ----       ----           ----        ---        ---
+ 01OCT2026    2150       ----         ----       ----           ----        ---        ---
+</pre>"""
+        monkeypatch.setattr(data_fetcher, "_fetch_html", lambda *a, **k: dashes)
+        result = data_fetcher.get_bull_shoals_data()
+        assert result[0]['error'] is True
+        assert result[0]['reason'] == OUTAGE_NO_DATA_PUBLISHED
+
+    def test_a_broken_fetch_is_fetch_failed(self, monkeypatch):
+        import data_fetcher
+        from data_fetcher import OUTAGE_FETCH_FAILED
+
+        def boom(*a, **k):
+            raise RuntimeError("net::ERR_CONNECTION_REFUSED")
+
+        monkeypatch.setattr(data_fetcher, "_fetch_html", boom)
+        result = data_fetcher.get_bull_shoals_data()
+        assert result[0]['reason'] == OUTAGE_FETCH_FAILED

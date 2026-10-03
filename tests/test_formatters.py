@@ -784,3 +784,39 @@ class TestSunLine:
             recent_data=normal_conditions_data, timeline_data=[])
         assert "Sunrise" in html and "Sunset" in html
         assert "dawn until" in html and "dusk from" in html
+
+
+@pytest.mark.unit
+class TestOutageVocabulary:
+    """The banner must name which outage it is, and stay in step with data_fetcher."""
+
+    def test_the_mirrored_constant_matches_data_fetcher(self):
+        import data_fetcher
+        import formatters
+        assert formatters.OUTAGE_NO_DATA_PUBLISHED == data_fetcher.OUTAGE_NO_DATA_PUBLISHED
+
+    def test_headlines_differ_by_reason(self):
+        from data_fetcher import OUTAGE_FETCH_FAILED, OUTAGE_NO_DATA_PUBLISHED
+        from formatters import outage_headline, outage_sentence
+        assert outage_headline(OUTAGE_NO_DATA_PUBLISHED) == "DAM TELEMETRY OUT"
+        assert outage_headline(OUTAGE_FETCH_FAILED) == "LIVE DAM FEED UNAVAILABLE"
+        assert outage_headline(None) == "LIVE DAM FEED UNAVAILABLE"
+        assert "publishing no readings" in outage_sentence(OUTAGE_NO_DATA_PUBLISHED)
+        assert "could not be reached" in outage_sentence(OUTAGE_FETCH_FAILED)
+
+    def test_schedule_only_page_never_presents_the_schedule_as_measured(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        from formatters import generate_schedule_only_html
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=ZoneInfo("America/Chicago"))
+
+        html = generate_schedule_only_html(
+            current_time=now, forecast_timeline=None, scheduled_cfs=750,
+            feed_reason=OUTAGE_NO_DATA_PUBLISHED)
+
+        assert "NO MEASURED FLOW" in html
+        assert "SCHEDULED" in html and "NOT MEASURED" in html
+        assert "750 CFS" in html
+        # nothing may claim this is what the river is doing
+        assert "AT WHITE HOLE NOW" not in html

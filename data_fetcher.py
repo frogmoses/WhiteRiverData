@@ -122,6 +122,14 @@ def _fetch_html(url, extra_args=()):
     return html_content
 
 
+# Why a run has no readings. The two cases look identical on the page unless
+# they are told apart: FETCH_FAILED is ours to fix (DNS, TLS, the site down),
+# NO_DATA_PUBLISHED is the Corps publishing a table of dashes, which no retry
+# or cache can repair (first seen 01OCT2026 2050, ~36 h and counting).
+OUTAGE_FETCH_FAILED = "fetch_failed"
+OUTAGE_NO_DATA_PUBLISHED = "no_data_published"
+
+
 def get_bull_shoals_data():
     """
     Scrape the Bull Shoals Dam data table from the website using Playwright.
@@ -146,12 +154,14 @@ def get_bull_shoals_data():
 
         if data:
             return data
-        else:
-            return get_error_data()
+        # The page came back but held no usable rows: Bull Shoals is
+        # publishing dashes. Say so rather than blaming the fetch.
+        print("USACE page fetched but every row is blank — dam publishing no readings")
+        return get_error_data(OUTAGE_NO_DATA_PUBLISHED)
 
     except Exception as e:
         print(f"Error fetching data: {e}")
-        return get_error_data()
+        return get_error_data(OUTAGE_FETCH_FAILED)
 
 # Cache of the last successful fetch, used as a fallback when the USACE site
 # is unreachable (e.g. the Aug 2026 army.mil DNS outage). Written relative to
@@ -218,8 +228,8 @@ def load_last_good_data(filename=LAST_GOOD_CACHE_FILE, max_age_hours=24,
         return None
 
 
-def get_error_data():
-    """Return error data when web scraping fails."""
+def get_error_data(reason=OUTAGE_FETCH_FAILED):
+    """Return the error sentinel, tagged with why there are no readings."""
     # Return a minimal dataset with just the current time and an error indicator
     current_time = datetime.now(DAM_TIMEZONE)
     error_data = [{
@@ -230,7 +240,8 @@ def get_error_data():
         'turbine_release': 0,  # Using 0 as an error indicator
         'spillway_release': 0,
         'total_release': 0,
-        'error': True  # Flag to indicate this is error data
+        'error': True,  # Flag to indicate this is error data
+        'reason': reason
     }]
     
     return error_data
