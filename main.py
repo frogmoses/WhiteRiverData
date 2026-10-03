@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from data_fetcher import (
     get_bull_shoals_data, DAM_TIMEZONE,
-    save_last_good_data, load_last_good_data
+    save_last_good_data, load_last_good_data, OUTAGE_FETCH_FAILED
 )
 from forecast_fetcher import get_swpa_forecast
 from water_calculator import (
@@ -11,7 +11,8 @@ from water_calculator import (
 )
 from formatters import (
     generate_html_summary, generate_error_html, save_html_summary,
-    generate_text_summary, include_chart_in_html
+    generate_text_summary, include_chart_in_html,
+    generate_schedule_only_html, generate_schedule_only_text, outage_sentence
 )
 from chart_generator import generate_vertical_river_chart
 from fishing_report import generate_fishing_report, render_fishing_report_html
@@ -31,6 +32,47 @@ MAX_CACHE_AGE_HOURS = 24
 def _is_error_data(data):
     """True for the error sentinel returned by data_fetcher on fetch failure."""
     return len(data) == 1 and data[0].get('error', False)
+
+
+def _outage_reason(data):
+    """Why this run has no readings, from the sentinel (None if it has some)."""
+    if data and _is_error_data(data):
+        return data[0].get('reason', OUTAGE_FETCH_FAILED)
+    return None
+
+
+def _fetch_forecast(current_time, previous_cfs=None):
+    """SWPA schedule, arrival-adjusted. Optional: failures return None."""
+    try:
+        swpa_data = get_swpa_forecast(current_time)
+        if swpa_data:
+            return calculate_forecast_timeline(
+                swpa_data, current_time, previous_cfs=previous_cfs)
+    except Exception as e:
+        print(f"Warning: Could not fetch SWPA forecast: {e}")
+    return None
+
+
+def _fetch_water_quality(current_time):
+    """USGS tailwater temperature / oxygen. Optional: failures return None."""
+    try:
+        return get_water_quality(current_time)
+    except Exception as e:
+        print(f"Warning: Could not fetch USGS water quality: {e}")
+    return None
+
+
+def _scheduled_now(forecast_timeline, current_time):
+    """
+    The CFS the schedule has running at White Hole now: the last hour whose
+    water has already arrived, else the first one on its way. Used only when
+    there is no measured flow at all.
+    """
+    if not forecast_timeline:
+        return None
+    arrived = [item for item in forecast_timeline
+               if item['arrival_time'] <= current_time]
+    return (arrived[-1] if arrived else forecast_timeline[0])['cfs']
 
 
 def generate_white_hole_summary(output_format="text", data=None, dataset_name=None, current_time=None,
@@ -62,37 +104,55 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
     # upstream outage degrades to a (possibly stale-flagged) report instead of
     # replacing the whole page with an error
     feed_failed = False
+    feed_reason = _outage_reason(data)
     if not data or _is_error_data(data):
         cached = load_last_good_data(
             max_age_hours=MAX_CACHE_AGE_HOURS, current_time=current_time)
         if cached:
-            print("Warning: live USACE fetch failed; using last-good data cache")
+            print(f"Warning: no live USACE readings ({feed_reason}); "
+                  "using last-good data cache")
             data = cached
             feed_failed = True
 
-    if not data:
+    # No readings at all and no cache worth showing. The schedule, the gauges
+    # and the fishing report do not depend on a dam reading, so serve those
+    # with the outage stated instead of replacing the page with an error
+    # (added 2026-10-03, when Bull Shoals published dashes for 36 h straight).
+    if not data or _is_error_data(data):
+        forecast_timeline = _fetch_forecast(current_time)
+        water_quality = _fetch_water_quality(current_time)
+        scheduled_cfs = _scheduled_now(forecast_timeline, current_time)
+
+        if scheduled_cfs is None:
+            # Both feeds down: there is genuinely nothing to say
+            message = (f"Unable to retrieve data from Bull Shoals Dam. "
+                       f"{outage_sentence(feed_reason)} The SWPA generation "
+                       f"schedule is unavailable too, so no flow can be "
+                       f"estimated either.")
+            if output_format == "html":
+                return generate_error_html(message, current_time)
+            return (f"\nWHITE HOLE CURRENT CONDITIONS SUMMARY\n"
+                    f"Generated: {current_time.strftime('%Y-%m-%d %H:%M')}\n\n"
+                    f"ERROR: {message}\n")
+
+        fishing_report = generate_fishing_report(
+            scheduled_cfs, current_time, None, forecast_timeline,
+            water_quality=water_quality)
+
         if output_format == "html":
-            return generate_error_html("Unable to retrieve data from Bull Shoals Dam.")
-        else:
-            return "Unable to retrieve data from Bull Shoals Dam."
-
-    # Check if we got error data
-    if _is_error_data(data):
-        error_message = """
-ERROR: Unable to retrieve data from Bull Shoals Dam website.
-Please try again later or check your internet connection.
-
-The White Hole water conditions cannot be determined at this time.
-"""
-        if output_format == "html":
-            return generate_error_html(error_message, current_time)
-        else:
-            return f"""
-WHITE HOLE CURRENT CONDITIONS SUMMARY
-Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
-
-{error_message}
-"""
+            return generate_schedule_only_html(
+                current_time=current_time,
+                forecast_timeline=forecast_timeline,
+                scheduled_cfs=scheduled_cfs,
+                fishing_report_html=render_fishing_report_html(fishing_report),
+                water_quality=water_quality,
+                feed_reason=feed_reason)
+        return generate_schedule_only_text(
+            current_time=current_time,
+            forecast_timeline=forecast_timeline,
+            scheduled_cfs=scheduled_cfs,
+            water_quality=water_quality,
+            feed_reason=feed_reason)
 
     # Sort data by date_time
     data.sort(key=lambda x: x['date_time'])
@@ -156,25 +216,14 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
     # Calculate timeline data
     timeline_data = calculate_timeline(data, current_time)
 
-    # Fetch SWPA forecast schedule (optional — failures don't break the page)
-    forecast_timeline = None
-    try:
-        swpa_data = get_swpa_forecast(current_time)
-        if swpa_data:
-            # The latest actual reading is the flow ahead of the first
-            # scheduled hour, so a scheduled cut right after it is a drop
-            forecast_timeline = calculate_forecast_timeline(
-                swpa_data, current_time, previous_cfs=get_flow(latest_entry))
-    except Exception as e:
-        print(f"Warning: Could not fetch SWPA forecast: {e}")
+    # SWPA forecast schedule (optional — failures don't break the page). The
+    # latest actual reading is the flow ahead of the first scheduled hour, so
+    # a scheduled cut right after it reads as a drop.
+    forecast_timeline = _fetch_forecast(
+        current_time, previous_cfs=get_flow(latest_entry))
 
     # Tailwater temperature / dissolved oxygen from the USGS gauges
-    # (optional — failures just drop the section)
-    water_quality = None
-    try:
-        water_quality = get_water_quality(current_time)
-    except Exception as e:
-        print(f"Warning: Could not fetch USGS water quality: {e}")
+    water_quality = _fetch_water_quality(current_time)
 
     # Build the fishing report (full content during trip windows,
     # placeholder otherwise) driven by the flow at White Hole
@@ -207,6 +256,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             forecast_timeline=forecast_timeline,
             stale_hours=stale_hours,
             feed_failed=feed_failed,
+            feed_reason=feed_reason,
             fishing_report_html=fishing_report_html,
             water_quality=water_quality
         )
@@ -233,6 +283,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
             relevant_entry=relevant_entry,
             stale_hours=stale_hours,
             feed_failed=feed_failed,
+            feed_reason=feed_reason,
             water_quality=water_quality
         )
 
