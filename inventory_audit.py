@@ -36,6 +36,8 @@ OWNED_GEAR = [
     ("St. Croix Premier PS60ULF", r"St\. Croix", r"PS60ULF"),
     ("Berkley Cherrywood CWD702MS", r"Cherrywood", r"CWD702MS"),
     ("Abu Garcia Black Max 30", r"Black Max", r"Black Max 30"),
+    ("Pflueger President 20 (AR travel reel)", r"President", r"Pflueger President size 20"),
+    ("Daiwa Exceler 2000 SH (AR travel reel)", r"Exceler", r"Daiwa Exceler 2000 SH"),
     # metal
     ("Kastmaster", r"Kastmaster", r"Kastmaster ×\d"),
     ("Cleo (gold)", r"\bCleo\b", r"Cleo gold"),
