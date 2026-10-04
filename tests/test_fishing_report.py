@@ -1,6 +1,7 @@
 """Tests for fishing_report.py — flow-driven fishing report."""
 from datetime import datetime, timedelta
 import pytest
+import re
 
 from fishing_report import (
     get_flow_band,
@@ -803,3 +804,49 @@ class TestRigDiagram:
         # the livebait exception moved out of the Y block
         wr = html.split("The White River rig (spin)", 1)[1].split("</details>", 1)[0]
         assert "livebait drift exception" not in wr
+
+
+@pytest.mark.unit
+class TestNoHousekeepingDates:
+    """
+    The page is for fishing, not for a purchase ledger: no "(bought
+    2026-09-28)" or "Brian's call 2026-09-29" in anything that renders.
+    Brian, 2026-10-04 — "I don't need info about dates about when I bought
+    stuff, or made decisions."
+
+    Dates that ARE the information stay: a regulation's effective date, a
+    source's verification date in SOURCES, and the journal's catch dates in
+    EVIDENCE. Those are not covered here.
+    """
+
+    ISO_DATE = re.compile(r"\b20\d\d-\d\d-\d\d\b")
+
+    def _strings(self, value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for item in value.values():
+                yield from self._strings(item)
+        elif isinstance(value, (list, tuple)):
+            for item in value:
+                yield from self._strings(item)
+
+    def test_rendered_content_carries_no_iso_dates(self):
+        from fishing_report import (
+            BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE)
+        offenders = [text for block in (BAND_CONTENT, SEASON_CONTENT,
+                                        GEAR_CHECK, RIGGING_REFERENCE)
+                     for text in self._strings(block)
+                     if self.ISO_DATE.search(text)]
+        assert not offenders, (
+            "housekeeping dates leaked into rendered copy:\n- "
+            + "\n- ".join(f"{t[:110]}..." for t in offenders))
+
+    def test_the_rendered_report_carries_no_purchase_dates(self):
+        """Belt and braces: the assembled HTML, not just the content tables."""
+        from datetime import datetime
+        from fishing_report import generate_fishing_report, render_fishing_report_html
+        html = render_fishing_report_html(
+            generate_fishing_report(750, datetime(2026, 10, 3, 9, 0)))
+        for phrase in ("bought 2026-", "Brian's call 2026-", "his call 2026-"):
+            assert phrase not in html

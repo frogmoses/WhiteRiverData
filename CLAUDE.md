@@ -252,6 +252,13 @@ appended to the bottom of the page. Design rules:
   SCHEDULED RISE/DROP with per-spot ETAs (windows for drops), then `schedule_outline` — one
   bullet per scheduled day ("Rest of today at White Hole: …", "Tomorrow (Mon) at White
   Hole: …") listing every significant change with its ETA, peak marked.
+- **No housekeeping dates in rendered copy** (Brian, 2026-10-04: "I don't need info about
+  dates about when I bought stuff, or made decisions"). Purchase and decision dates belong
+  in code comments, commit messages and this file — never in a string the page renders.
+  `tests/test_fishing_report.py::TestNoHousekeepingDates` fails on any ISO date in
+  `BAND_CONTENT`, `SEASON_CONTENT`, `GEAR_CHECK` or `RIGGING_REFERENCE`. Dates that ARE
+  the information are exempt and stay: a regulation's effective date, a source's
+  verification date in `SOURCES`, the journal's catch dates in `EVIDENCE`.
 - **Provenance** (`SOURCES`, per-block `sources`, `EVIDENCE`): every band and season block
   names its sources and the page renders a "Sources:" line under it (`brief` links the
   restored research brief; a REPORTED or INFERRED claim stays that until a journal row or a
