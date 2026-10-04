@@ -113,13 +113,17 @@ def outage_headline(reason):
     return "LIVE DAM FEED UNAVAILABLE"
 
 
-# USACE Little Rock District Water Management. Their own site gives this number
-# for "website corrections or issues", which is what a table of dashes is. The
-# Corps publishes the release table; USGS only runs the temperature/oxygen
-# gauges, so reporting a blank table to USGS reaches the wrong agency (Brian
-# emailed them first, 2026-10-04).
-USACE_WM_PHONE = "(501) 324-6231"
-USACE_WM_TEL = "+15013246231"
+# USACE Little Rock District. The district site names this address itself —
+# "For website corrections, write to ceswl-pa@usace.army.mil" — and a table of
+# dashes is a website correction; Public Affairs routes it to Water Management.
+# Email leads because the water-control site's own (501) 324-6231 does not
+# connect (Brian tried it, 2026-10-04); 324-6235 is the Water Management team's
+# published number. The Corps publishes the release table, USGS only runs the
+# temperature/oxygen gauges, so a blank table reported to USGS reaches the wrong
+# agency — which is where Brian wrote first, the page having told him nothing.
+USACE_EMAIL = "ceswl-pa@usace.army.mil"
+USACE_WM_PHONE = "(501) 324-6235"
+USACE_WM_TEL = "+15013246235"
 
 
 def outage_action(reason, last_reading_time=None):
@@ -127,24 +131,29 @@ def outage_action(reason, last_reading_time=None):
     What the reader can do about this outage, or None when there is nothing.
 
     Only the telemetry case gets one: dashes in the Corps' table are theirs to
-    fix and a phone call is the reported-fastest route. A failed fetch is ours.
+    fix and reporting it is the only lever a reader has. A failed fetch is ours.
     """
     if reason != OUTAGE_NO_DATA_PUBLISHED:
         return None
     since = ""
     if last_reading_time is not None:
         since = f" (nothing since {last_reading_time.strftime('%a %b %d, %-I:%M %p')})"
-    return (f"Worth reporting: USACE Little Rock Water Management, {USACE_WM_PHONE} \u2014 "
-            f"tell them the Bull Shoals hourly table is publishing \u2014\u2014\u2014\u2014 "
-            f"in every column{since}. Not USGS: they run the temperature and oxygen "
-            f"gauges, not the release table.")
+    return (f"Worth reporting: email USACE Little Rock at {USACE_EMAIL} \u2014 the address "
+            f"their own site gives for website corrections \u2014 or Water Management on "
+            f"{USACE_WM_PHONE}. Tell them the Bull Shoals hourly table is publishing "
+            f"\u2014\u2014\u2014\u2014 in every column{since}. Not USGS: they run the "
+            f"temperature and oxygen gauges, not the release table.")
 
 
 def _with_tel_link(text):
-    """Make the phone number in an action line tappable."""
-    return text.replace(
-        USACE_WM_PHONE,
-        f'<a href="tel:{USACE_WM_TEL}" style="color: inherit; font-weight: 600;">{USACE_WM_PHONE}</a>')
+    """Make the email and phone number in an action line tappable."""
+    link = 'style="color: inherit; font-weight: 600;"'
+    return (text
+            .replace(USACE_EMAIL,
+                     f'<a href="mailto:{USACE_EMAIL}?subject=Bull%20Shoals%20hourly%20data'
+                     f'%20table%20blank" {link}>{USACE_EMAIL}</a>')
+            .replace(USACE_WM_PHONE,
+                     f'<a href="tel:{USACE_WM_TEL}" {link}>{USACE_WM_PHONE}</a>'))
 
 
 def outage_sentence(reason):
