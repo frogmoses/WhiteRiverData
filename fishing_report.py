@@ -448,10 +448,12 @@ SEASON_CONTENT = {
     "fall": {
         "label": "Fall (September–October): pre-spawn browns",
         "sources": ["brief", "usgs"],
+        "timing": [
+            "Typical fall pattern: minimum flow through the morning, generation arriving afternoon/evening — run downstream early, fish the low water, work back up on the rise",
+        ],
         "notes": [
             "Browns are staging pre-spawn — aggression without redds. They've shifted to eating big: sculpin here run 5–6 in, so don't fish small for them",
             "Stage points: upper ends of holes (trophy browns found in as little as 5 ft), shoal-tail drop-offs, undercut banks and wood",
-            "Typical pattern: minimum flow through the morning, generation arriving afternoon/evening — run downstream early, fish the low water, work back up on the rise",
             "Rainbow forage: sowbug/scud > midge > worms-on-the-rise; brown forage: sculpin > crawdad > everything else",
             "Not a dry-fly month — nymphs and streamers; hoppers on warm afternoons are the exception",
         ],
@@ -472,23 +474,31 @@ SEASON_CONTENT = {
             ],
         },
         "gear_add": {
-            "spin": [
-                "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
-                "The soft craw upgrade is bought, not optional any more: Z-Man TRD CrawZ 2.5 in Mudbug x12 plus tungsten 1/10 oz mushroom heads x5 — pack both for the Ned-head crawdad presentation. At 2.5 in the CrawZ lands inside the 2–2.75 in finesse window this rig wants, matching the half-Senko profile the 1/10 oz head already carries: a 3.5 in flipping craw would overpower a light Ned head, slow the fall and kill the action the rig runs on",
-            ],
-            "fly": [
-                "A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor",
-            ],
+            "spin": {
+                "bench": [
+                    "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
+                ],
+                "pack": [
+                    "The soft craw upgrade is bought, not optional any more: Z-Man TRD CrawZ 2.5 in Mudbug x12 plus tungsten 1/10 oz mushroom heads x5 — pack both for the Ned-head crawdad presentation. At 2.5 in the CrawZ lands inside the 2–2.75 in finesse window this rig wants, matching the half-Senko profile the 1/10 oz head already carries: a 3.5 in flipping craw would overpower a light Ned head, slow the fall and kill the action the rig runs on",
+                ],
+            },
+            "fly": {
+                "buy": [
+                    "A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor",
+                ],
+            },
         },
     },
     "spring": {
         "label": "Spring (March–April): post-spawn rainbows, front edge of the caddis",
         "sources": ["brief", "agfc_regs"],
+        "timing": [
+            "Typical spring pattern: the bite skews later — mid-morning through afternoon, then the evening caddis window. Overcast and rainy days are the best days",
+        ],
         "notes": [
             "Rainbows are post-spawn and feeding normally; stockings are still thin after the 2025 hatchery losses — temper numbers expectations, brown expectations are intact or better",
             "The caddis hatch truly fires at flows around 4,000 CFS or less and works upstream from the lower river — early April usually catches the front edge here, not the peak",
             "The tell: evening swarms of egg-laying caddis; activity picks up after 5 pm",
-            "The bite skews later — mid-morning through afternoon, then the evening caddis window. Overcast and rainy days are the best days",
             "BWOs on grey days; shad get pulled through the dam on big water",
             "When Crooked Creek and the Buffalo rise on rain, the Corps cuts generation to protect Newport — rain can hand you surprise low water",
         ],
@@ -509,12 +519,16 @@ SEASON_CONTENT = {
             ],
         },
         "gear_add": {
-            "spin": [
-                "Cool-water season line rule: mono hook legs (they float with the drift)",
-            ],
-            "fly": [
-                "Caddis consumables for the fly box: Tailwater Soft Hackle caddis-green #14 and Elk Hair Caddis #14",
-            ],
+            "spin": {
+                "bench": [
+                    "Cool-water season line rule: mono hook legs (they float with the drift)",
+                ],
+            },
+            "fly": {
+                "buy": [
+                    "Caddis consumables for the fly box: Tailwater Soft Hackle caddis-green #14 and Elk Hair Caddis #14",
+                ],
+            },
         },
     },
 }
@@ -527,37 +541,69 @@ REGULATIONS = [
     "Verify current limits by phone before the trip: AGFC 833-345-0325 — the Feb 2026 limits replaced an emergency order and hold until further notice, so they can change again",
 ]
 
-# Core, season-independent packing list, split spin/fly like everything else;
-# each season appends its own gear_add items in generate_fishing_report
+# Core, season-independent packing list. Two axes: the kind of gear (spin and
+# fly never mix, boat is shared) and the action each item asks for, which is
+# how the page groups it (GEAR_ACTIONS). Each season appends its own gear_add
+# items, keyed the same way, in generate_fishing_report
+GEAR_ACTIONS = [
+    ("buy", "To buy"),
+    ("verify", "To verify"),
+    ("bench", "Bench jobs at home"),
+    ("pack", "Owned — pack it"),
+]
+GEAR_KINDS = [
+    ("spin", "🎣 Spin gear:"),
+    ("fly", "🪶 Fly gear:"),
+    ("boat", "🛶 Boat &amp; trip gear:"),
+]
+
 GEAR_CHECK = {
-    "spin": [
-        "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
-        "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — a settled call, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the hook leader wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
-        "2 mm tippet rings — OWNED, a 50-pack, so the rig is buildable. What is left is an evening pre-tying the leader wallet (12/24/36 in hook leaders in both line classes)",
-        "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
-        "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
-        "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
-        "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
-        "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
-        "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
-        "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
-        "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
-        "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow hook leaders and carries the spinner work — but its ultralight blank can never take the browns main",
-        "The browns rod stops travelling — a settled call. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the hook-leader rule is unchanged, the main out-tests the 8 lb browns leader so break-offs happen at the hook leader. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
-    ],
-    "fly": [
-        "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
-        "Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds",
-        "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
-        "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
-        "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin rig's rings",
-    ],
-    "boat": [
-        "Tie-up rope (50+ ft) and a sharp fixed-blade knife in a sheath — the two non-negotiables",
-        "Drag chain for 3+ units — check whether the resort provides one before buying",
-        "Headlamp for the after-dark sculpin run",
-        "Polarized glasses — the structure-reading tool at low water",
-    ],
+    "spin": {
+        "buy": [
+            "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — a settled call, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the hook leader wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
+            "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
+            "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
+            "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
+            "The browns rod stops travelling — a settled call. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the hook-leader rule is unchanged, the main out-tests the 8 lb browns leader so break-offs happen at the hook leader. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
+        ],
+        "verify": [
+            "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
+        ],
+        "bench": [
+            "2 mm tippet rings — OWNED, a 50-pack, so the rig is buildable. What is left is an evening pre-tying the leader wallet (12/24/36 in hook leaders in both line classes)",
+            "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
+        ],
+        "pack": [
+            "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
+            "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
+            "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
+            "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
+            "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow hook leaders and carries the spinner work — but its ultralight blank can never take the browns main",
+        ],
+    },
+    "fly": {
+        "buy": [
+            "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
+            "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
+        ],
+        "verify": [
+            "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
+            "Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds",
+        ],
+        "pack": [
+            "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin rig's rings",
+        ],
+    },
+    "boat": {
+        "verify": [
+            "Drag chain for 3+ units — check whether the resort provides one before buying",
+        ],
+        "pack": [
+            "Tie-up rope (50+ ft) and a sharp fixed-blade knife in a sheath — the two non-negotiables",
+            "Headlamp for the after-dark sculpin run",
+            "Polarized glasses — the structure-reading tool at low water",
+        ],
+    },
 }
 
 
@@ -815,6 +861,8 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
         "Fish the generation change: the leading edge of a rise and the first hour "
         "of falling water beat any time on the clock",
     ]
+    season, _ = get_effective_season(current_time)
+    timing.extend(SEASON_CONTENT[season]["timing"])
 
     # The day's low-light windows — the browns program's hours
     light = light_windows_for(current_time)
@@ -930,7 +978,7 @@ def schedule_outline(forecast_timeline, current_time):
 
 def water_notes(water_quality, season, current_time=None):
     """
-    Measured temperature/oxygen lines for the season notes (from the USGS
+    Measured temperature/oxygen lines for the top of the report (from the USGS
     gauges), or the season's generic fallback when no reading is available.
     """
     temp_line, do_line = describe_water_quality(water_quality)
@@ -982,6 +1030,18 @@ def _band_block(band, season_content):
     }
 
 
+def _gear_by_action(season_content):
+    """{action: {kind: [items]}} — the core list plus the season's adds."""
+    return {
+        action: {
+            kind: (list(GEAR_CHECK[kind].get(action, []))
+                   + season_content["gear_add"].get(kind, {}).get(action, []))
+            for kind, _ in GEAR_KINDS
+        }
+        for action, _ in GEAR_ACTIONS
+    }
+
+
 def generate_fishing_report(white_hole_cfs, current_time,
                             timeline_data=None, forecast_timeline=None,
                             water_quality=None):
@@ -992,7 +1052,7 @@ def generate_fishing_report(white_hole_cfs, current_time,
     September-October) the upcoming window's playbook is shown with
     'in_window' False so the renderer can label it as a preview.
     water_quality is the USGS reading from water_quality.get_water_quality
-    (None when unavailable) and leads the season notes.
+    (None when unavailable) and renders under the flow line as 'water'.
     """
     season, in_window = get_effective_season(current_time)
 
@@ -1007,6 +1067,7 @@ def generate_fishing_report(white_hole_cfs, current_time,
     spin = current["spin"]
     fly = current["fly"]
     content = BAND_CONTENT[band]
+    gear_actions = _gear_by_action(season_content)
 
     return {
         "in_window": in_window,
@@ -1029,13 +1090,16 @@ def generate_fishing_report(white_hole_cfs, current_time,
                                timeline_data, forecast_timeline),
         "spin": spin,
         "fly": fly,
-        "season_notes": water_notes(water_quality, season, current_time) + season_content["notes"],
+        "water": water_notes(water_quality, season, current_time),
+        "season_notes": list(season_content["notes"]),
         "regulations": REGULATIONS,
+        # Flat per kind (action order) for callers that only care what is on
+        # the list; gear_actions is what the page renders
         "gear_check": {
-            "spin": GEAR_CHECK["spin"] + season_content["gear_add"]["spin"],
-            "fly": GEAR_CHECK["fly"] + season_content["gear_add"]["fly"],
-            "boat": list(GEAR_CHECK["boat"]),
+            kind: [item for action, _ in GEAR_ACTIONS for item in gear_actions[action][kind]]
+            for kind, _ in GEAR_KINDS
         },
+        "gear_actions": gear_actions,
         "rigging": RIGGING_REFERENCE,
     }
 
@@ -1064,6 +1128,19 @@ def _map_links_html():
     return f'<p style="margin: 6px 0; font-size: 0.9em;">{links}</p>'
 
 
+def _collapsible_html(title, body, hint=""):
+    """One collapsed reference block; hint is the short read beside the title."""
+    hint_html = (f' <span style="font-weight: normal; color: #666;">— {hint}</span>'
+                 if hint else "")
+    return f'''
+        <details style="margin-bottom: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">{title}{hint_html}</summary>
+            <div style="padding: 5px 15px;">
+                {body}
+            </div>
+        </details>'''
+
+
 def _rigging_html(rigging):
     """Collapsible reference blocks — static content, kept out of the way."""
     blocks = []
@@ -1071,16 +1148,45 @@ def _rigging_html(rigging):
         intro = (f'<p style="color: #666; margin: 8px 0 4px;">{section["intro"]}</p>'
                  if section["intro"] else "")
         figure = section.get("figure", "")
-        blocks.append(f'''
-        <details style="margin-bottom: 8px;">
-            <summary style="cursor: pointer; font-weight: bold; padding: 8px 10px; background: #f7fafc; border-radius: 8px;">{section["title"]}</summary>
-            <div style="padding: 5px 15px;">
-                {intro}
+        blocks.append(_collapsible_html(section["title"], f'''{intro}
                 {figure}
-                <ul style="margin: 5px 0 5px 5px;">{_items_html(section["items"])}</ul>
-            </div>
-        </details>''')
+                <ul style="margin: 5px 0 5px 5px;">{_items_html(section["items"])}</ul>'''))
     return "".join(blocks)
+
+
+REGULATIONS_HINT = ("2 rainbows under 14 in, all other trout released, "
+                    "single hook with bait, one rod")
+
+
+def _regulations_html(regulations):
+    return _collapsible_html(
+        "Regulations",
+        f'''<ul style="margin: 5px 0 5px 5px;">{_items_html(regulations)}</ul>
+                {sources_html(["agfc_regs", "agfc_code"])}''',
+        REGULATIONS_HINT)
+
+
+def _gear_check_html(gear_actions):
+    """The gear check grouped by what each item asks for; spin, fly and boat
+    stay separate lists inside every group."""
+    groups = []
+    counts = []
+    for action, heading in GEAR_ACTIONS:
+        kinds = gear_actions[action]
+        total = sum(len(items) for items in kinds.values())
+        if not total:
+            continue
+        if action in ("buy", "verify"):
+            counts.append(f"{total} to {action}")
+        lists = "".join(
+            f'''
+                <p style="margin: 8px 0 4px;"><strong>{label}</strong></p>
+                <ul style="margin: 0 0 0 5px;">{_items_html(kinds[kind])}</ul>'''
+            for kind, label in GEAR_KINDS if kinds[kind])
+        groups.append(f'''
+                <h5 style="color: #2c3e50; margin: 14px 0 2px; font-size: 1em; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px;">{heading} ({total})</h5>{lists}''')
+    return _collapsible_html("Gear check", "".join(groups),
+                             " · ".join(["before the trip"] + counts))
 
 
 def _evidence_html(text):
@@ -1194,7 +1300,9 @@ def render_fishing_report_html(report):
 
     timing_html = _items_html(report["timing"])
     season_html = _items_html(report["season_notes"])
-    regs_html = _items_html(report["regulations"])
+    water_html = "".join(
+        f'<p style="color: #444; margin: 2px 0; font-size: 0.95em;">{line}</p>'
+        for line in report["water"])
 
     return f'''
     <details class="timeline-box">
@@ -1206,29 +1314,23 @@ def render_fishing_report_html(report):
         {preview_html}
         <p style="font-size: 1.1em; margin: 10px 0;"><strong>{report["band_label"]}</strong>
             — {report["cfs"]:,} CFS at White Hole ({report["generators"]})</p>
+        {water_html}
         {_map_links_html()}
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Timing</h4>
         <ul style="margin: 0 0 0 5px;">{timing_html}</ul>
 
-        {_band_picker_html(report)}
-        {"".join(_band_panel_html(b, b["key"] == report["band"]) for b in report["bands"])}
-
-        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Season notes</h4>
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">This season</h4>
         <ul style="margin: 0 0 0 5px;">{season_html}</ul>
         {sources_html(report["season_sources"])}
 
-        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Regulations</h4>
-        <ul style="margin: 0 0 0 5px;">{regs_html}</ul>
-        {sources_html(["agfc_regs", "agfc_code"])}
+        {_band_picker_html(report)}
+        {"".join(_band_panel_html(b, b["key"] == report["band"]) for b in report["bands"])}
+        <!-- /bands -->
 
-        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Gear check</h4>
-        <p style="margin: 6px 0 4px;"><strong>🎣 Spin gear:</strong></p>
-        <ul style="margin: 0 0 0 5px;">{_items_html(report["gear_check"]["spin"])}</ul>
-        <p style="margin: 10px 0 4px;"><strong>🪶 Fly gear:</strong></p>
-        <ul style="margin: 0 0 0 5px;">{_items_html(report["gear_check"]["fly"])}</ul>
-        <p style="margin: 10px 0 4px;"><strong>🛶 Boat &amp; trip gear:</strong></p>
-        <ul style="margin: 0 0 0 5px;">{_items_html(report["gear_check"]["boat"])}</ul>
+        <h4 style="color: #2c3e50; margin: 22px 0 6px;">Before the trip (reference)</h4>
+        {_regulations_html(report["regulations"])}
+        {_gear_check_html(report["gear_actions"])}
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Rigging &amp; techniques (reference)</h4>
         {_rigging_html(report["rigging"])}

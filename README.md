@@ -17,7 +17,7 @@ Top to bottom:
 | **Current Conditions** | The flow at White Hole now, wading and boating verdicts, sunrise and sunset with the low-light windows, and the tailwater's temperature and oxygen from the USGS gauge with a trout verdict (low oxygen means land fish fast). |
 | **Arrivals at White Hole** | The water on its way to you, in the order it gets there. The top row is what is in front of you now. "Released" rows are the dam's hourly readings, "scheduled" rows are SWPA's generation plan for the rest of today and, once posted around 5 PM, tomorrow. Falling water shows as a window: when the level starts dropping and when it is fully down. |
 | **Water Flow Progression** | The chart: which release is at which landmark right now, dam to White Hole, with map pins for each landmark. |
-| **Fishing Report** | Collapsed by default. Timing around the generation changes, then a tap-to-pick strip with a playbook for every flow band: where to go, boat handling, spin and fly tackle split into a browns program and a rainbows program. Season notes, regulations, a gear check, and the rigging reference follow. |
+| **Fishing Report** | Collapsed by default. Timing around the generation changes and a short This-season block, then a tap-to-pick strip with a playbook for every flow band: where to go, boat handling, spin and fly tackle split into a browns program and a rainbows program. Regulations, a gear check grouped by action (buy / verify / bench / pack), and the rigging reference follow as collapsed blocks. |
 
 Wading verdicts by flow at White Hole:
 
