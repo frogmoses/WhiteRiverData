@@ -266,6 +266,158 @@ def render_arrivals(rows, current_time, wading_condition, has_forecast):
         '''
 
 
+def page_css(banner_color, banner_text_color, wading_condition, boating_condition):
+    """
+    The page stylesheet, shared by every full page this module renders.
+
+    One copy on purpose: the schedule-only page used to carry its own cut-down
+    sheet and silently lost the rules the water-quality pills and the fishing
+    report depend on (run-on pill text, no box round the report — Brian,
+    2026-10-04). Only the banner colours and the two condition pills vary.
+    """
+    return f'''
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7fafc;
+        }}
+        h1 {{
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }}
+        .subtitle {{
+            color: #718096;
+            margin-bottom: 20px;
+        }}
+        .headline-banner {{
+            background-color: {banner_color};
+            color: {banner_text_color};
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }}
+        .headline-banner .main-status {{
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }}
+        .headline-banner .forecast-status {{
+            font-size: 18px;
+            opacity: 0.95;
+        }}
+        .current-conditions {{
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        .current-conditions h3 {{
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }}
+        .flow-display {{
+            font-size: 36px;
+            font-weight: bold;
+            color: #2b6cb0;
+        }}
+        .generator-display {{
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 15px;
+        }}
+        .condition-pills {{
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }}
+        .pill {{
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }}
+        .pill.wading {{
+            background-color: {('#fee2e2' if wading_condition == 'no wading' else '#d1fae5' if wading_condition == 'excellent wading' else '#fef3c7')};
+            color: {('#991b1b' if wading_condition == 'no wading' else '#065f46' if wading_condition == 'excellent wading' else '#92400e')};
+        }}
+        .pill.boating {{
+            background-color: {('#dbeafe' if boating_condition == 'ideal boating' else '#fee2e2' if boating_condition == 'high water' else '#fef3c7')};
+            color: {('#1e40af' if boating_condition == 'ideal boating' else '#991b1b' if boating_condition == 'high water' else '#92400e')};
+        }}
+        .timeline-box {{
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        .timeline-box h3 {{
+            margin-top: 0;
+            color: #2c3e50;
+        }}
+        .chart-section {{
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        .chart-section h3 {{
+            margin-top: 0;
+            color: #2c3e50;
+        }}
+        .webcam-link {{
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #bee3f8;
+            text-decoration: none;
+            font-weight: 500;
+        }}
+        .webcam-link:hover {{
+            background-color: #bee3f8;
+        }}
+        .details-section {{
+            background-color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        .details-section summary {{
+            list-style: none;
+        }}
+        .details-section summary::-webkit-details-marker {{
+            display: none;
+        }}
+        .timestamp {{
+            font-size: 0.85em;
+            color: #718096;
+            text-align: center;
+            margin-top: 20px;
+        }}
+        @media (max-width: 600px) {{
+            .headline-banner .main-status {{
+                font-size: 20px;
+            }}
+            .headline-banner .forecast-status {{
+                font-size: 16px;
+            }}
+            .flow-display {{
+                font-size: 28px;
+            }}
+        }}
+'''
+
+
 def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, water_state,
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
@@ -417,145 +569,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White Hole Conditions - {current_time.strftime('%Y-%m-%d %H:%M')}</title>
     <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f7fafc;
-        }}
-        h1 {{
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }}
-        .subtitle {{
-            color: #718096;
-            margin-bottom: 20px;
-        }}
-        .headline-banner {{
-            background-color: {banner_color};
-            color: {banner_text_color};
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }}
-        .headline-banner .main-status {{
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }}
-        .headline-banner .forecast-status {{
-            font-size: 18px;
-            opacity: 0.95;
-        }}
-        .current-conditions {{
-            background-color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        .current-conditions h3 {{
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }}
-        .flow-display {{
-            font-size: 36px;
-            font-weight: bold;
-            color: #2b6cb0;
-        }}
-        .generator-display {{
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 15px;
-        }}
-        .condition-pills {{
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }}
-        .pill {{
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 500;
-        }}
-        .pill.wading {{
-            background-color: {('#fee2e2' if wading_condition == 'no wading' else '#d1fae5' if wading_condition == 'excellent wading' else '#fef3c7')};
-            color: {('#991b1b' if wading_condition == 'no wading' else '#065f46' if wading_condition == 'excellent wading' else '#92400e')};
-        }}
-        .pill.boating {{
-            background-color: {('#dbeafe' if boating_condition == 'ideal boating' else '#fee2e2' if boating_condition == 'high water' else '#fef3c7')};
-            color: {('#1e40af' if boating_condition == 'ideal boating' else '#991b1b' if boating_condition == 'high water' else '#92400e')};
-        }}
-        .timeline-box {{
-            background-color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        .timeline-box h3 {{
-            margin-top: 0;
-            color: #2c3e50;
-        }}
-        .chart-section {{
-            background-color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        .chart-section h3 {{
-            margin-top: 0;
-            color: #2c3e50;
-        }}
-        .webcam-link {{
-            display: inline-block;
-            background-color: #ebf8ff;
-            color: #2b6cb0;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid #bee3f8;
-            text-decoration: none;
-            font-weight: 500;
-        }}
-        .webcam-link:hover {{
-            background-color: #bee3f8;
-        }}
-        .details-section {{
-            background-color: white;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        .details-section summary {{
-            list-style: none;
-        }}
-        .details-section summary::-webkit-details-marker {{
-            display: none;
-        }}
-        .timestamp {{
-            font-size: 0.85em;
-            color: #718096;
-            text-align: center;
-            margin-top: 20px;
-        }}
-        @media (max-width: 600px) {{
-            .headline-banner .main-status {{
-                font-size: 20px;
-            }}
-            .headline-banner .forecast-status {{
-                font-size: 16px;
-            }}
-            .flow-display {{
-                font-size: 28px;
-            }}
-        }}
+{page_css(banner_color, banner_text_color, wading_condition, boating_condition)}
     </style>
 </head>
 <body>
@@ -670,25 +684,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White Hole Conditions - {current_time.strftime('%Y-%m-%d %H:%M')}</title>
     <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f7fafc;
-        }}
-        h1 {{ color: #2c3e50; margin-bottom: 5px; }}
-        h2 {{ color: #2c3e50; font-size: 1.2em; margin: 25px 0 10px; }}
-        .subtitle {{ color: #718096; margin-bottom: 20px; }}
-        .card {{
-            background: white;
-            border-radius: 12px;
-            padding: 20px 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }}
+{page_css("#991b1b", "white", wading, boating)}
         .scheduled-flow {{ font-size: 2em; font-weight: bold; color: #553c9a; }}
         .tag {{
             display: inline-block;
@@ -701,21 +697,28 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
             letter-spacing: 0.04em;
             vertical-align: middle;
         }}
-        table {{ width: 100%; border-collapse: collapse; }}
-        .footer {{ color: #a0aec0; font-size: 0.8em; text-align: center; margin-top: 30px; }}
+        .outage-banner {{
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+        }}
+        .outage-banner .headline {{ font-weight: 700; font-size: 1.1em; margin-bottom: 6px; }}
     </style>
 </head>
 <body>
     <h1>White Hole Conditions</h1>
     <p class="subtitle">{current_time.strftime('%A, %B %d, %Y at %-I:%M %p')} Central</p>
 
-    <div style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;">
-        <div style="font-weight: 700; font-size: 1.1em; margin-bottom: 6px;">\u26a0\ufe0f {outage_headline(feed_reason)} \u2014 NO MEASURED FLOW</div>
+    <div class="outage-banner">
+        <div class="headline">\u26a0\ufe0f {outage_headline(feed_reason)} \u2014 NO MEASURED FLOW</div>
         <div>{outage_sentence(feed_reason)}</div>
     </div>
 
-    <div class="card">
-        <h2 style="margin-top: 0;">What the dam is scheduled to run</h2>
+    <div class="current-conditions">
+        <h3 style="margin-top: 0;">What the dam is scheduled to run</h3>
         <p><span class="scheduled-flow">{scheduled_cfs:,} CFS</span>
            <span class="tag">SCHEDULED \u2014 NOT MEASURED</span></p>
         <p>{format_generators(scheduled_cfs)} \u00b7 Wading: <strong>{wading}</strong> \u00b7 Boating: <strong>{boating}</strong></p>
@@ -731,7 +734,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
 
     {fishing_report_html}
 
-    <div class="footer">
+    <div class="timestamp">
         Generated {current_time.strftime('%Y-%m-%d %H:%M')} Central \u00b7 schedule from SWPA \u00b7
         readings from USACE Bull Shoals (out)
     </div>

@@ -820,3 +820,21 @@ class TestOutageVocabulary:
         assert "750 CFS" in html
         # nothing may claim this is what the river is doing
         assert "AT WHITE HOLE NOW" not in html
+
+    def test_schedule_only_page_carries_the_shared_stylesheet(self):
+        """
+        It renders the same water-quality pills and fishing-report HTML as the
+        normal page, so it must ship the same CSS. Its own cut-down sheet left
+        the pills running together and the report without its box (2026-10-04).
+        """
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        from formatters import generate_schedule_only_html
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=ZoneInfo("America/Chicago"))
+
+        html = generate_schedule_only_html(
+            current_time=now, forecast_timeline=None, scheduled_cfs=750)
+
+        for rule in (".pill {", ".condition-pills {", ".current-conditions {",
+                     ".details-section {", ".timestamp {"):
+            assert rule in html, f"schedule-only page is missing {rule}"
