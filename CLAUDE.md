@@ -150,6 +150,13 @@ unused (an open item from the review).
   `formatters` mirrors the `no_data_published` literal rather than importing
   `data_fetcher` (Playwright import chain); `tests/test_formatters.py` asserts the two
   never drift.
+- **The telemetry banner says who to call** (`formatters.outage_action`,
+  `USACE_WM_PHONE = (501) 324-6231`): on a `no_data_published` outage every renderer adds
+  one line naming USACE Little Rock Water Management (their own site gives that number for
+  "website corrections or issues"), what to report, when the readings stopped where that is
+  known, and that it is **not** USGS — the Corps publishes the release table, USGS only runs
+  the temperature/oxygen gauges, and Brian emailed USGS first (2026-10-04). A
+  `fetch_failed` outage gets no line: that one is ours to fix.
 - **Schedule-only page** (`formatters.generate_schedule_only_html` /
   `generate_schedule_only_text`, chosen in `main.generate_white_hole_summary`): when there
   are no readings AND no cache inside `MAX_CACHE_AGE_HOURS`, the page no longer collapses
