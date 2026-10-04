@@ -211,7 +211,7 @@ BAND_CONTENT = {
             "Low water lingers longest downstream — run down early, work back upstream as any afternoon water arrives",
         ],
         "spin": {
-            "rig": "White River rig both programs: dropper-loop Y, 6–10 in sinker leg with a "
+            "rig": "White River rig both programs: surgeon's-loop Y, 7 in sinker leg with a "
                    "1/8 oz bell (#10), size 10 barrel swivel up top, hook leg long "
                    "at this flow (30–48 in). Each program's 'Leader' below is the single piece "
                    "of line the whole Y is tied from — both legs; your main line stays as spooled.",
@@ -575,8 +575,8 @@ SPIN_RIG_SVG = '''
 <svg viewBox="0 0 420 356" role="img" aria-labelledby="rigttl"
      style="width:100%;max-width:430px;height:auto;display:block;margin:10px auto 0;">
   <title id="rigttl">The White River rig built as the tippet-ring cartridge system: main line to a
-  barrel swivel, then a permanent 8 lb fluorocarbon base carrying a 12 inch butt and a dropper loop
-  that splits into a short sinker leg with a bell sinker and an 8 inch stub ending in a 2 mm tippet
+  barrel swivel, then a permanent 8 lb fluorocarbon base carrying a 12 inch butt and a surgeon's loop
+  that splits into a 7 inch sinker leg with a bell sinker and an 8 inch stub ending in a 2 mm tippet
   ring; a swappable pre-tied cartridge clinches to that ring and runs down to the hook, where the
   bait rides up off the bottom</title>
   <g fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round">
@@ -607,8 +607,8 @@ SPIN_RIG_SVG = '''
     <text x="114" y="28">main line, as spooled</text>
     <text x="114" y="56">size 10 barrel swivel</text>
     <text x="114" y="80" fill="#2b6cb0">12 in butt</text>
-    <text x="114" y="99">dropper loop</text>
-    <text x="2" y="180" fill="#2b6cb0">6–10 in</text>
+    <text x="114" y="99">surgeon's loop</text>
+    <text x="2" y="180" fill="#2b6cb0">7 in</text>
     <text x="2" y="232">bell #10–#4</text>
     <text x="142" y="126" fill="#2b6cb0">8 in stub</text>
     <text x="196" y="160">2 mm tippet ring</text>
