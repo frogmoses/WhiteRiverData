@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>White Hole Conditions - 2026-10-04 06:00</title>
+    <title>White Hole Conditions - 2026-10-04 06:46</title>
     <style>
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
@@ -14,16 +15,137 @@
             padding: 20px;
             background-color: #f7fafc;
         }
-        h1 { color: #2c3e50; margin-bottom: 5px; }
-        h2 { color: #2c3e50; font-size: 1.2em; margin: 25px 0 10px; }
-        .subtitle { color: #718096; margin-bottom: 20px; }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
         }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        .headline-banner {
+            background-color: #991b1b;
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .headline-banner .main-status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .headline-banner .forecast-status {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        .current-conditions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .current-conditions h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .flow-display {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2b6cb0;
+        }
+        .generator-display {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .condition-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .pill.wading {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .pill.boating {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .timeline-box {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .timeline-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .chart-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .webcam-link {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #bee3f8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .webcam-link:hover {
+            background-color: #bee3f8;
+        }
+        .details-section {
+            background-color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .details-section summary {
+            list-style: none;
+        }
+        .details-section summary::-webkit-details-marker {
+            display: none;
+        }
+        .timestamp {
+            font-size: 0.85em;
+            color: #718096;
+            text-align: center;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .headline-banner .main-status {
+                font-size: 20px;
+            }
+            .headline-banner .forecast-status {
+                font-size: 16px;
+            }
+            .flow-display {
+                font-size: 28px;
+            }
+        }
+
         .scheduled-flow { font-size: 2em; font-weight: bold; color: #553c9a; }
         .tag {
             display: inline-block;
@@ -36,21 +158,28 @@
             letter-spacing: 0.04em;
             vertical-align: middle;
         }
-        table { width: 100%; border-collapse: collapse; }
-        .footer { color: #a0aec0; font-size: 0.8em; text-align: center; margin-top: 30px; }
+        .outage-banner {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+        }
+        .outage-banner .headline { font-weight: 700; font-size: 1.1em; margin-bottom: 6px; }
     </style>
 </head>
 <body>
     <h1>White Hole Conditions</h1>
-    <p class="subtitle">Sunday, October 04, 2026 at 6:00 AM Central</p>
+    <p class="subtitle">Sunday, October 04, 2026 at 6:46 AM Central</p>
 
-    <div style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;">
-        <div style="font-weight: 700; font-size: 1.1em; margin-bottom: 6px;">⚠️ DAM TELEMETRY OUT — NO MEASURED FLOW</div>
+    <div class="outage-banner">
+        <div class="headline">⚠️ DAM TELEMETRY OUT — NO MEASURED FLOW</div>
         <div>The USACE page is up, but Bull Shoals is publishing no readings — every row in its table is blank. Nothing here can fix that; it comes back when the Corps' telemetry does.</div>
     </div>
 
-    <div class="card">
-        <h2 style="margin-top: 0;">What the dam is scheduled to run</h2>
+    <div class="current-conditions">
+        <h3 style="margin-top: 0;">What the dam is scheduled to run</h3>
         <p><span class="scheduled-flow">750 CFS</span>
            <span class="tag">SCHEDULED — NOT MEASURED</span></p>
         <p>0-1 generators · Wading: <strong>excellent wading</strong> · Boating: <strong>low for boating</strong></p>
@@ -59,7 +188,7 @@
            non-power release would not show up here while the readings are out.</p>
         
         <div class="condition-pills" style="margin-top: 12px;"><span class="pill" style="background-color: #d1fae5; color: #065f46;">Water 60.3°F <small>— prime trout water — fish will chase</small></span><span class="pill" style="background-color: #d1fae5; color: #065f46;">Oxygen 6.8 mg/L <small>— good</small></span></div>
-        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater <a href="https://waterdata.usgs.gov/monitoring-location/USGS-07054527/" target="_blank" style="color: #718096;">USGS gauge at Cane Island</a>, as of 5:00 AM</p>
+        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater <a href="https://waterdata.usgs.gov/monitoring-location/USGS-07054527/" target="_blank" style="color: #718096;">USGS gauge at Cane Island</a>, as of 6:00 AM</p>
         <p style="color: #718096; font-size: 0.9em; margin: 10px 0 0;">☀️ Sunrise 7:08 AM · Sunset 6:51 PM <small>— low light: dawn until 9:08 AM, dusk from 4:51 PM</small></p>
         
     </div>
@@ -378,7 +507,7 @@
         </div>
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Season notes</h4>
-        <ul style="margin: 0 0 0 5px;"><li>Water 60.3°F — prime trout water — fish will chase</li><li>Oxygen 6.8 mg/L — good (USGS gauge at Cane Island, 5:00 AM)</li><li>Browns are staging pre-spawn — aggression without redds. They've shifted to eating big: sculpin here run 5–6 in, so don't fish small for them</li><li>Stage points: upper ends of holes (trophy browns found in as little as 5 ft), shoal-tail drop-offs, undercut banks and wood</li><li>Typical pattern: minimum flow through the morning, generation arriving afternoon/evening — run downstream early, fish the low water, work back up on the rise</li><li>Rainbow forage: sowbug/scud > midge > worms-on-the-rise; brown forage: sculpin > crawdad > everything else</li><li>Not a dry-fly month — nymphs and streamers; hoppers on warm afternoons are the exception</li></ul>
+        <ul style="margin: 0 0 0 5px;"><li>Water 60.3°F — prime trout water — fish will chase</li><li>Oxygen 6.8 mg/L — good (USGS gauge at Cane Island, 6:00 AM)</li><li>Browns are staging pre-spawn — aggression without redds. They've shifted to eating big: sculpin here run 5–6 in, so don't fish small for them</li><li>Stage points: upper ends of holes (trophy browns found in as little as 5 ft), shoal-tail drop-offs, undercut banks and wood</li><li>Typical pattern: minimum flow through the morning, generation arriving afternoon/evening — run downstream early, fish the low water, work back up on the rise</li><li>Rainbow forage: sowbug/scud > midge > worms-on-the-rise; brown forage: sculpin > crawdad > everything else</li><li>Not a dry-fly month — nymphs and streamers; hoppers on warm afternoons are the exception</li></ul>
         <p style="color: #999; font-size: 0.8em; margin: 6px 0 0;">Sources: <a href="research/WHITE_RIVER_RESEARCH_BRIEF.md" target="_blank" style="color: #718096;">Research brief, Aug 2026</a> · <a href="https://waterdata.usgs.gov/monitoring-location/USGS-07054527/" target="_blank" style="color: #718096;">USGS tailwater gauges 07054527 / 07054502</a></p>
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Regulations</h4>
@@ -571,8 +700,8 @@
         </p>
     </details>
 
-    <div class="footer">
-        Generated 2026-10-04 06:00 Central · schedule from SWPA ·
+    <div class="timestamp">
+        Generated 2026-10-04 06:46 Central · schedule from SWPA ·
         readings from USACE Bull Shoals (out)
     </div>
 </body>
