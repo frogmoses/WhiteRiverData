@@ -283,9 +283,9 @@ appended to the bottom of the page. Design rules:
   `report["gear_actions"]` is what renders.
 - **Timing** (`build_timing`): the generic bullet, the season's pattern bullet, the day's low-light windows, RISE/DROP EN
   ROUTE from the first *significant* incoming plug (recession window for drops), the first
-  SCHEDULED RISE/DROP with per-spot ETAs (windows for drops), then `schedule_outline` — one
-  bullet per scheduled day ("Rest of today at White Hole: …", "Tomorrow (Mon) at White
-  Hole: …") listing every significant change with its ETA, peak marked.
+  SCHEDULED RISE/DROP with per-spot ETAs (windows for drops). Nothing more: the per-day outline bullets (`schedule_outline`)
+  were removed 2026-10-04 at Brian's word — they repeated the arrivals table as an
+  unreadable run-on line. The table is the schedule; Timing is what to do about it.
 - **No housekeeping dates in rendered copy** (Brian, 2026-10-04: "I don't need info about
   dates about when I bought stuff, or made decisions"). Purchase and decision dates belong
   in code comments, commit messages and this file — never in a string the page renders.

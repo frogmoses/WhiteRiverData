@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 
 from water_calculator import (
     calculate_travel_time, get_flow, format_generators, get_fishing_condition,
-    recession_window, clock, group_forecast_runs, significant_change
+    recession_window, clock
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
 import suncalc
@@ -916,9 +916,10 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
                 f"{name} ~{clock(eta, current_time)}" for name, eta in etas
             )
             timing.append(
-                f"SCHEDULED RISE to {entry['cfs']:,} CFS "
-                f"({format_generators(entry['cfs'])}) at {when}: {eta_str}. "
-                f"Downstream water stays low longer — be below the front and fish it up"
+                f"SCHEDULED RISE — be below the front and fish it up; downstream "
+                f"water stays low longer. Reaches {eta_str} "
+                f"({entry['cfs']:,} CFS, {format_generators(entry['cfs'])}, "
+                f"released at {when})"
             )
         else:
             windows = spot_recession_windows(entry["scheduled_time"], from_cfs, entry["cfs"])
@@ -926,54 +927,12 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
                 _window_str(name, start, end, current_time) for name, start, end in windows
             )
             timing.append(
-                f"SCHEDULED DROP to {entry['cfs']:,} CFS at {when}: "
-                f"falling water {eta_str} (start of the drop–fully down). "
-                f"Fish the first hour of the drop at each spot; upstream falls first"
+                f"SCHEDULED DROP — fish the first hour of the drop at each spot; "
+                f"upstream falls first. Falling water, start of the drop–fully down: "
+                f"{eta_str} (cut to {entry['cfs']:,} CFS at {when})"
             )
 
-    timing.extend(schedule_outline(forecast_timeline, current_time))
-
     return timing
-
-
-def schedule_outline(forecast_timeline, current_time):
-    """
-    One bullet per scheduled day: every significant change at White Hole in
-    order, the peak marked — the night-before read of tomorrow, and the rest
-    of today beyond the first change the SCHEDULED RISE/DROP bullet names.
-    """
-    if not forecast_timeline:
-        return []
-    bullets = []
-    by_day = {}
-    for run in group_forecast_runs(forecast_timeline):
-        by_day.setdefault(run["start_time"].date(), []).append(run)
-    for day, day_runs in sorted(by_day.items()):
-        # The day's high point — unmarked when it is simply where the day
-        # starts (a day that only falls from the current level has no peak)
-        peak = max(day_runs, key=lambda r: r["cfs"])
-        if peak is day_runs[0]:
-            peak = None
-        steps = []
-        prev = None
-        for run in day_runs:
-            if prev is not None and significant_change(prev, run["cfs"]) is None and run is not peak:
-                prev = run["cfs"]
-                continue
-            when = (f"falling ~{clock(run['recession_start'], current_time)}"
-                    if run.get("change") == "falling" and run.get("recession_start")
-                    else f"by ~{clock(run['arrival_time'], current_time)}")
-            tag = " (peak)" if run is peak else ""
-            steps.append(f"{run['cfs']:,} {when}{tag}")
-            prev = run["cfs"]
-        if day == current_time.date():
-            label = "Rest of today at White Hole"
-        elif day == current_time.date() + timedelta(days=1):
-            label = f"Tomorrow ({day.strftime('%a')}) at White Hole"
-        else:
-            label = f"{day.strftime('%a')} at White Hole"
-        bullets.append(f"{label}: " + " · ".join(steps))
-    return bullets
 
 
 def water_notes(water_quality, season, current_time=None):

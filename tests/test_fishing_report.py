@@ -740,40 +740,17 @@ class TestLightWindows:
         assert "until further notice" in regs
 
 
-class TestScheduleOutline:
-    def _hour(self, when, cfs, change=None, recession_start=None):
-        return {"scheduled_time": when, "cfs": cfs, "generators": "x",
-                "arrival_time": when + timedelta(hours=calculate_travel_time(cfs)),
-                "wading": "no wading", "change": change, "recession_start": recession_start,
-                "generation_cfs": cfs - 250, "min_flow_cfs": 250}
+class TestNoScheduleOutline:
+    """The per-day outline bullets repeated the arrivals table in a form that
+    was hard to read; Timing keeps only the first scheduled change."""
 
-    def test_tomorrow_bullet_lists_every_significant_change_and_the_peak(self):
-        tomorrow = OCTOBER.replace(hour=0) + timedelta(days=1)
-        forecast = (
-            [self._hour(tomorrow + timedelta(hours=h), 750) for h in range(0, 6)]
-            + [self._hour(tomorrow + timedelta(hours=h), 1600, "rising") for h in range(6, 11)]
-            + [self._hour(tomorrow + timedelta(hours=11), 4301, "rising")]
-            + [self._hour(tomorrow + timedelta(hours=16), 18818, "rising")]
-            + [self._hour(tomorrow + timedelta(hours=19), 10378, "falling",
-                          tomorrow + timedelta(hours=21))]
-        )
-        timing = build_timing(750, OCTOBER, None, forecast)
-        outline = [t for t in timing if t.startswith("Tomorrow (")][0]
-        assert "at White Hole:" in outline
-        assert "1,600 by ~" in outline and "4,301 by ~" in outline
-        assert "18,818 by ~" in outline and "(peak)" in outline
-        assert "10,378 falling ~" in outline
-        # weekday prefix on every clock, since the day is tomorrow
-        assert tomorrow.strftime("%a") in outline
-
-    def test_rest_of_today_bullet(self):
-        later = OCTOBER + timedelta(hours=2)
-        forecast = [self._hour(later, 8352, "rising"), self._hour(later + timedelta(hours=3), 750, "falling")]
+    def test_timing_carries_no_day_outline(self):
+        scheduled = OCTOBER.replace(hour=14, minute=0)
+        forecast = [{"scheduled_time": scheduled, "cfs": 8352,
+                     "arrival_time": scheduled + timedelta(hours=2)}]
         timing = " ".join(build_timing(750, OCTOBER, None, forecast))
-        assert "Rest of today at White Hole: 8,352 by ~" in timing
-
-    def test_no_forecast_no_outline(self):
-        assert not [t for t in build_timing(750, OCTOBER, None, None) if "at White Hole:" in t]
+        assert "SCHEDULED RISE" in timing
+        assert "Rest of today" not in timing and "Tomorrow (" not in timing
 
 
 class TestProvenance:
