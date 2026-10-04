@@ -531,26 +531,26 @@ REGULATIONS = [
 # each season appends its own gear_add items in generate_fishing_report
 GEAR_CHECK = {
     "spin": [
-        "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the cartridge-tying material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
-        "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — a settled call, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the cartridge wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
-        "2 mm tippet rings — OWNED, a 50-pack, so the cartridge rig is buildable. What is left is an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
+        "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
+        "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — a settled call, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the hook leader wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
+        "2 mm tippet rings — OWNED, a 50-pack, so the rig is buildable. What is left is an evening pre-tying the leader wallet (12/24/36 in hook leaders in both line classes)",
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
         "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
-        "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the cartridge does",
+        "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
         "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
         "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
         "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
         "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
-        "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main",
-        "The browns rod stops travelling — a settled call. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the cartridge rule is unchanged, the main out-tests the 8 lb browns cartridge so break-offs happen at the cartridge. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
+        "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow hook leaders and carries the spinner work — but its ultralight blank can never take the browns main",
+        "The browns rod stops travelling — a settled call. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the hook-leader rule is unchanged, the main out-tests the 8 lb browns leader so break-offs happen at the hook leader. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
     ],
     "fly": [
         "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
         "Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds",
         "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
         "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
-        "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin cartridge rings",
+        "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin rig's rings",
     ],
     "boat": [
         "Tie-up rope (50+ ft) and a sharp fixed-blade knife in a sheath — the two non-negotiables",
@@ -567,17 +567,17 @@ GEAR_CHECK = {
 # blocks stay separate; boat handling and etiquette are shared seamanship.
 # ---------------------------------------------------------------------------
 
-# Inline diagram of the tippet-ring cartridge rig. Literal colours, because
+# Inline diagram of the tippet-ring rig. Literal colours, because
 # the report page has no CSS custom properties and no dark mode. The base is
-# drawn in ink and the cartridge in orange: that split is the whole point of
+# drawn in ink and the hook leader in orange: that split is the whole point of
 # the system, so it carries the one colour distinction in the drawing.
 SPIN_RIG_SVG = '''
 <svg viewBox="0 0 420 356" role="img" aria-labelledby="rigttl"
      style="width:100%;max-width:430px;height:auto;display:block;margin:10px auto 0;">
-  <title id="rigttl">The White River rig built as the tippet-ring cartridge system: main line to a
+  <title id="rigttl">The White River rig built as the tippet-ring system: main line to a
   barrel swivel, then a permanent 8 lb fluorocarbon base carrying a 12 inch butt and a surgeon's loop
   that splits into a 7 inch sinker leg with a bell sinker and an 8 inch stub ending in a 2 mm tippet
-  ring; a swappable pre-tied cartridge clinches to that ring and runs down to the hook, where the
+  ring; a swappable pre-tied hook leader clinches to that ring and runs down to the hook, where the
   bait rides up off the bottom</title>
   <g fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round">
     <path d="M100 10 L100 44"/>
@@ -612,7 +612,7 @@ SPIN_RIG_SVG = '''
     <text x="2" y="232">bell #10–#4</text>
     <text x="142" y="126" fill="#2b6cb0">8 in stub</text>
     <text x="196" y="160">2 mm tippet ring</text>
-    <text x="112" y="252" fill="#c05621">cartridge  12 / 24 / 36 in</text>
+    <text x="112" y="252" fill="#c05621">hook leader  12 / 24 / 36 in</text>
     <text x="112" y="267">= hook leg  20 / 32 / 44 in</text>
     <text x="418" y="266" text-anchor="end">bait rides up</text>
   </g>
@@ -620,13 +620,13 @@ SPIN_RIG_SVG = '''
     <path d="M8 314 l22 0" fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
     <text x="38" y="318">permanent base · 8 lb fluoro · stays on the rod</text>
     <path d="M8 338 l22 0" fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round"/>
-    <text x="38" y="342">cartridge · clinched on · 4 lb rainbows, 8 lb browns</text>
+    <text x="38" y="342">hook leader · clinched on · 4 lb rainbows, 8 lb browns</text>
   </g>
 </svg>
 <p style="font-size: 0.82em; color: #718096; text-align: center; margin: 8px auto 4px; max-width: 430px; line-height: 1.5;">
-  The base never comes off the rod. A hook snag costs the cartridge and never the base, the ring or
-  the bell, which is why a 4&nbsp;lb rainbow cartridge hangs under an 8&nbsp;lb base. The base sits
-  more than 20&nbsp;in above the bait, so the fish only ever inspects cartridge-class line.
+  The base never comes off the rod. A hook snag costs the hook leader and never the base, the ring or
+  the bell, which is why a 4&nbsp;lb rainbow hook leader hangs under an 8&nbsp;lb base. The base sits
+  more than 20&nbsp;in above the bait, so the fish only ever inspects hook-leader line.
 </p>'''
 
 
@@ -681,16 +681,16 @@ SPLIT_SHOT_RIG_SVG = '''
 RIGGING_REFERENCE = [
     {
         "title": "The White River rig (spin)",
-        "intro": "The tippet-ring cartridge system: a permanent base that stays on the "
-                 "rod, and a swappable pre-tied hook leader — the cartridge — clinched to "
+        "intro": "The tippet-ring system: a permanent base that stays on the "
+                 "rod, and a swappable pre-tied hook leader clinched to "
                  "the ring. The diagram is the rig. What follows is how to size it, tune "
                  "it and fish it, not how to tie it.",
         "figure": SPIN_RIG_SVG,
         "items": [
-            "Tune the hook leg, never the weight leg. The cartridge ladder does it without retying anything: a 12, 24 or 36 in cartridge gives a hook leg of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Faster water wants it shorter, because a long leader lays flat; minimum flow wants it long. Trim to tune, swap up when the water drops",
-            "The cartridge picks the species program — each program's 'Leader' spec applies to the cartridge, not the base: 4 lb mono = rainbows, 8 lb fluoro = browns. The base sits 20+ in above the bait, so the fish only inspects cartridge-class line, and a lighter cartridge under a heavier base is automatically sacrificial: a hook snag costs the cartridge, never the base, the ring or the bell",
-            "The rubber-band breakaway, what it actually looks like: finish the bell end with a small overhand loop instead of clinching it to the bell. Girth-hitch a #16 orthodontic rubber band (the ¼ in dental elastic) through that loop, then pass the band's free end through the bell's eye and back over the bell — a second girth hitch. No knots in the band and nothing else holding the sinker; fishing, the band lies slack and the bell hangs as if tied. Hung up, point the rod at the snag and pull steadily: the band stretches, snaps, and the rig comes back whole minus one bell — hitch on a fresh band and bell and cast again. Check it on the tailgate before the first cast: pull the bell against the tied rig by hand and make sure the band lets go before anything else does; a band that out-pulls the 4 lb cartridge has defeated the point. Sized for the #10–#7 bells; a #6 or #4 bell for the 3+ unit bands stretches the band on the cast, so up there clinch the bell direct and accept that a bad hang costs the base",
-            "Pre-tie the cartridge wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. An evening's work that turns a mid-drift re-rig into a ten-second swap",
+            "Tune the hook leg, never the weight leg. The hook-leader ladder does it without retying anything: a 12, 24 or 36 in leader gives a hook leg of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Faster water wants it shorter, because a long leader lays flat; minimum flow wants it long. Trim to tune, swap up when the water drops",
+            "The hook leader picks the species program — each program's 'Leader' spec applies to the hook leader, not the base: 4 lb mono = rainbows, 8 lb fluoro = browns. The base sits 20+ in above the bait, so the fish only inspects hook-leader line, and a lighter leader under a heavier base is automatically sacrificial: a hook snag costs the hook leader, never the base, the ring or the bell",
+            "The rubber-band breakaway, what it actually looks like: finish the bell end with a small overhand loop instead of clinching it to the bell. Girth-hitch a #16 orthodontic rubber band (the ¼ in dental elastic) through that loop, then pass the band's free end through the bell's eye and back over the bell — a second girth hitch. No knots in the band and nothing else holding the sinker; fishing, the band lies slack and the bell hangs as if tied. Hung up, point the rod at the snag and pull steadily: the band stretches, snaps, and the rig comes back whole minus one bell — hitch on a fresh band and bell and cast again. Check it on the tailgate before the first cast: pull the bell against the tied rig by hand and make sure the band lets go before anything else does; a band that out-pulls the 4 lb hook leader has defeated the point. Sized for the #10–#7 bells; a #6 or #4 bell for the 3+ unit bands stretches the band on the cast, so up there clinch the bell direct and accept that a bad hang costs the base",
+            "Pre-tie the leader wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. An evening's work that turns a mid-drift re-rig into a ten-second swap",
             "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7–#6 · 4+ units #6–#4. Calibrate on the water: it should tick bottom on the swing and slip when the tip lifts, never plant",
             "Hook by bait: eggs or Mice Tail #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
         ],

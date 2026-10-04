@@ -237,7 +237,7 @@ class TestSpeciesPrograms:
     @pytest.mark.parametrize("when", [OCTOBER, APRIL])
     @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
     def test_only_two_line_weights_prescribed(self, cfs, when):
-        """Leader/cartridge prescriptions run on exactly two spools: 4 lb
+        """Leader prescriptions run on exactly two spools: 4 lb
         (rainbows), 8 lb (browns). 20 lb is allowed only as the fly leader's
         butt section. Any other pound-test (6, 10, 12, 16, ranges like 6-8 or
         8-10...) in the prescriptions is drift.
@@ -318,7 +318,7 @@ class TestSpeciesPrograms:
             spin_text = " ".join(gear["spin"])
             fly_text = " ".join(gear["fly"])
             # Fly vocabulary stays out of the spin list
-            # "tippet ring" is legitimate dual-use hardware in the cartridge
+            # "tippet ring" is legitimate dual-use hardware in the hook-leader
             # rig; ban tippet-as-line vocabulary only
             assert "tippet" not in spin_text.replace("tippet ring", "")
             assert "VersiLeader" not in spin_text
@@ -576,10 +576,10 @@ class TestQuietSummary:
         assert "list-style: none" in summary
 
 
-class TestCartridgeRig:
-    """The tippet-ring cartridge upgrade lives in the rig-build reference."""
+class TestHookLeaderRig:
+    """The tippet-ring hook-leader upgrade lives in the rig-build reference."""
 
-    def test_cartridge_system_documented(self):
+    def test_hook_leader_system_documented(self):
         report = generate_fishing_report(750, OCTOBER)
         rig = next(s for s in report["rigging"]
                    if s["title"].startswith("The White River rig"))
@@ -588,10 +588,10 @@ class TestCartridgeRig:
         # 2026-09-29 removal of the tying steps
         assert "12, 24 or 36 in" in text
         assert "20, 32 or 44 in" in text
-        # Species selection moves to the cartridge
+        # Species selection moves to the hook leader
         assert "4 lb mono = rainbows, 8 lb fluoro = browns" in text
         # and the sacrificial logic that makes the system worth having
-        assert "costs the cartridge" in text
+        assert "costs the hook leader" in text
 
     def test_rings_in_both_gear_lists(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
@@ -794,7 +794,7 @@ class TestRigDiagram:
         rig = html.split("The White River rig (spin)", 1)[1].split("</details>", 1)[0]
         assert "<svg" in rig and "2 mm tippet ring" in rig and "12 / 24 / 36 in" in rig
         assert "20 / 32 / 44 in" in rig
-        assert "cartridge-class line" in rig
+        assert "hook-leader line" in rig
 
     def test_split_shot_rig_has_its_own_drawing(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
