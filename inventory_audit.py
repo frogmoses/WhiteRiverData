@@ -78,8 +78,8 @@ OWNED_GEAR = [
     ("worm blower", r"worm blower", r"Magic 1004 Worm Blower"),
     ("Z-Man TRD CrawZ (the soft craw)", r"soft craw|TRD CrawZ", r"TRD CrawZ 2\.5\" Mudbug"),
     # found by the 'bought' check on its first run, 2026-09-28: the rainbow
-    # cartridge tier was on the buy list while the shelf held it three ways
-    ("Maxima Chameleon 4 lb (rainbow cartridges)", r"Maxima|Chameleon", r"Chameleon 4 lb"),
+    # hook-leader tier was on the buy list while the shelf held it three ways
+    ("Maxima Chameleon 4 lb (rainbow hook leaders)", r"Maxima|Chameleon", r"Chameleon 4 lb"),
 ]
 
 # Named by the report as things to buy or verify — must NOT be presented as
@@ -97,12 +97,12 @@ BUY_OR_VERIFY = [
     ("fast-sinking VersiLeader/polyleader", r"VersiLeader|polyleader", None),
     # NOT matched on purpose: the shelf's 8 lb P-Line Floroclear is fluoro-COATED
     # copolymer (the Croton drop-shot leader spool), and the Maxima 8 lb wheels
-    # are mono. The browns cartridge spec is 100% fluorocarbon, which the shelf
+    # are mono. The browns hook-leader spec is 100% fluorocarbon, which the shelf
     # carries only at 15 lb. Brian was asked whether the coating should count and
     # said no, keep the spec (2026-09-28) — so this stays tight and the item stays
     # on the buy list until a real 8 lb fluorocarbon spool has a row. Settled;
     # don't re-open it from the fact that an 8 lb fluoro-ish line is owned.
-    ("8 lb fluorocarbon spool (browns cartridges)", r"8 lb fluorocarbon \(~\$",
+    ("8 lb fluorocarbon spool (browns hook leaders)", r"8 lb fluorocarbon \(~\$",
      r"100% fluorocarbon[^|]*\| \*\*8 lb\*\*"),
 ]
 

@@ -210,7 +210,7 @@ appended to the bottom of the page. Design rules:
   paragraph, its row says "failed inspection" without the gear check saying so, or **a buy
   item now has a live inventory row** (the drift that runs the other way: the report still
   says buy it, the shelf says owned. Added 2026-09-28 after four items flipped unnoticed;
-  it found a fifth on its first run, the rainbow cartridge mono). Keep a buy item's row
+  it found a fifth on its first run, the rainbow hook-leader mono). Keep a buy item's row
   pattern tight — a loose one matches a near-miss on the shelf and cries wolf.
   `scripts/audit_gear_inventory.py` runs the same audit from the shell (exit 1 on drift) for
   the Croton side. **Naming new gear in the report means registering it in the same
@@ -273,7 +273,7 @@ appended to the bottom of the page. Design rules:
   `SPOT_COORDS`, rendered as a map link. The brief called it "the Narrows"; that name found
   no corroboration and was dropped.
 - **`RIGGING_REFERENCE`**: static how-to content (White River rig build incl. the
-  tippet-ring cartridge system with its SVG diagram `SPIN_RIG_SVG`, bait prep, boat strategy
+  tippet-ring hook-leader system with its SVG diagram `SPIN_RIG_SVG`, bait prep, boat strategy
   — tie/drift/anchor, tied-boat presentations, fly-from-boat, etiquette) rendered as
   collapsible blocks after the gear check. Unchanged by flow/season; spin and fly blocks
   tagged and kept separate; boat handling and etiquette shared.
