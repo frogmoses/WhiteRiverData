@@ -553,7 +553,6 @@ GEAR_KINDS = [
 GEAR_CHECK = {
     "spin": {
         "buy": [
-            "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — a settled call, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the hook leader wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
             "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
             "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
             "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
@@ -567,6 +566,7 @@ GEAR_CHECK = {
             "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
         ],
         "pack": [
+            "Brown program leader: 8 lb fluorocarbon — OWNED, a spool of 100% fluorocarbon, and that is the one to pack: the 8 lb P-Line Floroclear beside it on the shelf is a fluoro-COATED nylon copolymer, near-neutral where real fluoro sinks and mono-stretchy where the hook leader wants low stretch. Read the spool, not the word on the front of it. This one spool runs the whole browns program, spin and fly",
             "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
             "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
             "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
@@ -577,13 +577,13 @@ GEAR_CHECK = {
     "fly": {
         "buy": [
             "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
-            "Brown program tippet: the same 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
         ],
         "verify": [
             "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
             "Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds",
         ],
         "pack": [
+            "Brown program tippet: the same OWNED 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
             "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin rig's rings",
         ],
     },
