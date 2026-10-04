@@ -31,10 +31,10 @@ INVENTORY_PATH = os.path.expanduser(
 
 # (label, how the report mentions it, how the inventory row reads)
 OWNED_GEAR = [
-    # rods and reels — the AR pair plus the travelling browns rod
+    # rods and reels — the AR pair (the Cherrywood stopped travelling and the
+    # report no longer names it)
     ("Daiwa Presso (AR)", r"Presso", r"AR \| \*\*6'\*\* Daiwa Presso"),
     ("St. Croix Premier PS60ULF", r"St\. Croix", r"PS60ULF"),
-    ("Berkley Cherrywood CWD702MS", r"Cherrywood", r"CWD702MS"),
     ("Abu Garcia Black Max 30", r"Black Max", r"Black Max 30"),
     ("Pflueger President 20 (AR travel reel)", r"President", r"Pflueger President size 20"),
     ("Daiwa Exceler 2000 SH (AR travel reel)", r"Exceler", r"Daiwa Exceler 2000 SH"),

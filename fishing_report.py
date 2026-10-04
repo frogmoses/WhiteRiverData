@@ -556,7 +556,7 @@ GEAR_CHECK = {
             "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
             "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
             "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
-            "The browns rod stops travelling — a settled call. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the hook-leader rule is unchanged, the main out-tests the 8 lb browns leader so break-offs happen at the hook leader. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
+            "Buy a 7 ft medium, 6-14 lb, 1/8-3/4 oz browns rod and leave it in Arkansas",
         ],
         "verify": [
             "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
@@ -566,7 +566,7 @@ GEAR_CHECK = {
             "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
         ],
         "pack": [
-            "Brown program leader: 8 lb fluorocarbon — OWNED, a spool of 100% fluorocarbon, and that is the one to pack: the 8 lb P-Line Floroclear beside it on the shelf is a fluoro-COATED nylon copolymer, near-neutral where real fluoro sinks and mono-stretchy where the hook leader wants low stretch. Read the spool, not the word on the front of it. This one spool runs the whole browns program, spin and fly",
+            "Brown program leader: a spool of 8 lb fluorocarbon — OWNED",
             "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
             "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
             "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
