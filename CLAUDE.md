@@ -173,7 +173,7 @@ unused (an open item from the review).
   feeds down it is still the error page.
 - **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails, `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed`), plus the stale banner once the cache ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the error page. The cache is **committed** by `run_white_hole.sh` (its `git stash -u` would destroy an untracked copy). Motivated by the Aug 27 2026 army.mil DNS outage.
 - **DNS fallback** (`data_fetcher.get_bull_shoals_data`): on `ERR_NAME_NOT_RESOLVED`, `resolve_via_doh` asks cloudflare-dns.com for the A record and Chromium is relaunched with `--host-resolver-rules=MAP host ip` (the existing `--ignore-certificate-errors` covers a mismatched cert on the pinned IP). Other errors are not retried. Added 2026-09-21 after the Pi's resolver failed army.mil; the Pi's resolver was also fixed (see Deployment).
-- **Water quality** (`water_quality.get_water_quality`): one call to the USGS instantaneous-values service for gauges 07054527 (near Fairview, beside the Cane Island pin — preferred) and 07054502 (0.7 mi below the dam — fallback): water temperature and dissolved oxygen, 15-minute, **no discharge**. Thresholds: DO <5 mg/L low / <6 marginal; temp <50°F cold / 50–62 prime / 62–68 warm / ≥68 hot (commonly cited trout ranges — verify before tightening). Rendered as pills under Current Conditions (`formatters.generate_water_quality_html`, age shown past `STALE_READING_HOURS`), in the text summary, and as the first lines of the fishing report's season notes (`fishing_report.water_notes`; a per-season fallback sentence when the fetch fails — the old fixed "~53–56°F" note contradicted the live gauge). Fetch failure never blanks the page.
+- **Water quality** (`water_quality.get_water_quality`): one call to the USGS instantaneous-values service for gauges 07054527 (near Fairview, beside the Cane Island pin — preferred) and 07054502 (0.7 mi below the dam — fallback): water temperature and dissolved oxygen, 15-minute, **no discharge**. Thresholds: DO <5 mg/L low / <6 marginal; temp <50°F cold / 50–62 prime / 62–68 warm / ≥68 hot (commonly cited trout ranges — verify before tightening). Rendered as pills under Current Conditions (`formatters.generate_water_quality_html`, age shown past `STALE_READING_HOURS`), in the text summary, and as the lines under the fishing report's flow line (`fishing_report.water_notes` → `report["water"]`; a per-season fallback sentence when the fetch fails — the old fixed "~53–56°F" note contradicted the live gauge). Fetch failure never blanks the page.
 - **Sunrise/sunset** (`suncalc.light_windows` via `fishing_report.light_windows_for`): dawn = sunrise−1 h..+2 h, dusk = sunset−2 h..+1 h, at the White Hole pin; the Current Conditions line, the report's "Low light today" Timing bullet and the journal builder's windows all use this one function.
 - **Prediction log** (`prediction_log.py`): `main.__main__` passes `prediction_log_file=PREDICTION_LOG_FILE` for the HTML run only, appending one row per production run to `predictions.csv` (run time, latest reading, predicted White Hole CFS and its source reading, next significant actual change with its arrival or recession window, first significant scheduled change, water temp/DO, feed_failed). Committed by `run_white_hole.sh`. Purpose: the first validation dataset for the travel model — compare against timestamped on-site observations (journal) and later dam readings.
 - **Chart and table run in opposite senses, on purpose** (`chart_generator`,
@@ -264,10 +264,24 @@ appended to the bottom of the page. Design rules:
   `<div class="wh-band-panel" data-band=…>` per band (`<!-- band:key -->` marker before each;
   only the live band is unhidden and badged "at White Hole now"; an inline script toggles
   them, no persistence so a reload shows the live band). Where/boat/spin/fly and the
-  per-program Journal lines are per panel; Timing, season notes, regulations, gear and
-  rigging stay shared. Top-level `report["spin"]`/`["fly"]`/`["where"]` remain the live
+  per-program Journal lines are per panel; Timing, This season, regulations, gear and
+  rigging stay shared. `<!-- /bands -->` closes the last panel — tests split on it. Top-level `report["spin"]`/`["fly"]`/`["where"]` remain the live
   band's for compatibility.
-- **Timing** (`build_timing`): the generic bullet, the day's low-light windows, RISE/DROP EN
+- **Expanded = driven by flow, time or season; everything else is collapsed** (Brian,
+  2026-10-04: "there is just a lot of information. I want it focused"). Order: flow line +
+  USGS water lines → Timing → This season (`SEASON_CONTENT[...]["notes"]`, short) → band
+  picker and panels → "Before the trip (reference)": Regulations and Gear check as
+  collapsed blocks (`_collapsible_html`, the same block the rigging reference uses), then
+  Rigging. The Regulations summary line carries the on-the-water rules
+  (`REGULATIONS_HINT`). A season's when-to-fish sentence lives in
+  `SEASON_CONTENT[...]["timing"]` and renders as a Timing bullet, not a season note.
+- **Gear check is grouped by action** (`GEAR_ACTIONS`: buy / verify / bench / pack), with
+  spin, fly and boat as separate lists inside each group (`GEAR_KINDS`). `GEAR_CHECK` and
+  each season's `gear_add` are `{kind: {action: [items]}}`; a new item must be filed under
+  the action it asks for, and moved when that changes (bought → pack). The summary line
+  counts the buy and verify bullets. `report["gear_check"]` stays flat per kind;
+  `report["gear_actions"]` is what renders.
+- **Timing** (`build_timing`): the generic bullet, the season's pattern bullet, the day's low-light windows, RISE/DROP EN
   ROUTE from the first *significant* incoming plug (recession window for drops), the first
   SCHEDULED RISE/DROP with per-spot ETAs (windows for drops), then `schedule_outline` — one
   bullet per scheduled day ("Rest of today at White Hole: …", "Tomorrow (Mon) at White

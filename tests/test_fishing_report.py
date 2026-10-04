@@ -169,7 +169,7 @@ class TestSpinFlySeparation:
         panels = re.split(r"<!-- band:\w+ -->", html)[1:]
         assert len(panels) == 5
         for panel in panels:
-            panel = panel.split("Season notes", 1)[0]
+            panel = panel.split("<!-- /bands -->", 1)[0]
             spin_block = panel.split("Spin Fishing", 1)[1].split("Fly Fishing", 1)[0]
             fly_block = panel.split("Fly Fishing", 1)[1]
             # Fly-only vocabulary stays out of the spin block
@@ -291,7 +291,7 @@ class TestSpeciesPrograms:
         panels = re.split(r"<!-- band:\w+ -->", html)[1:]
         assert len(panels) == 5
         for panel in panels:
-            panel = panel.split("Season notes", 1)[0]
+            panel = panel.split("<!-- /bands -->", 1)[0]
             fly_cased = "stays cased" in panel
             expected = 1 if fly_cased else 2
             assert panel.count("trophy program") == expected
@@ -332,6 +332,52 @@ class TestSpeciesPrograms:
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         assert "Spin gear:" in html
         assert "Fly gear:" in html
+
+
+class TestFocusedLayout:
+    """What flow, time and season drive stays expanded and in that order;
+    everything else is a collapsed reference block below the band panels."""
+
+    def test_expanded_order_is_timing_season_playbook(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        order = [html.index(marker) for marker in (
+            ">Timing<", ">This season<", "The playbook by flow", "<!-- /bands -->")]
+        assert order == sorted(order)
+
+    def test_reference_blocks_are_collapsed_below_the_bands(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        tail = html.split("<!-- /bands -->", 1)[1]
+        for title in (">Regulations <span", ">Gear check <span"):
+            assert title in tail
+        assert "<details open" not in tail
+        # The on-the-water rules ride in the collapsed summary line
+        assert "2 rainbows under 14 in, all other trout released" in tail
+
+    def test_seasonal_pattern_is_a_timing_bullet(self):
+        fall = generate_fishing_report(750, OCTOBER)
+        spring = generate_fishing_report(750, APRIL)
+        assert any("Typical fall pattern" in t for t in fall["timing"])
+        assert any("Typical spring pattern" in t for t in spring["timing"])
+        assert not any("Typical" in n for n in fall["season_notes"] + spring["season_notes"])
+
+    def test_gear_check_groups_by_action(self):
+        report = generate_fishing_report(750, OCTOBER)
+        actions = report["gear_actions"]
+        assert list(actions) == ["buy", "verify", "bench", "pack"]
+        assert any("8 lb fluorocarbon (~$8)" in i for i in actions["buy"]["spin"])
+        assert any("Fly box audit" in i for i in actions["verify"]["fly"])
+        assert any("leader wallet" in i for i in actions["bench"]["spin"])
+        assert any("Worm blower" in i for i in actions["pack"]["spin"])
+        # Nothing is lost between the grouped view and the flat lists
+        for kind in ("spin", "fly", "boat"):
+            grouped = [i for a in actions.values() for i in a[kind]]
+            assert sorted(grouped) == sorted(report["gear_check"][kind])
+        html = render_fishing_report_html(report)
+        buy = sum(len(v) for v in actions["buy"].values())
+        verify = sum(len(v) for v in actions["verify"].values())
+        assert f"{buy} to buy · {verify} to verify" in html
+        assert html.index("To buy (") < html.index("To verify (") \
+            < html.index("Bench jobs at home (") < html.index("Owned — pack it (")
 
 
 class TestRiggingReference:
@@ -641,7 +687,8 @@ class TestGearDoctrine:
 
 
 class TestWaterNotes:
-    """Measured USGS temperature/oxygen leads the season notes."""
+    """Measured USGS temperature/oxygen sits under the flow line, not in the
+    season notes."""
 
     WQ = {"site": "07054527", "site_label": "USGS gauge at Cane Island",
           "temp_c": 14.6, "temp_f": 58.3, "do_mg_l": 4.5,
@@ -650,7 +697,7 @@ class TestWaterNotes:
 
     def test_measured_reading_replaces_the_guess(self):
         report = generate_fishing_report(750, OCTOBER, water_quality=self.WQ)
-        notes = report["season_notes"]
+        notes = report["water"]
         assert notes[0].startswith("Water 58.3°F — prime")
         assert notes[1].startswith("Oxygen 4.5 mg/L — LOW")
         assert "USGS gauge at Cane Island" in notes[1]
@@ -658,7 +705,7 @@ class TestWaterNotes:
 
     def test_fallback_without_a_reading(self):
         for when in (OCTOBER, APRIL):
-            notes = generate_fishing_report(750, when, water_quality=None)["season_notes"]
+            notes = generate_fishing_report(750, when, water_quality=None)["water"]
             assert "USGS tailwater reading unavailable" in notes[0]
 
     def test_no_hardcoded_temperature_claims(self):
