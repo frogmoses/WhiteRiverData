@@ -838,3 +838,35 @@ class TestOutageVocabulary:
         for rule in (".pill {", ".condition-pills {", ".current-conditions {",
                      ".details-section {", ".timestamp {"):
             assert rule in html, f"schedule-only page is missing {rule}"
+
+    def test_telemetry_outage_tells_the_reader_who_to_call(self):
+        from data_fetcher import OUTAGE_FETCH_FAILED, OUTAGE_NO_DATA_PUBLISHED
+        from formatters import outage_action, USACE_WM_PHONE
+        action = outage_action(OUTAGE_NO_DATA_PUBLISHED)
+        assert USACE_WM_PHONE in action
+        assert "Little Rock Water Management" in action
+        # the wrong-agency trap Brian fell into: USGS runs the gauges, not the table
+        assert "Not USGS" in action
+        # a failed fetch is ours to fix — no phone call to make
+        assert outage_action(OUTAGE_FETCH_FAILED) is None
+
+    def test_the_action_names_when_the_readings_stopped_when_known(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        from formatters import outage_action
+        last = datetime(2026, 10, 1, 20, 50, tzinfo=ZoneInfo("America/Chicago"))
+        assert "nothing since Thu Oct 01, 8:50 PM" in outage_action(
+            OUTAGE_NO_DATA_PUBLISHED, last)
+
+    def test_schedule_only_page_carries_a_tappable_number(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        from formatters import generate_schedule_only_html
+        html = generate_schedule_only_html(
+            current_time=datetime(2026, 10, 3, 9, 0, tzinfo=ZoneInfo("America/Chicago")),
+            forecast_timeline=None, scheduled_cfs=750,
+            feed_reason=OUTAGE_NO_DATA_PUBLISHED)
+        assert 'href="tel:+15013246231"' in html
+        assert "(501) 324-6231" in html

@@ -113,6 +113,40 @@ def outage_headline(reason):
     return "LIVE DAM FEED UNAVAILABLE"
 
 
+# USACE Little Rock District Water Management. Their own site gives this number
+# for "website corrections or issues", which is what a table of dashes is. The
+# Corps publishes the release table; USGS only runs the temperature/oxygen
+# gauges, so reporting a blank table to USGS reaches the wrong agency (Brian
+# emailed them first, 2026-10-04).
+USACE_WM_PHONE = "(501) 324-6231"
+USACE_WM_TEL = "+15013246231"
+
+
+def outage_action(reason, last_reading_time=None):
+    """
+    What the reader can do about this outage, or None when there is nothing.
+
+    Only the telemetry case gets one: dashes in the Corps' table are theirs to
+    fix and a phone call is the reported-fastest route. A failed fetch is ours.
+    """
+    if reason != OUTAGE_NO_DATA_PUBLISHED:
+        return None
+    since = ""
+    if last_reading_time is not None:
+        since = f" (nothing since {last_reading_time.strftime('%a %b %d, %-I:%M %p')})"
+    return (f"Worth reporting: USACE Little Rock Water Management, {USACE_WM_PHONE} \u2014 "
+            f"tell them the Bull Shoals hourly table is publishing \u2014\u2014\u2014\u2014 "
+            f"in every column{since}. Not USGS: they run the temperature and oxygen "
+            f"gauges, not the release table.")
+
+
+def _with_tel_link(text):
+    """Make the phone number in an action line tappable."""
+    return text.replace(
+        USACE_WM_PHONE,
+        f'<a href="tel:{USACE_WM_TEL}" style="color: inherit; font-weight: 600;">{USACE_WM_PHONE}</a>')
+
+
 def outage_sentence(reason):
     """One sentence saying what is broken and whose problem it is."""
     if reason == OUTAGE_NO_DATA_PUBLISHED:
@@ -502,9 +536,12 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     # is being served from the last-good-data cache)
     feed_failed_banner_html = ""
     if feed_failed:
+        action = outage_action(feed_reason, latest_entry.get('date_time'))
+        action_html = (f'<div style="font-weight: 400; font-size: 0.9em; margin-top: 8px;">'
+                       f'{_with_tel_link(action)}</div>') if action else ""
         feed_failed_banner_html = f'''
     <div style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; font-weight: 500;">
-        ⚠️ {outage_headline(feed_reason)} — Showing the last readings retrieved before it stopped. Conditions may have changed since.
+        ⚠️ {outage_headline(feed_reason)} — Showing the last readings retrieved before it stopped. Conditions may have changed since.{action_html}
     </div>'''
 
     # Stale-data warning banner (shown when the USACE feed has stalled)
@@ -671,6 +708,10 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
     if rows:
         arrivals_html = render_arrivals(rows, current_time, wading, has_forecast=True)
 
+    action = outage_action(feed_reason, last_reading_time)
+    action_html = (f'<div style="margin-top: 10px; font-size: 0.95em;">'
+                   f'{_with_tel_link(action)}</div>') if action else ""
+
     last_reading_html = ""
     if last_reading_time is not None:
         last_reading_html = (f'<p style="color: #718096; font-size: 0.9em;">Last reading the dam '
@@ -715,6 +756,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
     <div class="outage-banner">
         <div class="headline">\u26a0\ufe0f {outage_headline(feed_reason)} \u2014 NO MEASURED FLOW</div>
         <div>{outage_sentence(feed_reason)}</div>
+        {action_html}
     </div>
 
     <div class="current-conditions">
@@ -749,6 +791,9 @@ def generate_schedule_only_text(current_time, forecast_timeline, scheduled_cfs,
     wading, boating = get_fishing_condition(scheduled_cfs)
     temp_line, do_line = describe_water_quality(water_quality)
     water_quality_text = "".join(f"{line}\n" for line in (temp_line, do_line) if line)
+    action = outage_action(feed_reason, last_reading_time)
+    action_text = f"{action}\n" if action else ""
+
     last_reading_text = ""
     if last_reading_time is not None:
         last_reading_text = (f"Last reading the dam published: "
@@ -764,7 +809,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
 
 WARNING: {outage_headline(feed_reason).capitalize()} — no measured flow.
 {outage_sentence(feed_reason)}
-{last_reading_text}
+{action_text}{last_reading_text}
 SCHEDULED (not measured), from SWPA:
 - Now: {scheduled_cfs:,} CFS, {format_generators(scheduled_cfs)}
 - Wading: {wading}
@@ -854,6 +899,9 @@ def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, w
     if feed_failed:
         stale_warning += (f"\nWARNING: {outage_headline(feed_reason).capitalize()} — "
                           "showing the last readings retrieved before it stopped.\n")
+        action = outage_action(feed_reason, latest_entry.get('date_time'))
+        if action:
+            stale_warning += f"{action}\n"
     if stale_hours is not None:
         stale_warning += f"\nWARNING: Dam data is delayed — latest reading is {stale_hours:.1f} hours old.\n"
     summary = f"""
