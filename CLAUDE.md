@@ -150,11 +150,14 @@ unused (an open item from the review).
   `formatters` mirrors the `no_data_published` literal rather than importing
   `data_fetcher` (Playwright import chain); `tests/test_formatters.py` asserts the two
   never drift.
-- **The telemetry banner says who to call** (`formatters.outage_action`,
-  `USACE_WM_PHONE = (501) 324-6231`): on a `no_data_published` outage every renderer adds
-  one line naming USACE Little Rock Water Management (their own site gives that number for
-  "website corrections or issues"), what to report, when the readings stopped where that is
-  known, and that it is **not** USGS — the Corps publishes the release table, USGS only runs
+- **The telemetry banner says who to tell** (`formatters.outage_action`, `USACE_EMAIL`,
+  `USACE_WM_PHONE`): on a `no_data_published` outage every renderer adds one line with
+  `ceswl-pa@usace.army.mil` (the address the district site itself gives for website
+  corrections — a blank table is one; Public Affairs routes it on) as a `mailto:` with a
+  subject, then Water Management on (501) 324-6235 as a `tel:`. **Email leads because the
+  water-control site's own (501) 324-6231 does not connect** — Brian tried it 2026-10-04.
+  The line also carries what to report, when the readings stopped where that is known,
+  and that it is **not** USGS — the Corps publishes the release table, USGS only runs
   the temperature/oxygen gauges, and Brian emailed USGS first (2026-10-04). A
   `fetch_failed` outage gets no line: that one is ours to fix.
 - **Schedule-only page** (`formatters.generate_schedule_only_html` /

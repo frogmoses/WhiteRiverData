@@ -841,10 +841,11 @@ class TestOutageVocabulary:
 
     def test_telemetry_outage_tells_the_reader_who_to_call(self):
         from data_fetcher import OUTAGE_FETCH_FAILED, OUTAGE_NO_DATA_PUBLISHED
-        from formatters import outage_action, USACE_WM_PHONE
+        from formatters import outage_action, USACE_WM_PHONE, USACE_EMAIL
         action = outage_action(OUTAGE_NO_DATA_PUBLISHED)
-        assert USACE_WM_PHONE in action
-        assert "Little Rock Water Management" in action
+        # email leads: the published water-control number did not connect
+        assert action.index(USACE_EMAIL) < action.index(USACE_WM_PHONE)
+        assert "USACE Little Rock" in action
         # the wrong-agency trap Brian fell into: USGS runs the gauges, not the table
         assert "Not USGS" in action
         # a failed fetch is ours to fix — no phone call to make
@@ -868,5 +869,5 @@ class TestOutageVocabulary:
             current_time=datetime(2026, 10, 3, 9, 0, tzinfo=ZoneInfo("America/Chicago")),
             forecast_timeline=None, scheduled_cfs=750,
             feed_reason=OUTAGE_NO_DATA_PUBLISHED)
-        assert 'href="tel:+15013246231"' in html
-        assert "(501) 324-6231" in html
+        assert 'href="mailto:ceswl-pa@usace.army.mil' in html
+        assert 'href="tel:+15013246235"' in html
