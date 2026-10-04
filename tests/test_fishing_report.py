@@ -446,7 +446,7 @@ class TestRiggingReference:
 
     def test_season_adds_land_in_the_right_program(self):
         fall = generate_fishing_report(750, OCTOBER)
-        assert any("crawdad" in item for item in fall["spin"]["browns"])
+        assert any("TRD CrawZ" in item for item in fall["spin"]["browns"])
         assert any("garlic" in item for item in fall["spin"]["rainbows"])
         spring = generate_fishing_report(750, APRIL)
         assert any("caddis pupa" in item for item in spring["fly"]["browns"])
@@ -599,13 +599,18 @@ class TestRigClarity:
 
     @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
     def test_crawler_and_shrimp_baits_name_the_y(self, cfs):
-        """Every crawler/shrimp soak or hold references the White River rig."""
+        """Every crawler/shrimp soak or hold is on the White River rig: the
+        bullet says so, or it names no rig at all and inherits the section's
+        Rig line, which must then be the White River rig."""
         report = generate_fishing_report(cfs, OCTOBER)
+        assert "White River rig" in report["spin"]["rig"]
+        other_rigs = ("float", "tied direct")
         for program in ("browns", "rainbows"):
             for item in report["spin"][program]:
                 text = item.lower()
                 if ("crawler" in text or "shrimp" in text) and "split-shot" not in text:
-                    assert "white river rig" in text, item
+                    assert ("white river rig" in text
+                            or not any(rig in text for rig in other_rigs)), item
 
 
 class TestQuietSummary:
@@ -672,11 +677,11 @@ class TestGearDoctrine:
 
     def test_soft_craw_leads_the_crawdad_bullet(self):
         """The soft craw was bought 2026-09-28, so the fall crawdad bullet
-        leads with it and keeps the half Senko as the fallback."""
+        leads with it and keeps the Senko as the alternative."""
         fall = generate_fishing_report(750, OCTOBER)
-        craw = [item for item in fall["spin"]["browns"] if "crawdad" in item.lower()]
-        assert craw and "TRD CrawZ" in craw[0]
-        assert "green-pumpkin Senko" in craw[0]
+        craw = [item for item in fall["spin"]["browns"] if "TRD CrawZ" in item]
+        assert craw and craw[0].startswith("The Z-Man TRD CrawZ")
+        assert "green pumpkin Senko" in craw[0]
         assert "not owned" not in craw[0]
 
     def test_fly_gear_marked_unverified(self):
