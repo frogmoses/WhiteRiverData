@@ -364,7 +364,8 @@ class TestFocusedLayout:
         report = generate_fishing_report(750, OCTOBER)
         actions = report["gear_actions"]
         assert list(actions) == ["buy", "verify", "bench", "pack"]
-        assert any("8 lb fluorocarbon (~$8)" in i for i in actions["buy"]["spin"])
+        assert any("resident" in i or "browns rod" in i for i in actions["buy"]["spin"])
+        assert any("8 lb fluorocarbon — OWNED" in i for i in actions["pack"]["spin"])
         assert any("Fly box audit" in i for i in actions["verify"]["fly"])
         assert any("leader wallet" in i for i in actions["bench"]["spin"])
         assert any("Worm blower" in i for i in actions["pack"]["spin"])
@@ -665,10 +666,10 @@ class TestGearDoctrine:
         spin = " ".join(gear["spin"])
         # The worm blower, the tippet rings, the rubber bands and the soft craw
         # were bought 2026-09-28, and the rainbow leader turned out to be owned
-        # all along; all five now say OWNED. The browns fluoro spool is what is
-        # left of the spin buy list
+        # all along; all five now say OWNED. The browns fluoro spool followed
+        # on 2026-10-04 - it packs, it is no longer a purchase
         assert "Worm blower" in spin and "OWNED" in spin
-        assert "8 lb fluorocarbon (~$8)" in spin
+        assert "8 lb fluorocarbon — OWNED" in spin and "8 lb fluorocarbon (~$" not in spin
         # The rods live at Dad's, the reels travel and are respooled at home
         # (2026-09-29) — the gear check must keep that split visible
         assert "live at Dad's" in spin and "the reels travel" in spin

@@ -80,6 +80,13 @@ OWNED_GEAR = [
     # found by the 'bought' check on its first run, 2026-09-28: the rainbow
     # hook-leader tier was on the buy list while the shelf held it three ways
     ("Maxima Chameleon 4 lb (rainbow hook leaders)", r"Maxima|Chameleon", r"Chameleon 4 lb"),
+    # bought 2026-10-04 — the last line item on the spin buy list. The row
+    # pattern stays tight on purpose: the shelf's 8 lb P-Line Floroclear is
+    # fluoro-COATED copolymer (the Croton drop-shot leader spool) and the Maxima
+    # 8 lb wheels are mono, and neither is the browns hook-leader spec. Brian
+    # was asked whether the coating should count and said no (2026-09-28).
+    ("8 lb fluorocarbon spool (browns hook leaders)", r"8 lb fluorocarbon",
+     r"100% fluorocarbon[^|]*\| \*\*8 lb\*\*"),
 ]
 
 # Named by the report as things to buy or verify — must NOT be presented as
@@ -95,15 +102,6 @@ BUY_OR_VERIFY = [
     ("resident browns rod at Dad's", r"browns rod", r"AR \|[^|]*medium spinning"),
     # fly gear is uninventoried by Brian's standing decision — nothing to find
     ("fast-sinking VersiLeader/polyleader", r"VersiLeader|polyleader", None),
-    # NOT matched on purpose: the shelf's 8 lb P-Line Floroclear is fluoro-COATED
-    # copolymer (the Croton drop-shot leader spool), and the Maxima 8 lb wheels
-    # are mono. The browns hook-leader spec is 100% fluorocarbon, which the shelf
-    # carries only at 15 lb. Brian was asked whether the coating should count and
-    # said no, keep the spec (2026-09-28) — so this stays tight and the item stays
-    # on the buy list until a real 8 lb fluorocarbon spool has a row. Settled;
-    # don't re-open it from the fact that an 8 lb fluoro-ish line is owned.
-    ("8 lb fluorocarbon spool (browns hook leaders)", r"8 lb fluorocarbon \(~\$",
-     r"100% fluorocarbon[^|]*\| \*\*8 lb\*\*"),
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory section)
