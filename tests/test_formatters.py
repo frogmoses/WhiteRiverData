@@ -871,3 +871,25 @@ class TestOutageVocabulary:
             feed_reason=OUTAGE_NO_DATA_PUBLISHED)
         assert 'href="mailto:ceswl-pa@usace.army.mil' in html
         assert 'href="tel:+15013246235"' in html
+
+    def test_chart_section_explains_its_direction(self):
+        """
+        The chart is ordered by river mile (later water higher), the arrivals
+        table by arrival time (later water lower). Opposite senses on purpose —
+        one is a map, one is a schedule — so the page says so rather than
+        leaving the reader to work it out (Brian, 2026-10-04).
+        """
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        from formatters import generate_html_summary
+        now = datetime(2026, 10, 3, 9, 0, tzinfo=ZoneInfo("America/Chicago"))
+        entry = {'date_time': now, 'elevation': 657.0, 'tailwater': 450.0,
+                 'generation': 100, 'turbine_release': 2000,
+                 'spillway_release': 0, 'total_release': 2000}
+        html = generate_html_summary(
+            current_time=now, white_hole_cfs=2000, generators_equivalent=0.6,
+            water_state="steady", wading_condition="excellent wading",
+            boating_condition="low for boating", recent_trend="steady",
+            forecast="stable", latest_entry=entry, relevant_entry=entry)
+        assert "water moves <em>down</em> the chart" in html
+        assert "still on its" in html and "way" in html

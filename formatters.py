@@ -653,6 +653,10 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     <div class="chart-section">
         <h3>Water Flow Progression</h3>
         <p style="color: #666;">Chart shows water traveling from Bull Shoals Dam to White Hole</p>
+        <p style="color: #666; font-size: 0.9em; margin-top: -6px;">Dam at the top, White Hole at the
+           bottom &mdash; water moves <em>down</em> the chart, so a bar above White Hole is still on its
+           way. Each bar carries the time that water reaches White Hole, which is the order the
+           arrivals table above lists them in.</p>
         <div id="chart-container" style="text-align: center; margin: 20px 0;">
             <!-- Chart will be inserted here -->
         </div>
