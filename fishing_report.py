@@ -457,10 +457,10 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: the Z-Man TRD CrawZ 2.5 in Mudbug on the 1/10 oz Ned head, tied direct (both bought 2026-09-28 for this presentation), with half a green-pumpkin Senko on the same head as the fallback",
+                "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: the Z-Man TRD CrawZ 2.5 in Mudbug on the 1/10 oz Ned head, tied direct (both owned), with half a green-pumpkin Senko on the same head as the fallback",
             ],
             "rainbows": [
-                "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough (his call 2026-09-29)",
+                "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough",
             ],
         },
         "fly_add": {
@@ -474,7 +474,7 @@ SEASON_CONTENT = {
         "gear_add": {
             "spin": [
                 "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
-                "The soft craw upgrade is bought, not optional any more: Z-Man TRD CrawZ 2.5 in Mudbug x12 plus tungsten 1/10 oz mushroom heads x5 (2026-09-28) — pack both for the Ned-head crawdad presentation. At 2.5 in the CrawZ lands inside the 2–2.75 in finesse window this rig wants, matching the half-Senko profile the 1/10 oz head already carries: a 3.5 in flipping craw would overpower a light Ned head, slow the fall and kill the action the rig runs on",
+                "The soft craw upgrade is bought, not optional any more: Z-Man TRD CrawZ 2.5 in Mudbug x12 plus tungsten 1/10 oz mushroom heads x5 — pack both for the Ned-head crawdad presentation. At 2.5 in the CrawZ lands inside the 2–2.75 in finesse window this rig wants, matching the half-Senko profile the 1/10 oz head already carries: a 3.5 in flipping craw would overpower a light Ned head, slow the fall and kill the action the rig runs on",
             ],
             "fly": [
                 "A few #10 hoppers in pink and black/purple (~$6) — the colors browns here reportedly favor",
@@ -532,18 +532,18 @@ REGULATIONS = [
 GEAR_CHECK = {
     "spin": [
         "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the cartridge-tying material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
-        "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — Brian's call 2026-09-28, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the cartridge wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
-        "2 mm tippet rings — OWNED, a 50-pack (2026-09-28), so the cartridge rig is buildable. What is left is an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
+        "Brown program leader: a spool of 8 lb fluorocarbon (~$8), and 100% fluorocarbon is the spec, not a fluoro-COATED copolymer — a settled call, asked and answered: the shelf's owned 8 lb P-Line Floroclear is a nylon copolymer under its coating, near-neutral where real fluoro sinks and mono-stretchy where the cartridge wants low stretch, so it does not substitute. Read the spool, not the word on the front of it. 4 lb is a rainbow tool; this one spool runs the whole browns program, spin and fly",
+        "2 mm tippet rings — OWNED, a 50-pack, so the cartridge rig is buildable. What is left is an evening pre-tying the cartridge wallet (12/24/36 in hook leaders in both line classes)",
         "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
-        "Marabou jigs: the inventory records their hooks as failed inspection (2026-08-28) — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
-        "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics (2026-09-28) — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the cartridge does",
+        "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
+        "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the cartridge does",
         "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
         "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
         "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
-        "Worm blower — OWNED (Magic 1004, 2026-09-28); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
-        "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay (2026-09-29)",
-        "The AR reels are respooled and bagged (2026-09-29): President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main",
-        "The browns rod stops travelling — Brian's call 2026-09-28. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the cartridge rule is unchanged, the main out-tests the 8 lb browns cartridge so break-offs happen at the cartridge. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
+        "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
+        "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
+        "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow cartridges and carries the spinner work — but its ultralight blank can never take the browns main",
+        "The browns rod stops travelling — a settled call. It was the 2-piece Berkley Cherrywood CWD702MS packed down and back; a rod matching that blank (7 ft medium, 6-14 lb, 1/8-3/4 oz) gets bought and LEFT at Dad's instead, so the jerkbait class lives in Arkansas. What travels is the reel: the Black Max 30 off the NY shelf, carried down each trip and respooled to 10 lb mono before it goes — the cartridge rule is unchanged, the main out-tests the 8 lb browns cartridge so break-offs happen at the cartridge. UNTIL THAT ROD IS BOUGHT there is no browns rod in Arkansas and nothing is packed in its place: the ultralight pair still covers the rainbow drift, but a trophy or high-generation agenda has no rod for it",
     ],
     "fly": [
         "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
