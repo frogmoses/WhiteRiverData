@@ -27,6 +27,13 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
     flows_at_points = []
     release_times = []
     release_hours_ago = []
+    # When the parcel sitting at each landmark reaches White Hole. This is the
+    # bridge between the chart and the arrivals table: the chart is ordered by
+    # river mile (dam top, water moving down) so later-arriving water sits
+    # HIGHER, while the table is ordered by arrival time so later water sits
+    # LOWER. Printing the ETA on each row means the reader never has to
+    # translate between the two axes (Brian, 2026-10-04).
+    white_hole_etas = []
 
     for mile in points:
         relevant_entry = None
@@ -48,14 +55,20 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
                     break
 
         if relevant_entry:
-            flows_at_points.append(get_flow(relevant_entry))
+            flow = get_flow(relevant_entry)
+            flows_at_points.append(flow)
             release_times.append(relevant_release_time)
             hours_ago = (current_time - relevant_release_time).total_seconds() / 3600
             release_hours_ago.append(hours_ago)
+            # Full-reach travel time from the release, the same model the
+            # arrivals table uses, so the two agree to the minute
+            white_hole_etas.append(
+                relevant_release_time + timedelta(hours=calculate_travel_time(flow)))
         else:
             flows_at_points.append(0)
             release_times.append(None)
             release_hours_ago.append(0)
+            white_hole_etas.append(None)
 
     # Create the chart
     fig, ax = plt.subplots(figsize=(8, 10))
@@ -109,22 +122,31 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
     # Annotate each point with CFS, generators, and release time
     for i, (flow, release_time, hours) in enumerate(zip(flows_at_points, release_times, release_hours_ago)):
         gen_str = format_generators(flow)
+        eta = white_hole_etas[i]
+        if i == len(points) - 1:
+            eta_line = "\nat White Hole now"
+        elif eta is None:
+            eta_line = ""
+        elif eta <= current_time:
+            eta_line = "\nat White Hole now"
+        else:
+            eta_line = f"\nWhite Hole ~{eta.strftime('%-I:%M %p')}"
 
         if i == 0:
             # Dam - show as "Current Release"
-            annotation = f"{flow:,} CFS\n({gen_str})\nCurrent Release"
+            annotation = f"{flow:,} CFS\n({gen_str})\nCurrent Release{eta_line}"
         elif i == len(points) - 1:
             # White Hole - show release time prominently
             if release_time:
-                annotation = f"{flow:,} CFS\n({gen_str})\nReleased: {release_time.strftime('%H:%M')}"
+                annotation = f"{flow:,} CFS\n({gen_str})\nReleased: {release_time.strftime('%H:%M')}{eta_line}"
             else:
-                annotation = f"{flow:,} CFS\n({gen_str})"
+                annotation = f"{flow:,} CFS\n({gen_str}){eta_line}"
         else:
             # Intermediate points - show release time if different from neighbors
             if release_time:
-                annotation = f"{flow:,} CFS\n({gen_str})\n{release_time.strftime('%H:%M')}"
+                annotation = f"{flow:,} CFS\n({gen_str})\n{release_time.strftime('%H:%M')}{eta_line}"
             else:
-                annotation = f"{flow:,} CFS"
+                annotation = f"{flow:,} CFS{eta_line}"
 
         # Position annotation to the right of the bar
         ax.annotate(annotation, (flow + 200, y_pos[i]), va='center', fontsize=9,

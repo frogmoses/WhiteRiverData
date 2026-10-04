@@ -176,6 +176,16 @@ unused (an open item from the review).
 - **Water quality** (`water_quality.get_water_quality`): one call to the USGS instantaneous-values service for gauges 07054527 (near Fairview, beside the Cane Island pin — preferred) and 07054502 (0.7 mi below the dam — fallback): water temperature and dissolved oxygen, 15-minute, **no discharge**. Thresholds: DO <5 mg/L low / <6 marginal; temp <50°F cold / 50–62 prime / 62–68 warm / ≥68 hot (commonly cited trout ranges — verify before tightening). Rendered as pills under Current Conditions (`formatters.generate_water_quality_html`, age shown past `STALE_READING_HOURS`), in the text summary, and as the first lines of the fishing report's season notes (`fishing_report.water_notes`; a per-season fallback sentence when the fetch fails — the old fixed "~53–56°F" note contradicted the live gauge). Fetch failure never blanks the page.
 - **Sunrise/sunset** (`suncalc.light_windows` via `fishing_report.light_windows_for`): dawn = sunrise−1 h..+2 h, dusk = sunset−2 h..+1 h, at the White Hole pin; the Current Conditions line, the report's "Low light today" Timing bullet and the journal builder's windows all use this one function.
 - **Prediction log** (`prediction_log.py`): `main.__main__` passes `prediction_log_file=PREDICTION_LOG_FILE` for the HTML run only, appending one row per production run to `predictions.csv` (run time, latest reading, predicted White Hole CFS and its source reading, next significant actual change with its arrival or recession window, first significant scheduled change, water temp/DO, feed_failed). Committed by `run_white_hole.sh`. Purpose: the first validation dataset for the travel model — compare against timestamped on-site observations (journal) and later dam readings.
+- **Chart and table run in opposite senses, on purpose** (`chart_generator`,
+  `formatters.arrival_rows`): the chart is a MAP — `ax.invert_yaxis()` puts the dam at the
+  top and White Hole at the bottom, water moving down the page, so later-arriving water
+  sits HIGHER. The arrivals table is a SCHEDULE — now first, then everything in the order
+  it gets there, so later water sits LOWER. Flipping either one makes it worse (a river
+  running up the page, or an arrivals list that opens with tomorrow). Instead the page
+  bridges them: the chart section carries a one-line orientation note, and every chart
+  annotation prints that parcel's White Hole ETA from `calculate_travel_time` — the same
+  model the table uses, so the two agree to the minute. Asked for by Brian 2026-10-04,
+  after the outage left the table on screen without the chart beside it.
 - **Landmarks** (`landmarks.py`): pinned GPS coordinates (Brian's in-river points beside each landmark) for the 8 dam→White Hole locations; river miles are cumulative haversine chord distances along the chain, scaled so The White Hole lands exactly on `WHITE_HOLE_MILE = 7.0` (the raw chord sum ~6.73 mi undercuts the meanders; scaling preserves the His Place calibration). `LANDMARK_MILES` drives the chart's points and the fishing report's `REACH_SPOTS`/`SPOT_COORDS` (Gaston's ≈ mile 4.09). Cranor's Island stays at an estimated 9.5 — no GPS chain below White Hole.
 
 ### Fishing Report (`fishing_report.py`)
