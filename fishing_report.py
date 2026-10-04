@@ -211,19 +211,16 @@ BAND_CONTENT = {
             "Low water lingers longest downstream — run down early, work back upstream as any afternoon water arrives",
         ],
         "spin": {
-            "rig": "White River rig both programs: surgeon's-loop Y, 7 in sinker leg with a "
-                   "1/8 oz bell (#10), size 10 barrel swivel up top, hook leg long "
-                   "at this flow (30–48 in). Each program's 'Leader' below is the single piece "
-                   "of line the whole Y is tied from — both legs; your main line stays as spooled.",
+            "rig": "White River rig — 1/8 oz bell (#10), 36 in hook leader",
             "browns": [
                 "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
-                "Sculpin on the split-shot rig (not the Y): leader straight to a #1 drop-shot hook, split shot pinched a foot up — presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
-                "Whole inflated night crawler (hook first, then 4–5 air bubbles) on the White River rig — the long hook leg lets it float and drift",
+                "Sculpin on the split-shot rig (not the Y) presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
+                "Whole inflated night crawler",
                 "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
             ],
             "rainbows": [
                 "Leader: 4 lb mono — this is 'the lighter the better' water, and the fish won't test it",
-                "PowerBait pink or white floating worm / Mice Tail on the White River rig: floats ~a foot off bottom from a #4 light-wire Aberdeen (keep the hook leg mono — fluoro sinks and kills the lift)",
+                "PowerBait pink or white floating worm / Mice Tail on the White River rig",
                 "Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (they stay on the hook in current), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg",
                 "Float rig — the highest-leverage method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
                 "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges",
@@ -267,8 +264,7 @@ BAND_CONTENT = {
             "Drifting works well at this level: drift the seams, motor back up, repeat — the driver's on the tiller and sits out, so rotate who drives",
         ],
         "spin": {
-            "rig": "White River rig both programs: 1/4 oz bell (#8), hook leg 24–36 in, size 10 swivel. "
-                   "'Leader' below = the line the whole Y is tied from.",
+            "rig": "White River rig — 1/4 oz bell (#8), 24 in hook leader",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "The sinking swimmers (Countdown class — brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
@@ -323,8 +319,7 @@ BAND_CONTENT = {
             "Know what's downstream before committing to a spot; there is no warning siren on this river",
         ],
         "spin": {
-            "rig": "White River rig both programs: 3/8 oz bell (#7), hook leg shortened to 18–24 in "
-                   "(a long leader lays flat in faster water). 'Leader' below = the line the whole Y is tied from.",
+            "rig": "White River rig — 3/8 oz bell (#7), 12 in hook leader",
             "browns": [
                 "Leader: 8 lb fluorocarbon — the trophy window is open, fish accordingly",
                 "Jerkbait prime time (2–4 units): the sinking swimmers and the suspending perch deep jerkbait, twitch-pause along the banks",
@@ -372,9 +367,7 @@ BAND_CONTENT = {
             "Debris starts moving at these flows; keep watch upstream",
         ],
         "spin": {
-            "rig": "White River rig: 1/2 oz bell (#6), hook leg 18–24 in. "
-                   "A tied boat needs roughly double the drift-chart weight to hold bottom. "
-                   "'Leader' below = the line the whole Y is tied from.",
+            "rig": "White River rig — 1/2 oz bell (#6), 12 in hook leader",
             "browns": [
                 "Leader: 8 lb fluorocarbon — guide-class line for exactly this water",
                 "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted down the bank edge — from a tied boat, work the lane flowing past you with a quartering-upstream cast and fed line; on a boat drift, cover the whole bank. The documented high-water big-trout method",
@@ -417,7 +410,7 @@ BAND_CONTENT = {
             "Re-check the schedule and the ramp before committing — this level with a rental jon is a risk decision, not a tactics decision",
         ],
         "spin": {
-            "rig": "White River rig: 1 oz bell (#4), short leg — slack-water soaks only.",
+            "rig": "White River rig — 1 oz bell (#4), 12 in hook leader; slack-water soaks only",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "4 in white Tab Tail or Keitech 4.3 on its swimbait head (tied direct), pitched along slack margins for a hunting brown",
@@ -459,7 +452,7 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "The crawdad presentation earns its fall slot — soft-shell crawdads are a named top natural bait for browns: the Z-Man TRD CrawZ 2.5 in Mudbug on the 1/10 oz Ned head, tied direct (both owned), with half a green-pumpkin Senko on the same head as the fallback",
+                "The Z-Man TRD CrawZ 2.5 in Mudbug or green pumpkin Senko on the 1/10 oz Ned head",
             ],
             "rainbows": [
                 "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough",

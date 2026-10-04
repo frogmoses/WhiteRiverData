@@ -250,7 +250,8 @@ appended to the bottom of the page. Design rules:
 - **Spin and fly sections are strictly separate** — never merge their content; a test
   enforces vocabulary separation per band panel. Section purity: spin/fly blocks contain
   tackle + presentation only; standalone where/when lines belong in Where-to-go and Timing;
-  every bait bullet names its rig (White River rig / split-shot / float / tied direct);
+  a bait bullet on any rig other than the section's Rig line names it (split-shot / float /
+  tied direct); a bullet that names none is on the White River rig the Rig line gives;
   "bottom rig" is banned vocabulary.
 - **Within each section, advice splits into two species programs** (Brian's requested
   grouping, behaviorally validated): **browns** (trophy, all released, big baits near
