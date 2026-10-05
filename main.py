@@ -17,6 +17,7 @@ from formatters import (
 from chart_generator import generate_vertical_river_chart
 from fishing_report import generate_fishing_report, render_fishing_report_html
 from water_quality import get_water_quality
+from release_outlook import get_release_outlook
 from prediction_log import build_prediction_row, append_prediction, PREDICTION_LOG_FILE
 
 # Warn on the page when the newest dam reading is older than this many hours
@@ -59,6 +60,15 @@ def _fetch_water_quality(current_time):
         return get_water_quality(current_time)
     except Exception as e:
         print(f"Warning: Could not fetch USGS water quality: {e}")
+    return None
+
+
+def _fetch_release_outlook(current_time):
+    """The Corps' days-ahead daily releases. Optional: failures return None."""
+    try:
+        return get_release_outlook(current_time)
+    except Exception as e:
+        print(f"Warning: Could not fetch the Corps release outlook: {e}")
     return None
 
 
@@ -121,6 +131,7 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
     if not data or _is_error_data(data):
         forecast_timeline = _fetch_forecast(current_time)
         water_quality = _fetch_water_quality(current_time)
+        release_outlook = _fetch_release_outlook(current_time)
         scheduled_cfs = _scheduled_now(forecast_timeline, current_time)
 
         if scheduled_cfs is None:
@@ -146,13 +157,15 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
                 scheduled_cfs=scheduled_cfs,
                 fishing_report_html=render_fishing_report_html(fishing_report),
                 water_quality=water_quality,
-                feed_reason=feed_reason)
+                feed_reason=feed_reason,
+                release_outlook=release_outlook)
         return generate_schedule_only_text(
             current_time=current_time,
             forecast_timeline=forecast_timeline,
             scheduled_cfs=scheduled_cfs,
             water_quality=water_quality,
-            feed_reason=feed_reason)
+            feed_reason=feed_reason,
+            release_outlook=release_outlook)
 
     # Sort data by date_time
     data.sort(key=lambda x: x['date_time'])
@@ -225,6 +238,9 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
     # Tailwater temperature / dissolved oxygen from the USGS gauges
     water_quality = _fetch_water_quality(current_time)
 
+    # The Corps' planned daily releases for the days past SWPA's horizon
+    release_outlook = _fetch_release_outlook(current_time)
+
     # Build the fishing report (full content during trip windows,
     # placeholder otherwise) driven by the flow at White Hole
     fishing_report = generate_fishing_report(
@@ -258,7 +274,8 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
             feed_failed=feed_failed,
             feed_reason=feed_reason,
             fishing_report_html=fishing_report_html,
-            water_quality=water_quality
+            water_quality=water_quality,
+            release_outlook=release_outlook
         )
 
         chart_filename = f"vertical_flow_chart_{dataset_name}.png" if dataset_name else "vertical_flow_chart.png"
@@ -284,7 +301,8 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
             stale_hours=stale_hours,
             feed_failed=feed_failed,
             feed_reason=feed_reason,
-            water_quality=water_quality
+            water_quality=water_quality,
+            release_outlook=release_outlook
         )
 
 if __name__ == "__main__":

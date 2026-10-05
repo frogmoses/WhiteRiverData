@@ -486,3 +486,25 @@ class TestScheduleOnlyPage:
         assert "Dam telemetry out" in text
         assert "SCHEDULED (not measured)" not in text
         assert "6600 CFS" in text
+
+
+@pytest.mark.integration
+class TestReleaseOutlookOnThePage:
+    OUTLOOK = {'days': [{'date': datetime(2026, 10, 6).date(), 'cfs': 2000}],
+               'yesterday_cfs': 1041}
+
+    def test_fetched_outlook_reaches_html_and_text(self, normal_conditions_data, monkeypatch):
+        import main
+        monkeypatch.setattr(main, "get_release_outlook", lambda now: self.OUTLOOK)
+        now = max(e['date_time'] for e in normal_conditions_data)
+        for fmt in ("html", "text"):
+            page = main.generate_white_hole_summary(
+                fmt, data=list(normal_conditions_data), current_time=now)
+            assert "Tue 2,000 CFS" in page
+
+    def test_page_renders_without_it(self, normal_conditions_data):
+        import main
+        now = max(e['date_time'] for e in normal_conditions_data)
+        page = main.generate_white_hole_summary(
+            "html", data=list(normal_conditions_data), current_time=now)
+        assert "Days ahead" not in page

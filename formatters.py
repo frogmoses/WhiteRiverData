@@ -4,6 +4,7 @@ from water_calculator import (
     get_fishing_condition, get_flow, find_incoming_change, clock, group_forecast_runs
 )
 from water_quality import describe as describe_water_quality, STALE_READING_HOURS
+from release_outlook import describe as describe_release_outlook
 from fishing_report import light_windows_for
 
 from landmarks import LANDMARK_COORDS
@@ -104,6 +105,26 @@ def generate_water_quality_html(water_quality, current_time):
     return f'''
         <div class="condition-pills" style="margin-top: 12px;">{"".join(pills)}</div>
         <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
+
+
+def generate_release_outlook_html(outlook):
+    """The Corps' days-ahead release line under the arrivals table ('' if none)."""
+    days_line, context = describe_release_outlook(outlook)
+    if not days_line:
+        return ""
+    return f'''
+    <div class="release-outlook" style="margin: 12px 0; padding: 10px 14px; background: #f7fafc; border-left: 4px solid #805ad5; border-radius: 6px;">
+        <p style="margin: 0;"><strong>Days ahead</strong> — Corps planned release: {days_line}</p>
+        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">{context}</p>
+    </div>'''
+
+
+def release_outlook_text(outlook):
+    """The same line for the text summaries ('' if none)."""
+    days_line, context = describe_release_outlook(outlook)
+    if not days_line:
+        return ""
+    return f"Days ahead (Corps planned release): {days_line}. {context}\n"
 
 
 def outage_headline(reason):
@@ -465,7 +486,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
                            stale_hours=None, feed_failed=False, fishing_report_html="",
-                           water_quality=None, feed_reason=None):
+                           water_quality=None, feed_reason=None, release_outlook=None):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -648,6 +669,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 
     <!-- WATER TIMELINE -->
     {water_timeline_html}
+    {generate_release_outlook_html(release_outlook)}
 
     <!-- CHART PLACEHOLDER -->
     <div class="chart-section">
@@ -695,7 +717,8 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 
 def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
                                 fishing_report_html="", water_quality=None,
-                                feed_reason=None, last_reading_time=None):
+                                feed_reason=None, last_reading_time=None,
+                                release_outlook=None):
     """
     The page with no measured flow: an outage banner, what the SWPA schedule
     says the dam is doing, and everything that does not depend on a dam
@@ -786,6 +809,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
     </div>
 
     {arrivals_html}
+    {generate_release_outlook_html(release_outlook)}
 
     {fishing_report_html}
 
@@ -799,7 +823,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
 
 def generate_schedule_only_text(current_time, forecast_timeline, scheduled_cfs,
                                 water_quality=None, feed_reason=None,
-                                last_reading_time=None):
+                                last_reading_time=None, release_outlook=None):
     """The text twin of generate_schedule_only_html."""
     wading, boating = get_fishing_condition(scheduled_cfs)
     temp_line, do_line = describe_water_quality(water_quality)
@@ -827,7 +851,7 @@ SCHEDULED (not measured), from SWPA:
 - Now: {scheduled_cfs:,} CFS, {format_generators(scheduled_cfs)}
 - Wading: {wading}
 - Boating: {boating}
-{schedule_lines}{water_quality_text}
+{schedule_lines}{release_outlook_text(release_outlook)}{water_quality_text}
 """
 
 
@@ -902,7 +926,7 @@ def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, w
                          wading_condition, boating_condition, recent_trend, forecast,
                          latest_entry, relevant_entry, stale_hours=None, feed_failed=False,
                          feed_reason=None,
-                         water_quality=None):
+                         water_quality=None, release_outlook=None):
     """Generate a text version of the White Hole summary."""
     # Calculate travel time for the summary
     travel_time = calculate_travel_time(get_flow(relevant_entry))
@@ -929,7 +953,7 @@ Boating Conditions: {boating_condition.title()}
 
 Over the past 6 hours, dam releases have {recent_trend}.
 Looking ahead: {forecast.capitalize()}.
-{water_quality_text}
+{release_outlook_text(release_outlook)}{water_quality_text}
 CALCULATION DETAILS:
 - Latest dam reading: {get_flow(latest_entry)} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}
 - Travel time to White Hole: {travel_time:.1f} hours at {white_hole_cfs} CFS

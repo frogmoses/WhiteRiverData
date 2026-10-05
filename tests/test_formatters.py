@@ -893,3 +893,29 @@ class TestOutageVocabulary:
             forecast="stable", latest_entry=entry, relevant_entry=entry)
         assert "water moves <em>down</em> the chart" in html
         assert "still on its" in html and "way" in html
+
+
+class TestReleaseOutlook:
+    """The Corps' days-ahead line: present when fetched, silent when not."""
+
+    OUTLOOK = {'days': [{'date': datetime(2026, 10, 6).date(), 'cfs': 2000},
+                        {'date': datetime(2026, 10, 7).date(), 'cfs': 2500}],
+               'yesterday_cfs': 1041}
+
+    def test_html_line(self):
+        from formatters import generate_release_outlook_html
+        html = generate_release_outlook_html(self.OUTLOOK)
+        assert "Days ahead" in html
+        assert "Tue 2,000 · Wed 2,500 CFS" in html
+        assert "Yesterday averaged 1,041" in html
+
+    def test_nothing_rendered_without_an_outlook(self):
+        from formatters import generate_release_outlook_html, release_outlook_text
+        assert generate_release_outlook_html(None) == ""
+        assert release_outlook_text(None) == ""
+
+    def test_text_line(self):
+        from formatters import release_outlook_text
+        text = release_outlook_text(self.OUTLOOK)
+        assert text.startswith("Days ahead (Corps planned release): Tue 2,000")
+        assert text.endswith("\n")
