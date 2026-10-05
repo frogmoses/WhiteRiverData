@@ -237,3 +237,120 @@ class TestOutageReason:
         monkeypatch.setattr(data_fetcher, "_fetch_html", boom)
         result = data_fetcher.get_bull_shoals_data()
         assert result[0]['reason'] == OUTAGE_FETCH_FAILED
+
+
+class TestCwmsFallback:
+    """
+    The CWMS Data API behind the Corps' replacement site carries the same
+    readings and held them through the legacy app's Oct 2026 blank spell.
+    """
+
+    HOUR = 3600 * 1000
+    T0 = int(datetime(2026, 10, 5, 11, 0, tzinfo=CENTRAL).timestamp() * 1000)
+
+    def _series(self):
+        t0, t1 = self.T0, self.T0 + self.HOUR
+        return {
+            'elevation': {t0: 654.2301, t1: 654.2199},
+            'tailwater': {t0: 450.84, t1: 450.80},
+            'generation': {t0: 8.338, t1: 8.327},
+            'turbine_release': {t0: 775.0000933, t1: 20707.2},
+            'total_release': {t0: 775.0000933, t1: 21707.1},
+        }
+
+    def test_entries_match_the_legacy_row_shape(self):
+        from data_fetcher import build_cwms_entries
+        first, second = build_cwms_entries(self._series())
+        assert first == {
+            'date_time': datetime(2026, 10, 5, 11, 0, tzinfo=CENTRAL),
+            'elevation': 654.23, 'tailwater': 450.84, 'generation': 8,
+            'turbine_release': 775, 'spillway_release': 0, 'total_release': 775,
+        }
+        assert first['date_time'].tzinfo is DAM_TIMEZONE
+        assert second['spillway_release'] == 1000
+
+    def test_an_hour_without_any_flow_is_dropped(self):
+        from data_fetcher import build_cwms_entries
+        series = self._series()
+        series['elevation'][self.T0 + 2 * self.HOUR] = 654.2
+        assert len(build_cwms_entries(series)) == 2
+
+    def test_missing_side_series_do_not_sink_the_entry(self):
+        from data_fetcher import build_cwms_entries
+        entries = build_cwms_entries({'total_release': {self.T0: 775.0}})
+        assert entries[0]['total_release'] == 775
+        assert entries[0]['turbine_release'] is None
+        assert entries[0]['spillway_release'] is None
+
+    def test_fetch_reads_values_and_drops_nulls(self, monkeypatch):
+        import requests
+        import data_fetcher
+
+        class Resp:
+            def raise_for_status(self): pass
+            def json(self):
+                return {"values": [[1, 775.0, 0], [2, None, 5]]}
+
+        seen = {}
+
+        def fake_get(url, params=None, **kwargs):
+            seen.update(params)
+            return Resp()
+
+        monkeypatch.setattr(requests, "get", fake_get)
+        assert data_fetcher._fetch_cwms_series("X.Flow", "cfs") == {1: 775.0}
+        assert seen["office"] == "SWL" and seen["unit"] == "cfs"
+
+    def test_offline_cwms_is_empty_not_an_exception(self):
+        import data_fetcher
+        assert data_fetcher.get_cwms_data() == []
+
+    def _cwms(self, when):
+        return [{'date_time': when, 'elevation': None, 'tailwater': None,
+                 'generation': 8, 'turbine_release': 775,
+                 'spillway_release': 0, 'total_release': 775}]
+
+    def test_used_when_the_legacy_page_is_all_dashes(self, monkeypatch):
+        import data_fetcher
+        dashes = "<hr>\n 03OCT2026    0850       ----         ----       ----           ----        ---        ---\n<hr>"
+        cwms = self._cwms(datetime.now(CENTRAL))
+        monkeypatch.setattr(data_fetcher, "_fetch_html", lambda *a, **k: dashes)
+        monkeypatch.setattr(data_fetcher, "get_cwms_data", lambda: cwms)
+        assert data_fetcher.get_bull_shoals_data() is cwms
+
+    def test_used_when_the_legacy_fetch_fails(self, monkeypatch):
+        import data_fetcher
+
+        def boom(*a, **k):
+            raise RuntimeError("net::ERR_CONNECTION_REFUSED")
+
+        cwms = self._cwms(datetime.now(CENTRAL))
+        monkeypatch.setattr(data_fetcher, "_fetch_html", boom)
+        monkeypatch.setattr(data_fetcher, "get_cwms_data", lambda: cwms)
+        assert data_fetcher.get_bull_shoals_data() is cwms
+
+    def test_newer_cwms_replaces_a_stale_legacy_table(self, monkeypatch):
+        import data_fetcher
+        cwms = self._cwms(datetime.now(CENTRAL))
+        monkeypatch.setattr(data_fetcher, "_fetch_html", lambda *a, **k: SAMPLE_HTML)
+        monkeypatch.setattr(data_fetcher, "get_cwms_data", lambda: cwms)
+        assert data_fetcher.get_bull_shoals_data() is cwms
+
+    def test_stale_legacy_kept_when_cwms_is_no_newer(self, monkeypatch):
+        import data_fetcher
+        cwms = self._cwms(datetime(2026, 8, 1, tzinfo=CENTRAL))
+        monkeypatch.setattr(data_fetcher, "_fetch_html", lambda *a, **k: SAMPLE_HTML)
+        monkeypatch.setattr(data_fetcher, "get_cwms_data", lambda: cwms)
+        assert len(data_fetcher.get_bull_shoals_data()) == 4
+
+    def test_fresh_legacy_never_asks_cwms(self, monkeypatch):
+        import data_fetcher
+        now = datetime.now(CENTRAL)
+        row = f" {now.strftime('%d%b%Y').upper()}    {now.strftime('%H')}00     654.21       450.77          7            660          0        660"
+
+        def unexpected():
+            raise AssertionError("CWMS queried while the legacy table is fresh")
+
+        monkeypatch.setattr(data_fetcher, "_fetch_html", lambda *a, **k: f"<hr>\n{row}\n<hr>")
+        monkeypatch.setattr(data_fetcher, "get_cwms_data", unexpected)
+        assert data_fetcher.get_bull_shoals_data()[0]['total_release'] == 660

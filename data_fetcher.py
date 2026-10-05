@@ -130,38 +130,150 @@ OUTAGE_FETCH_FAILED = "fetch_failed"
 OUTAGE_NO_DATA_PUBLISHED = "no_data_published"
 
 
-def get_bull_shoals_data():
+# Second source for the same readings: the Corps' CWMS Data API, the public
+# JSON service behind the district's replacement site
+# (https://water.usace.army.mil/office/swl/hourly and .../reports — the two
+# links Public Affairs sent 2026-10-05 after the legacy app's Oct 1-4 blank
+# spell; that site says it "will replace our legacy website in 2026"). The
+# pages themselves are a JavaScript app behind a DoD consent banner, so the
+# API is read directly. Checked 2026-10-05: each series matches the legacy
+# table row for row, and the API held every hour of the blank spell. It ran
+# ~2 h behind the legacy table that afternoon, so legacy stays first.
+CWMS_URL = "https://cwms-data.usace.army.mil/cwms-data/timeseries"
+CWMS_OFFICE = "SWL"
+CWMS_LOOKBACK = "PT-48H"
+# entry field -> (time series, unit). Spillway is not a series of its own
+# here: it is whatever the reservoir released beyond the powerhouse.
+CWMS_SERIES = {
+    'elevation': ("Bull_Shoals_Dam-Headwater.Elev.Inst.1Hour.0.Decodes-rev", "ft"),
+    'tailwater': ("Bull_Shoals_Dam-Tailwater.Elev-Downstream.Inst.1Hour.0.Decodes-rev", "ft"),
+    'generation': ("Bull_Shoals_Dam.Energy-Gen_Plant.Total.1Hour.1Hour.CCP-Comp", "MWh"),
+    'turbine_release': ("Bull_Shoals_Dam.Flow-Plant.Ave.1Hour.1Hour.CCP-Comp", "cfs"),
+    'total_release': ("Bull_Shoals_Dam.Flow-Res Out.Ave.1Hour.1Hour.Regi-Comp", "cfs"),
+}
+# The legacy table is passed over for CWMS when its newest reading is older
+# than this and CWMS has a newer one (mirrors main.STALE_DATA_HOURS).
+LEGACY_STALE_HOURS = 3
+
+
+def _fetch_cwms_series(name, unit, timeout=30):
+    """One CWMS time series as {epoch ms: value}, missing values dropped."""
+    import requests
+    response = requests.get(
+        CWMS_URL,
+        params={"office": CWMS_OFFICE, "name": name, "unit": unit,
+                "begin": CWMS_LOOKBACK, "page-size": 500},
+        headers={"accept": "application/json;version=2"}, timeout=timeout)
+    response.raise_for_status()
+    return {row[0]: row[1] for row in response.json().get("values", [])
+            if row[1] is not None}
+
+
+def build_cwms_entries(series):
     """
-    Scrape the Bull Shoals Dam data table from the website using Playwright.
+    Merge {field: {epoch ms: value}} into entries shaped like the legacy
+    table's rows. An hour with no flow figure at all is dropped, as a row of
+    dashes is there.
+    """
+    timestamps = sorted(set().union(*[set(v) for v in series.values()])) if series else []
+    data = []
+    for ts in timestamps:
+        value = {field: values.get(ts) for field, values in series.items()}
+        turbine, total = value.get('turbine_release'), value.get('total_release')
+        if turbine is None and total is None:
+            continue
+        turbine = round(turbine) if turbine is not None else None
+        total = round(total) if total is not None else None
+        spillway = max(0, total - turbine) if None not in (turbine, total) else None
+        elevation, tailwater, generation = (
+            value.get('elevation'), value.get('tailwater'), value.get('generation'))
+        data.append({
+            'date_time': datetime.fromtimestamp(ts / 1000, DAM_TIMEZONE),
+            'elevation': round(elevation, 2) if elevation is not None else None,
+            'tailwater': round(tailwater, 2) if tailwater is not None else None,
+            'generation': round(generation) if generation is not None else None,
+            'turbine_release': turbine,
+            'spillway_release': spillway,
+            'total_release': total,
+        })
+    return data
+
+
+def get_cwms_data():
+    """Bull Shoals readings from the CWMS Data API, or [] when it has none."""
+    try:
+        series = {}
+        for field, (name, unit) in CWMS_SERIES.items():
+            try:
+                series[field] = _fetch_cwms_series(name, unit)
+            except Exception as e:
+                # elevation/tailwater/generation are not needed downstream;
+                # only the two flow series can sink the fallback
+                print(f"CWMS series {field} failed: {e}")
+        return build_cwms_entries(series)
+    except Exception as e:
+        print(f"CWMS fallback failed: {e}")
+        return []
+
+
+def _newest(data):
+    return max(entry['date_time'] for entry in data)
+
+
+def get_legacy_data():
+    """
+    Scrape the legacy Bull Shoals table using Playwright. Raises when the
+    page cannot be fetched; returns [] when it loads with every row blank.
 
     When the local resolver cannot resolve the USACE host, resolve it over
     DNS-over-HTTPS and retry with the answer pinned into Chromium.
     """
     try:
-        try:
-            html_content = _fetch_html(USACE_URL)
-        except Exception as e:
-            if DNS_FAILURE_MARKER not in str(e):
-                raise
-            ip = resolve_via_doh(USACE_HOST)
-            if not ip:
-                raise
-            print(f"Local DNS failed for {USACE_HOST}; retrying with DoH answer {ip}")
-            html_content = _fetch_html(
-                USACE_URL, [f"--host-resolver-rules=MAP {USACE_HOST} {ip}"])
+        html_content = _fetch_html(USACE_URL)
+    except Exception as e:
+        if DNS_FAILURE_MARKER not in str(e):
+            raise
+        ip = resolve_via_doh(USACE_HOST)
+        if not ip:
+            raise
+        print(f"Local DNS failed for {USACE_HOST}; retrying with DoH answer {ip}")
+        html_content = _fetch_html(
+            USACE_URL, [f"--host-resolver-rules=MAP {USACE_HOST} {ip}"])
+    return parse_table_content(html_content)
 
-        data = parse_table_content(html_content)
 
-        if data:
+def get_bull_shoals_data():
+    """
+    The dam's hourly readings: the legacy table first, the CWMS Data API
+    when that table cannot be fetched, is blank, or has gone stale while
+    CWMS is newer. The error sentinel only when both come up empty.
+    """
+    reason = OUTAGE_NO_DATA_PUBLISHED
+    try:
+        data = get_legacy_data()
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        data, reason = [], OUTAGE_FETCH_FAILED
+
+    if data:
+        age = datetime.now(DAM_TIMEZONE) - _newest(data)
+        if age <= timedelta(hours=LEGACY_STALE_HOURS):
             return data
+        cwms = get_cwms_data()
+        if cwms and _newest(cwms) > _newest(data):
+            print("Legacy USACE table is stale; using the newer CWMS readings")
+            return cwms
+        return data
+
+    cwms = get_cwms_data()
+    if cwms:
+        print("Legacy USACE table unavailable; using CWMS readings")
+        return cwms
+    if reason == OUTAGE_NO_DATA_PUBLISHED:
         # The page came back but held no usable rows: Bull Shoals is
         # publishing dashes. Say so rather than blaming the fetch.
         print("USACE page fetched but every row is blank — dam publishing no readings")
-        return get_error_data(OUTAGE_NO_DATA_PUBLISHED)
-
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return get_error_data(OUTAGE_FETCH_FAILED)
+    return get_error_data(reason)
 
 # Cache of the last successful fetch, used as a fallback when the USACE site
 # is unreachable (e.g. the Aug 2026 army.mil DNS outage). Written relative to
