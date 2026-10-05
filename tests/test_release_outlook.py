@@ -33,10 +33,26 @@ FORECAST = [[_ms(2026, 10, 6), 2500.0, 0], [_ms(2026, 10, 7), 2000.0, 0],
 MEASURED = [[_ms(2026, 10, 4), 896.2, 0], [_ms(2026, 10, 5), 1041.4, 0]]
 
 
+LAKE = {
+    release_outlook.LAKE_ELEV_SERIES: [[_ms(2026, 10, 5), 654.23, 0], [_ms(2026, 10, 5) + 1, 654.22, 0]],
+    release_outlook.LAKE_CONSERVATION_SERIES: [[_ms(2026, 10, 5), 81.96, 0]],
+    release_outlook.LAKE_FLOOD_SERIES: [[_ms(2026, 10, 5), 0.0, 0]],
+    release_outlook.LAKE_ELEV_FORECAST_SERIES: [[_ms(2026, 10, 6), 654.2, 0], [_ms(2026, 10, 8), 654.1, 0]],
+}
+
+
 def _fake_get(url, params=None, **kwargs):
     if params["name"] == release_outlook.FORECAST_SERIES:
         return _Resp(FORECAST)
-    return _Resp(MEASURED)
+    if params["name"] == release_outlook.MEASURED_SERIES:
+        return _Resp(MEASURED)
+    return _Resp([])
+
+
+def _fake_get_with_lake(url, params=None, **kwargs):
+    if params["name"] in LAKE:
+        return _Resp(LAKE[params["name"]])
+    return _fake_get(url, params=params, **kwargs)
 
 
 @pytest.mark.unit
@@ -68,7 +84,12 @@ class TestGetReleaseOutlook:
         assert get_release_outlook(NOW) is None
 
     def test_no_future_days_is_none(self, monkeypatch):
-        monkeypatch.setattr(requests, "get", lambda *a, **k: _Resp(FORECAST[:1]))
+        def get(url, params=None, **kwargs):
+            if params["name"] == release_outlook.FORECAST_SERIES:
+                return _Resp(FORECAST[:1])
+            return _Resp([])
+
+        monkeypatch.setattr(requests, "get", get)
         assert get_release_outlook(NOW) is None
 
     def test_missing_yesterday_keeps_the_outlook(self, monkeypatch):
@@ -100,3 +121,53 @@ class TestDescribe:
     def test_nothing_to_say(self):
         assert describe(None) == (None, None)
         assert describe({'days': [], 'yesterday_cfs': 900}) == (None, None)
+
+
+@pytest.mark.unit
+class TestLakeLevel:
+    def test_rides_on_the_outlook(self, monkeypatch):
+        monkeypatch.setattr(requests, "get", _fake_get_with_lake)
+        lake = get_release_outlook(NOW)['lake']
+        assert lake == {'elevation_ft': 654.2, 'conservation_pct': 82, 'flood_pct': 0,
+                        'forecast_ft': 654.1, 'forecast_date': date(2026, 10, 8)}
+
+    def test_lake_alone_when_there_is_no_release_forecast(self, monkeypatch):
+        def get(url, params=None, **kwargs):
+            if params["name"] in LAKE:
+                return _Resp(LAKE[params["name"]])
+            raise requests.ConnectionError("down")
+
+        monkeypatch.setattr(requests, "get", get)
+        outlook = get_release_outlook(NOW)
+        assert outlook['days'] == [] and outlook['lake']['elevation_ft'] == 654.2
+        assert describe(outlook) == (None, None)
+
+    def test_elevation_alone_is_enough(self, monkeypatch):
+        def get(url, params=None, **kwargs):
+            if params["name"] == release_outlook.LAKE_ELEV_SERIES:
+                return _Resp(LAKE[params["name"]])
+            raise requests.ConnectionError("down")
+
+        monkeypatch.setattr(requests, "get", get)
+        lake = release_outlook.get_lake_level(NOW)
+        assert lake['elevation_ft'] == 654.2 and lake['flood_pct'] is None
+        assert release_outlook.describe_lake({'lake': lake}) == ("Lake 654.2 ft", None)
+
+    def test_conservation_pool_wording(self):
+        lake = {'elevation_ft': 654.2, 'conservation_pct': 82, 'flood_pct': 0,
+                'forecast_ft': 654.1, 'forecast_date': date(2026, 10, 8)}
+        line, meaning = release_outlook.describe_lake({'lake': lake})
+        assert line == ("Lake 654.2 ft \u2014 82% of conservation pool, flood pool empty; "
+                        "forecast 654.1 ft by Thu")
+        assert meaning == "No flood water to evacuate: releases follow power demand."
+
+    def test_flood_pool_wording(self):
+        lake = {'elevation_ft': 668.4, 'conservation_pct': 100, 'flood_pct': 23,
+                'forecast_ft': None, 'forecast_date': None}
+        line, meaning = release_outlook.describe_lake({'lake': lake})
+        assert line == "Lake 668.4 ft \u2014 23% of the flood pool in use"
+        assert "heavier, longer generation" in meaning
+
+    def test_no_lake(self):
+        assert release_outlook.describe_lake(None) == (None, None)
+        assert release_outlook.describe_lake({'days': []}) == (None, None)
