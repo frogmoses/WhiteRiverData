@@ -3,7 +3,9 @@ from water_calculator import (
     calculate_travel_time, format_generators, calculate_timeline,
     get_fishing_condition, get_flow, find_incoming_change, clock, group_forecast_runs
 )
-from water_quality import describe as describe_water_quality, STALE_READING_HOURS
+from water_quality import (
+    describe as describe_water_quality, dam_line as dam_water_line, STALE_READING_HOURS
+)
 from release_outlook import describe as describe_release_outlook
 from fishing_report import light_windows_for
 
@@ -100,11 +102,29 @@ def generate_water_quality_html(water_quality, current_time):
         when = f"reading is {age:.1f} h old ({observed})"
     else:
         when = f"as of {observed}"
-    source = (f'<a href="https://waterdata.usgs.gov/monitoring-location/USGS-{water_quality["site"]}/" '
-              f'target="_blank" style="color: #718096;">{water_quality["site_label"]}</a>')
+    source = water_quality["site_label"]
+    if water_quality.get("site"):
+        source = (f'<a href="https://waterdata.usgs.gov/monitoring-location/USGS-{water_quality["site"]}/" '
+                  f'target="_blank" style="color: #718096;">{source}</a>')
+    dam = dam_water_line(water_quality, _dam_reading_time(water_quality, current_time))
+    dam_html = (f'\n        <p style="color: #4a5568; font-size: 0.9em; margin: 6px 0 0;">{dam}</p>'
+                if dam else "")
     return f'''
         <div class="condition-pills" style="margin-top: 12px;">{"".join(pills)}</div>
-        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
+        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>{dam_html}'''
+
+
+def _dam_reading_time(water_quality, current_time):
+    """Clock time of the reading at the dam riding on water_quality, or None."""
+    dam = (water_quality or {}).get("dam")
+    return clock(dam["observed"], current_time) if dam else None
+
+
+def water_quality_text(water_quality, current_time):
+    """Temperature, oxygen and at-the-dam lines for the text summaries."""
+    temp_line, do_line = describe_water_quality(water_quality)
+    dam = dam_water_line(water_quality, _dam_reading_time(water_quality, current_time))
+    return "".join(f"{line}\n" for line in (temp_line, do_line, dam) if line)
 
 
 # Mirrors data_fetcher.TURBINE_COUNT (same reason as the outage literal above)
@@ -845,8 +865,7 @@ def generate_schedule_only_text(current_time, forecast_timeline, scheduled_cfs,
                                 last_reading_time=None, release_outlook=None):
     """The text twin of generate_schedule_only_html."""
     wading, boating = get_fishing_condition(scheduled_cfs)
-    temp_line, do_line = describe_water_quality(water_quality)
-    water_quality_text = "".join(f"{line}\n" for line in (temp_line, do_line) if line)
+    wq_text = water_quality_text(water_quality, current_time)
     action = outage_action(feed_reason, last_reading_time)
     action_text = f"{action}\n" if action else ""
 
@@ -870,7 +889,7 @@ SCHEDULED (not measured), from SWPA:
 - Now: {scheduled_cfs:,} CFS, {format_generators(scheduled_cfs)}
 - Wading: {wading}
 - Boating: {boating}
-{schedule_lines}{release_outlook_text(release_outlook)}{water_quality_text}
+{schedule_lines}{release_outlook_text(release_outlook)}{wq_text}
 """
 
 
@@ -951,8 +970,7 @@ def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, w
     units_text = f"Units Running: {units} at the dam when this water left\n" if units else ""
     # Calculate travel time for the summary
     travel_time = calculate_travel_time(get_flow(relevant_entry))
-    temp_line, do_line = describe_water_quality(water_quality)
-    water_quality_text = "".join(f"{line}\n" for line in (temp_line, do_line) if line)
+    wq_text = water_quality_text(water_quality, current_time)
     stale_warning = ""
     if feed_failed:
         stale_warning += (f"\nWARNING: {outage_headline(feed_reason).capitalize()} — "
@@ -974,7 +992,7 @@ Boating Conditions: {boating_condition.title()}
 
 Over the past 6 hours, dam releases have {recent_trend}.
 Looking ahead: {forecast.capitalize()}.
-{release_outlook_text(release_outlook)}{water_quality_text}
+{release_outlook_text(release_outlook)}{wq_text}
 CALCULATION DETAILS:
 - Latest dam reading: {get_flow(latest_entry)} CFS at {latest_entry['date_time'].strftime('%Y-%m-%d %H:%M')}
 - Travel time to White Hole: {travel_time:.1f} hours at {white_hole_cfs} CFS

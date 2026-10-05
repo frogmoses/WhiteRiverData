@@ -86,3 +86,18 @@ class TestAppend:
         with open(tmp_path / "predictions.csv", newline="") as f:
             rows = list(csv.DictReader(f))
         assert len(rows) == 1 and rows[0]["white_hole_cfs"] == "750"
+
+
+def test_the_dam_stand_in_is_not_logged_as_the_usgs_gauge(normal_conditions_data):
+    """The log's water columns are the USGS gauge; the dam is a different place."""
+    import inspect
+    data = sorted(normal_conditions_data, key=lambda e: e['date_time'])
+    now = data[-1]['date_time']
+    dam = {"source": "corps_dam", "temp_f": 57.9, "do_mg_l": 9.1}
+    usgs = {"temp_f": 66.0, "do_mg_l": 11.6}
+    params = inspect.signature(build_prediction_row).parameters
+    base = dict(current_time=now, latest_entry=data[-1], relevant_entry=data[-1],
+                white_hole_cfs=3000, water_state="stable", forecast="stable conditions expected")
+    assert set(base) <= set(params)
+    assert not build_prediction_row(**base, water_quality=dam).get("water_temp_f")
+    assert build_prediction_row(**base, water_quality=usgs)["water_temp_f"] == 66.0

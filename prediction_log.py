@@ -81,7 +81,8 @@ def build_prediction_row(current_time, latest_entry, relevant_entry, white_hole_
             row["scheduled_arrival"] = _iso(entry["arrival_time"])
             break
 
-    if water_quality:
+    # USGS gauge only: the Corps' at-the-dam stand-in is a different place
+    if water_quality and water_quality.get("source") != "corps_dam":
         if water_quality.get("temp_f") is not None:
             row["water_temp_f"] = water_quality["temp_f"]
         if water_quality.get("do_mg_l") is not None:

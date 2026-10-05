@@ -919,3 +919,37 @@ class TestReleaseOutlook:
         text = release_outlook_text(self.OUTLOOK)
         assert text.startswith("Days ahead (Corps planned release): Tue 2,000")
         assert text.endswith("\n")
+
+
+class TestDamWaterQualityOnThePage:
+    NOW = datetime(2026, 10, 5, 16, 30)
+
+    def _wq(self, **extra):
+        wq = {"site": "07054527", "site_label": "USGS gauge at Cane Island",
+              "temp_f": 66.0, "do_mg_l": 11.6, "temp_status": "warm",
+              "do_status": "good", "observed": self.NOW, "age_hours": 0.1}
+        wq.update(extra)
+        return wq
+
+    DAM = {"source": "corps_dam", "site": None, "site_label": "Corps sensors at the dam",
+           "temp_f": 57.9, "do_mg_l": 9.1, "temp_status": "prime", "do_status": "good",
+           "observed": datetime(2026, 10, 5, 12, 0), "age_hours": 4.5}
+
+    def test_line_under_the_usgs_pills(self):
+        from formatters import generate_water_quality_html, water_quality_text
+        html = generate_water_quality_html(self._wq(dam=self.DAM), self.NOW)
+        assert "At the dam: 57.9°F · oxygen 9.1 mg/L (Corps sensors, 12:00 PM)" in html
+        assert "waterdata.usgs.gov" in html
+        text = water_quality_text(self._wq(dam=self.DAM), self.NOW)
+        assert text.splitlines()[-1].startswith("At the dam: 57.9°F")
+
+    def test_no_line_without_it(self):
+        from formatters import generate_water_quality_html
+        assert "At the dam" not in generate_water_quality_html(self._wq(), self.NOW)
+
+    def test_dam_reading_as_the_stand_in_has_no_usgs_link(self):
+        from formatters import generate_water_quality_html
+        html = generate_water_quality_html(self.DAM, self.NOW)
+        assert "Corps sensors at the dam" in html
+        assert "usgs.gov" not in html
+        assert "4.5 h old" in html
