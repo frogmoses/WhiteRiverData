@@ -953,3 +953,22 @@ class TestDamWaterQualityOnThePage:
         assert "Corps sensors at the dam" in html
         assert "usgs.gov" not in html
         assert "4.5 h old" in html
+
+
+class TestLakeLevelOnThePage:
+    LAKE = {'elevation_ft': 654.2, 'conservation_pct': 82, 'flood_pct': 0,
+            'forecast_ft': 654.1, 'forecast_date': datetime(2026, 10, 8).date()}
+
+    def test_under_the_days_ahead_line(self):
+        from formatters import generate_release_outlook_html, release_outlook_text
+        outlook = dict(TestReleaseOutlook.OUTLOOK, lake=self.LAKE)
+        html = generate_release_outlook_html(outlook)
+        assert html.index("Days ahead") < html.index("Lake 654.2 ft")
+        assert "releases follow power demand" in html
+        text = release_outlook_text(outlook)
+        assert "Lake 654.2 ft" in text.splitlines()[1]
+
+    def test_lake_alone_still_renders(self):
+        from formatters import generate_release_outlook_html
+        html = generate_release_outlook_html({'days': [], 'yesterday_cfs': None, 'lake': self.LAKE})
+        assert "Lake 654.2 ft" in html and "Days ahead" not in html

@@ -6,7 +6,7 @@ from water_calculator import (
 from water_quality import (
     describe as describe_water_quality, dam_line as dam_water_line, STALE_READING_HOURS
 )
-from release_outlook import describe as describe_release_outlook
+from release_outlook import describe as describe_release_outlook, describe_lake
 from fishing_report import light_windows_for
 
 from landmarks import LANDMARK_COORDS
@@ -141,21 +141,35 @@ def units_running_label(units):
 def generate_release_outlook_html(outlook):
     """The Corps' days-ahead release line under the arrivals table ('' if none)."""
     days_line, context = describe_release_outlook(outlook)
-    if not days_line:
+    lake_line, lake_meaning = describe_lake(outlook)
+    if not days_line and not lake_line:
         return ""
+    small = 'style="color: #718096; font-size: 0.85em; margin: 6px 0 0;"'
+    parts = []
+    if days_line:
+        parts.append(f'<p style="margin: 0;"><strong>Days ahead</strong> — Corps planned release: {days_line}</p>')
+        parts.append(f'<p {small}>{context}</p>')
+    if lake_line:
+        top = "10px" if days_line else "0"
+        parts.append(f'<p style="margin: {top} 0 0;">{lake_line}</p>')
+        if lake_meaning:
+            parts.append(f'<p {small}>{lake_meaning}</p>')
     return f'''
     <div class="release-outlook" style="margin: 12px 0; padding: 10px 14px; background: #f7fafc; border-left: 4px solid #805ad5; border-radius: 6px;">
-        <p style="margin: 0;"><strong>Days ahead</strong> — Corps planned release: {days_line}</p>
-        <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">{context}</p>
+        {"".join(parts)}
     </div>'''
 
 
 def release_outlook_text(outlook):
     """The same line for the text summaries ('' if none)."""
     days_line, context = describe_release_outlook(outlook)
-    if not days_line:
-        return ""
-    return f"Days ahead (Corps planned release): {days_line}. {context}\n"
+    lake_line, lake_meaning = describe_lake(outlook)
+    text = ""
+    if days_line:
+        text += f"Days ahead (Corps planned release): {days_line}. {context}\n"
+    if lake_line:
+        text += f"{lake_line}. {lake_meaning}\n" if lake_meaning else f"{lake_line}.\n"
+    return text
 
 
 def outage_headline(reason):
