@@ -275,7 +275,8 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
             feed_reason=feed_reason,
             fishing_report_html=fishing_report_html,
             water_quality=water_quality,
-            release_outlook=release_outlook
+            release_outlook=release_outlook,
+            units_running=relevant_entry.get('units_running')
         )
 
         chart_filename = f"vertical_flow_chart_{dataset_name}.png" if dataset_name else "vertical_flow_chart.png"
@@ -302,7 +303,8 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
             feed_failed=feed_failed,
             feed_reason=feed_reason,
             water_quality=water_quality,
-            release_outlook=release_outlook
+            release_outlook=release_outlook,
+            units_running=relevant_entry.get('units_running')
         )
 
 if __name__ == "__main__":

@@ -107,6 +107,17 @@ def generate_water_quality_html(water_quality, current_time):
         <p style="color: #718096; font-size: 0.85em; margin: 6px 0 0;">Tailwater {source}, {when}</p>'''
 
 
+# Mirrors data_fetcher.TURBINE_COUNT (same reason as the outage literal above)
+TURBINE_COUNT = 8
+
+
+def units_running_label(units):
+    """'3 of 8 units running' for a measured hour, or '' when unknown."""
+    if units is None:
+        return ""
+    return f"{units} of {TURBINE_COUNT} units running"
+
+
 def generate_release_outlook_html(outlook):
     """The Corps' days-ahead release line under the arrivals table ('' if none)."""
     days_line, context = describe_release_outlook(outlook)
@@ -214,6 +225,7 @@ def arrival_rows(timeline_data, forecast_timeline, current_time):
             'kind': 'now' if item['status'] == 'current' else 'actual',
             'cfs': item['cfs'],
             'generators': item['generators'],
+            'units_running': item.get('units_running'),
             'wading': get_fishing_condition(item['cfs'])[0],
             'arrival_time': item['arrival_time'],
             'change': item.get('change'),
@@ -294,10 +306,12 @@ def render_arrivals(rows, current_time, wading_condition, has_forecast):
 
         row_bg = {'now': '#e6fffa', 'actual': '#ebf8ff', 'scheduled': '#faf5ff'}[row['kind']]
         source_color = '#6b46c1' if row['kind'] == 'scheduled' else '#2b6cb0'
+        units = units_running_label(row.get('units_running'))
+        units_html = f'<br><small style="color: #666;">{units}</small>' if units else ""
         body.append(f'''
                     <tr style="background-color: {row_bg}; {row_border}">
                         <td style="padding: 10px; font-weight: bold;">{when_html}</td>
-                        <td style="padding: 10px;">{row['cfs']:,} CFS<br><small style="color: #666;">({row['generators']})</small><br>{pill}</td>
+                        <td style="padding: 10px;">{row['cfs']:,} CFS<br><small style="color: #666;">({row['generators']})</small>{units_html}<br>{pill}</td>
                         <td style="padding: 10px; color: {source_color};">{row['source']}</td>
                     </tr>
         ''')
@@ -486,7 +500,8 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
                            wading_condition, boating_condition, recent_trend, forecast, latest_entry,
                            relevant_entry, recent_data=None, timeline_data=None, forecast_timeline=None,
                            stale_hours=None, feed_failed=False, fishing_report_html="",
-                           water_quality=None, feed_reason=None, release_outlook=None):
+                           water_quality=None, feed_reason=None, release_outlook=None,
+                           units_running=None):
     """
     Generate HTML summary with headline banner, timeline, and reorganized layout.
 
@@ -561,6 +576,9 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 
     # Format generators as integer range
     gen_display = format_generators(white_hole_cfs)
+    units = units_running_label(units_running)
+    units_html = (f'<div class="generator-display">{units} at the dam when this water left</div>'
+                  if units else "")
 
     # Feed-outage banner (shown when the live USACE fetch failed and the page
     # is being served from the last-good-data cache)
@@ -656,6 +674,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
         <h3>Current Conditions at White Hole</h3>
         <div class="flow-display">{white_hole_cfs:,} CFS</div>
         <div class="generator-display">Equivalent to {gen_display}</div>
+        {units_html}
         <div class="condition-pills">
             <span class="pill wading">{wading_condition.title()}</span>
             <span class="pill boating">{boating_condition.title()}</span>
@@ -926,8 +945,10 @@ def generate_text_summary(current_time, white_hole_cfs, generators_equivalent, w
                          wading_condition, boating_condition, recent_trend, forecast,
                          latest_entry, relevant_entry, stale_hours=None, feed_failed=False,
                          feed_reason=None,
-                         water_quality=None, release_outlook=None):
+                         water_quality=None, release_outlook=None, units_running=None):
     """Generate a text version of the White Hole summary."""
+    units = units_running_label(units_running)
+    units_text = f"Units Running: {units} at the dam when this water left\n" if units else ""
     # Calculate travel time for the summary
     travel_time = calculate_travel_time(get_flow(relevant_entry))
     temp_line, do_line = describe_water_quality(water_quality)
@@ -947,7 +968,7 @@ Generated: {current_time.strftime('%Y-%m-%d %H:%M')}
 {stale_warning}
 Current Flow: Approximately {white_hole_cfs} CFS
 Equivalent Generators: {generators_equivalent:.1f} at full capacity
-Water State: {water_state.title()}
+{units_text}Water State: {water_state.title()}
 Wading Conditions: {wading_condition.title()}
 Boating Conditions: {boating_condition.title()}
 

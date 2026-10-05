@@ -317,6 +317,7 @@ def calculate_timeline(data, current_time):
             'release_time': entry['date_time'],
             'cfs': cfs,
             'generators': format_generators(cfs),
+            'units_running': entry.get('units_running'),
             'arrival_time': arrival_time,
             'status': status,
             'minutes_until': minutes_until
