@@ -37,7 +37,7 @@ from water_calculator import (
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
 import suncalc
-from water_quality import describe as describe_water_quality
+from water_quality import describe as describe_water_quality, dam_line as dam_water_line
 from data_fetcher import DAM_TIMEZONE as SPOT_TZ
 
 # Reach landmarks, miles below the dam. Gaston's and White Hole come from the
@@ -940,6 +940,10 @@ def water_notes(water_quality, season, current_time=None):
     when = clock(water_quality["observed"], current_time) if current_time else ""
     notes = [line for line in (temp_line, do_line) if line]
     notes[-1] += f" ({source}, {when})" if when else f" ({source})"
+    dam = (water_quality or {}).get("dam")
+    if dam:
+        notes.append(dam_water_line(
+            water_quality, clock(dam["observed"], current_time) if current_time else None))
     return notes
 
 

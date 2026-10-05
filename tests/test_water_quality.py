@@ -137,3 +137,84 @@ class TestFetch:
 
         monkeypatch.setattr(water_quality.requests, "get", lambda *a, **k: Resp())
         assert get_water_quality(NOW) is None
+
+
+def _cwms_resp(values):
+    class Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"values": values}
+    return Resp()
+
+
+def _ms(dt):
+    return int(dt.timestamp() * 1000)
+
+
+class TestDamReading:
+    """The Corps' own sensors at the dam, from the CWMS Data API."""
+
+    OBSERVED = NOW - timedelta(hours=2, minutes=30)
+
+    def _fake_get(self, temp=57.94, oxygen=5.89):
+        def fake_get(url, params=None, **kwargs):
+            if "usgs" in url:
+                raise requests.ConnectionError("usgs down")
+            value = temp if params["name"] == water_quality.DAM_TEMP_SERIES else oxygen
+            return _cwms_resp([[_ms(self.OBSERVED - timedelta(hours=1)), 1.0, 0],
+                               [_ms(self.OBSERVED), value, 0],
+                               [_ms(self.OBSERVED + timedelta(hours=1)), None, 5]])
+        return fake_get
+
+    def test_latest_non_null_reading_with_statuses(self, monkeypatch):
+        monkeypatch.setattr(water_quality.requests, "get", self._fake_get())
+        dam = water_quality.get_dam_water_quality(NOW)
+        assert dam["temp_f"] == 57.9 and dam["do_mg_l"] == 5.9
+        assert dam["observed"] == self.OBSERVED
+        assert dam["age_hours"] == 2.5
+        assert dam["temp_status"] == "prime" and dam["do_status"] == "marginal"
+        assert dam["source"] == water_quality.DAM_SOURCE and dam["site"] is None
+
+    def test_offline_is_none(self):
+        assert water_quality.get_dam_water_quality(NOW) is None
+
+    def test_stands_in_when_usgs_is_down(self, monkeypatch):
+        monkeypatch.setattr(water_quality.requests, "get", self._fake_get())
+        wq = get_water_quality(NOW)
+        assert wq["source"] == water_quality.DAM_SOURCE
+        assert "dam" not in wq
+        assert describe(wq)[0].startswith("Water 57.9°F")
+
+    def test_rides_on_the_usgs_reading(self, monkeypatch):
+        dam_get = self._fake_get()
+
+        def fake_get(url, params=None, **kwargs):
+            if "usgs" in url:
+                class Resp:
+                    def raise_for_status(self):
+                        pass
+
+                    def json(self):
+                        return _payload()
+                return Resp()
+            return dam_get(url, params=params, **kwargs)
+
+        monkeypatch.setattr(water_quality.requests, "get", fake_get)
+        wq = get_water_quality(NOW)
+        assert wq["site"] == "07054527"
+        assert wq["dam"]["temp_f"] == 57.9
+
+    def test_dam_line_flags_oxygen_only_when_not_good(self):
+        from water_quality import dam_line
+        dam = {"temp_f": 57.9, "do_mg_l": 5.9, "do_status": "marginal"}
+        assert dam_line({"dam": dam}, "12:00 PM") == (
+            "At the dam: 57.9°F · oxygen 5.9 mg/L — marginal (Corps sensors, 12:00 PM)")
+        dam = {"temp_f": 57.9, "do_mg_l": 9.1, "do_status": "good"}
+        assert dam_line({"dam": dam}) == "At the dam: 57.9°F · oxygen 9.1 mg/L (Corps sensors)"
+
+    def test_no_dam_line_without_a_dam_reading(self):
+        from water_quality import dam_line
+        assert dam_line(None) is None
+        assert dam_line({"temp_f": 66.0}) is None
