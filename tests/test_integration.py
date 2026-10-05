@@ -508,3 +508,23 @@ class TestReleaseOutlookOnThePage:
         page = main.generate_white_hole_summary(
             "html", data=list(normal_conditions_data), current_time=now)
         assert "Days ahead" not in page
+
+
+@pytest.mark.integration
+class TestUnitsRunningOnThePage:
+    def test_shown_when_the_readings_carry_it(self, normal_conditions_data):
+        import main
+        data = [dict(e, units_running=2) for e in normal_conditions_data]
+        now = max(e['date_time'] for e in data)
+        html = main.generate_white_hole_summary("html", data=data, current_time=now)
+        text = main.generate_white_hole_summary("text", data=data, current_time=now)
+        assert "2 of 8 units running at the dam when this water left" in html
+        assert "Units Running: 2 of 8 units running" in text
+
+    def test_silent_when_unknown(self, normal_conditions_data):
+        import main
+        now = max(e['date_time'] for e in normal_conditions_data)
+        for fmt in ("html", "text"):
+            page = main.generate_white_hole_summary(
+                fmt, data=list(normal_conditions_data), current_time=now)
+            assert "units running" not in page.lower()

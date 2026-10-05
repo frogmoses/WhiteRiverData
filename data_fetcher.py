@@ -216,6 +216,51 @@ def get_cwms_data():
         return []
 
 
+# The eight main units each publish their own hourly flow, and they sum to
+# the plant flow exactly (checked over 14 days, 2026-10-05), so counting the
+# non-zero ones gives the units actually running — which the page otherwise
+# only estimates from total flow. A running unit never read under ~200 CFS
+# in that fortnight; one unit carries the ~700 CFS minimum flow on its own.
+TURBINE_COUNT = 8
+TURBINE_SERIES = "Bull_Shoals_Dam-Turbine{n}.Flow-Power.Ave.1Hour.1Hour.Decodes-rev"
+UNIT_RUNNING_MIN_CFS = 100
+
+
+def get_units_running():
+    """
+    {reading time: main units running that hour}, or {} when CWMS cannot
+    say. An hour counts only when all eight units reported; the first failed
+    request abandons the lot, so a dead API costs one timeout, not eight.
+    """
+    try:
+        per_unit = [_fetch_cwms_series(TURBINE_SERIES.format(n=n), "cfs", timeout=15)
+                    for n in range(1, TURBINE_COUNT + 1)]
+    except Exception as e:
+        print(f"Units-running lookup failed: {e}")
+        return {}
+    hours = set(per_unit[0]).intersection(*per_unit[1:])
+    return {
+        datetime.fromtimestamp(ts / 1000, DAM_TIMEZONE):
+            sum(1 for unit in per_unit if unit[ts] >= UNIT_RUNNING_MIN_CFS)
+        for ts in hours
+    }
+
+
+def annotate_units_running(data, units=None):
+    """
+    Tag each reading with `units_running` where CWMS has that hour. CWMS has
+    run a couple of hours behind the legacy table, so the newest readings
+    often go untagged; everything downstream treats the key as optional.
+    """
+    if units is None:
+        units = get_units_running()
+    for entry in data:
+        count = units.get(entry['date_time'])
+        if count is not None:
+            entry['units_running'] = count
+    return data
+
+
 def _newest(data):
     return max(entry['date_time'] for entry in data)
 
@@ -258,17 +303,17 @@ def get_bull_shoals_data():
     if data:
         age = datetime.now(DAM_TIMEZONE) - _newest(data)
         if age <= timedelta(hours=LEGACY_STALE_HOURS):
-            return data
+            return annotate_units_running(data)
         cwms = get_cwms_data()
         if cwms and _newest(cwms) > _newest(data):
             print("Legacy USACE table is stale; using the newer CWMS readings")
-            return cwms
-        return data
+            return annotate_units_running(cwms)
+        return annotate_units_running(data)
 
     cwms = get_cwms_data()
     if cwms:
         print("Legacy USACE table unavailable; using CWMS readings")
-        return cwms
+        return annotate_units_running(cwms)
     if reason == OUTAGE_NO_DATA_PUBLISHED:
         # The page came back but held no usable rows: Bull Shoals is
         # publishing dashes. Say so rather than blaming the fetch.

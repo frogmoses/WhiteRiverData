@@ -354,3 +354,53 @@ class TestCwmsFallback:
         monkeypatch.setattr(data_fetcher, "_fetch_html", lambda *a, **k: f"<hr>\n{row}\n<hr>")
         monkeypatch.setattr(data_fetcher, "get_cwms_data", unexpected)
         assert data_fetcher.get_bull_shoals_data()[0]['total_release'] == 660
+
+
+class TestUnitsRunning:
+    """Units actually running, counted from the eight per-turbine flow series."""
+
+    T0 = int(datetime(2026, 10, 4, 17, 0, tzinfo=CENTRAL).timestamp() * 1000)
+    T1 = T0 + 3600 * 1000
+
+    def _patch_series(self, monkeypatch, flows_by_unit):
+        import data_fetcher
+
+        def fake(name, unit, timeout=30):
+            n = int(name.split("Turbine")[1].split(".")[0])
+            return flows_by_unit[n - 1]
+
+        monkeypatch.setattr(data_fetcher, "_fetch_cwms_series", fake)
+
+    def test_counts_units_with_flow(self, monkeypatch):
+        import data_fetcher
+        flows = [{self.T0: 0.0, self.T1: 0.0}] * 5 + [
+            {self.T0: 922.0, self.T1: 0.0}, {self.T0: 947.0, self.T1: 673.0},
+            {self.T0: 1152.0, self.T1: 0.0}]
+        self._patch_series(monkeypatch, flows)
+        units = data_fetcher.get_units_running()
+        assert units[datetime(2026, 10, 4, 17, 0, tzinfo=CENTRAL)] == 3
+        assert units[datetime(2026, 10, 4, 18, 0, tzinfo=CENTRAL)] == 1
+
+    def test_an_hour_missing_a_unit_is_not_counted(self, monkeypatch):
+        import data_fetcher
+        flows = [{self.T0: 2000.0, self.T1: 2000.0}] * 7 + [{self.T0: 2000.0}]
+        self._patch_series(monkeypatch, flows)
+        units = data_fetcher.get_units_running()
+        assert list(units.values()) == [8]
+
+    def test_offline_is_empty(self):
+        import data_fetcher
+        assert data_fetcher.get_units_running() == {}
+
+    def test_annotate_tags_only_matching_hours(self):
+        from data_fetcher import annotate_units_running
+        known = datetime(2026, 10, 4, 17, 0, tzinfo=CENTRAL)
+        data = [{'date_time': known}, {'date_time': known + timedelta(hours=1)}]
+        annotate_units_running(data, {known: 3})
+        assert data[0]['units_running'] == 3
+        assert 'units_running' not in data[1]
+
+    def test_literal_matches_formatters(self):
+        import data_fetcher
+        import formatters
+        assert formatters.TURBINE_COUNT == data_fetcher.TURBINE_COUNT
