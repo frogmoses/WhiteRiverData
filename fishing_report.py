@@ -196,7 +196,9 @@ BAND_CONTENT = {
         "summary": "The river is a giant spring creek. Gravel bars exposed; prop strikes "
                    "are the boat risk and the White Hole ramp can be tricky to launch. "
                    "Wading is wide open. Fish see everything — go light for rainbows, "
-                   "go dark (not light) for browns.",
+                   "go dark (not light) for browns. The river carries ~200 CFS more "
+                   "than the release figure says: the house unit and leakage through "
+                   "the closed gates are not counted in it (Corps Water Management).",
         "where": [
             "The weed-bed edges a short run upstream of the White Hole ramp — sowbug and scud water; trout hold on the edges and pick",
             "The head of the White Hole where the deep water starts at the ramp and runs downstream",
