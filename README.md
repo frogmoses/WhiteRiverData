@@ -14,8 +14,9 @@ Top to bottom:
 | Section | What it tells you |
 |---|---|
 | **Banner** | Can you wade right now, and is a rise or a drop on its way. A third line names the day's scheduled peak when high water is coming. |
-| **Current Conditions** | The flow at White Hole now, wading and boating verdicts, sunrise and sunset with the low-light windows, and the tailwater's temperature and oxygen from the USGS gauge with a trout verdict (low oxygen means land fish fast). |
-| **Arrivals at White Hole** | The water on its way to you, in the order it gets there. The top row is what is in front of you now. "Released" rows are the dam's hourly readings, "scheduled" rows are SWPA's generation plan for the rest of today and, once posted around 5 PM, tomorrow. Falling water shows as a window: when the level starts dropping and when it is fully down. |
+| **Current Conditions** | The flow at White Hole now, how many of the dam's eight units were running when that water left (when the Corps has reported that hour), wading and boating verdicts, sunrise and sunset with the low-light windows, and the tailwater's temperature and oxygen from the USGS gauge with a trout verdict (low oxygen means land fish fast). Under that, the same two numbers from the Corps' own sensors at the dam: the water before the reach has warmed it, and where a low-oxygen release shows first. |
+| **Arrivals at White Hole** | The water on its way to you, in the order it gets there. The top row is what is in front of you now. "Released" rows are the dam's hourly readings (with the units running, where known), "scheduled" rows are SWPA's generation plan for the rest of today and, once posted around 5 PM, tomorrow. Falling water shows as a window: when the level starts dropping and when it is fully down. |
+| **Days ahead** | The Corps' planned daily-average release for the next few days, with yesterday's actual average for scale — the only line that looks past tomorrow. A daily average, not a schedule: 2,000 CFS can be minimum flow all night and five units at dusk. Below it, the lake: its level, how full the conservation pool is, whether there is flood water to evacuate (heavy generation until it is gone), and the Corps' forecast level. |
 | **Water Flow Progression** | The chart: which release is at which landmark right now, dam to White Hole, with map pins for each landmark. |
 | **Fishing Report** | Collapsed by default. Timing around the generation changes and a short This-season block, then a tap-to-pick strip with a playbook for every flow band: where to go, boat handling, spin and fly tackle split into a browns program and a rainbows program. Regulations, a gear check grouped by action (buy / verify / bench / pack), and the rigging reference follow as collapsed blocks. |
 
@@ -63,7 +64,7 @@ hand, from the catch report, so the page can say "Journal: 3 fish on record" ins
 | Preview the fishing report for any flow or season | `uv run python fishing_report.py --season fall --cfs 750` | `fishing_report.html`, expanded |
 | Check the report's gear against the tackle inventory | `uv run python scripts/audit_gear_inventory.py` | Drift findings, or "0 findings"; exit 1 on drift |
 | Render the page for eight water scenarios | `uv run python generate_test_html.py` | `white_hole_conditions_{scenario}.html` and charts |
-| Run the tests | `uv run pytest` | 379 tests, offline |
+| Run the tests | `uv run pytest` | 461 tests, offline |
 
 The gear audit reads `~/CodeProjects/new-croton-fishing/reference/tackle-inventory.md`,
 the single inventory of record, and is skipped where that file is absent.
@@ -76,7 +77,7 @@ playwright install chromium
 uv run python main.py
 ```
 
-That fetches the dam, the SWPA schedule and the USGS gauges live and writes
+That fetches the dam, the SWPA schedule, the USGS gauges and the Corps' data service live and writes
 `white_hole_conditions.html` and `vertical_flow_chart.png` into the repo root, the same
 files the Raspberry Pi commits every hour. Restore them with `git checkout` if the run was
 not meant to be committed. Production runs also append one row of predictions to
@@ -84,7 +85,12 @@ not meant to be committed. Production runs also append one row of predictions to
 
 ## Where the numbers come from
 
-- **USACE** hourly releases at Bull Shoals Dam, the flow the whole page is built on.
+- **USACE** hourly releases at Bull Shoals Dam, the flow the whole page is built on. Read
+  from the Corps' legacy tabular page first and from their new data service (the one behind
+  water.usace.army.mil) when that page is down, blank or stale.
+- **The Corps' data service** also supplies the units running, the temperature and oxygen
+  at the dam, the days-ahead release plan and the lake level. It runs hours behind the
+  legacy page at times; those lines carry their reading time, or drop out, when it does.
 - **SWPA** hourly generation schedules, converted to flow, for what is coming.
 - **USGS** gauges below the dam for water temperature and dissolved oxygen. There is no
   discharge gauge near White Hole, which is why the model is unverified.

@@ -32,11 +32,11 @@ standalone fishing report without `--cfs` launch a browser).
 ```
 WhiteRiverData/
 ├── main.py                  # Orchestrates fetch → calculate → format → save; staleness + outage fallback; prediction-log opt-in
-├── data_fetcher.py          # USACE page via Playwright (+ DoH/host-resolver fallback); parse_table_content(); last-good cache
+├── data_fetcher.py          # USACE page via Playwright (+ DoH fallback); CWMS Data API fallback + units-running tags; last-good cache
 ├── forecast_fetcher.py      # SWPA day pages (today + tomorrow), <pre>-header date validation, MW→CFS
 ├── water_calculator.py      # get_flow, travel time, recession window, significant_change, timelines, run grouping, clock()
-├── water_quality.py         # USGS tailwater temperature / dissolved oxygen (07054527 preferred, 07054502 fallback)
-├── release_outlook.py       # Corps daily-average release forecast for the days after today (CWMS Data API)
+├── water_quality.py         # USGS tailwater temperature / DO (07054527 preferred, 07054502 fallback) + the Corps' sensors at the dam
+├── release_outlook.py       # Corps daily-average release forecast for the days after today + lake level (CWMS Data API)
 ├── prediction_log.py        # One CSV row per production run (predictions.csv)
 ├── fishing_report.py        # The fishing report: bands, programs, timing, provenance, band picker, rigging; standalone runner
 ├── formatters.py            # HTML/text page: banner, current conditions, arrivals table, chart embed
@@ -58,11 +58,11 @@ WhiteRiverData/
 ├── pyproject.toml, uv.lock, pytest.ini
 └── tests/
     ├── conftest.py                # 10 water-condition fixtures (naive datetimes); autouse: tmp cwd, network off
-    ├── test_data_fetcher.py       # USACE parsing, 2400 rows, spillway columns, DNS fallback
+    ├── test_data_fetcher.py       # USACE parsing, 2400 rows, spillway columns, DNS fallback, CWMS fallback, units running
     ├── test_forecast_fetcher.py   # <pre>-date validation, tomorrow fetch, MW→CFS
     ├── test_water_calculator.py   # Travel time, recession window, significant_change, timelines, clock
-    ├── test_water_quality.py      # USGS JSON, gauge preference, thresholds
-    ├── test_release_outlook.py    # Day-ending date convention, day-range collapsing, optional fetch
+    ├── test_water_quality.py      # USGS JSON, gauge preference, thresholds, the dam reading and its stand-in role
+    ├── test_release_outlook.py    # Day-ending date convention, day-range collapsing, lake level, optional fetch
     ├── test_prediction_log.py     # Row contents, CSV append, opt-in from main
     ├── test_fishing_report.py     # Bands, programs, two-spool rule, timing, outline, provenance, band picker, section purity
     ├── test_build_journal.py      # Journal parsing, catch vocabulary, model-row matching, crosswalk
@@ -94,14 +94,17 @@ data_fetcher.get_bull_shoals_data() → Playwright → parse_table_content(html)
     parse_dam_datetime() rolls USACE's "2400" midnight to the next day
     ERR_NAME_NOT_RESOLVED → resolve_via_doh() → retry with --host-resolver-rules
     fetch failed / all dashes / stale → get_cwms_data() (CWMS Data API, requests) → same entry shape
+    either way → annotate_units_running() tags readings CWMS has with units_running (optional key)
     both empty → error sentinel → main falls back to load_last_good_data (≤ 24 h) with a feed_failed banner
     ↓
 forecast_fetcher.get_swpa_forecast(current_time) → today's + tomorrow's day page, each validated
     against the <pre> header date → hourly MW → mw_to_cfs() → future hours only
     ↓
 water_quality.get_water_quality(current_time) → USGS IV JSON → one reading (temp °F, DO mg/L, statuses)
+    + get_dam_water_quality() → the Corps' sensors at the dam as reading["dam"] (or the reading itself when USGS is down)
     ↓
 release_outlook.get_release_outlook(current_time) → CWMS daily forecast → days after today (+ yesterday's measured average)
+    + get_lake_level() → pool elevation, % conservation / % flood pool, forecast elevation as outlook["lake"]
     ↓
 water_calculator:
     get_flow(entry)                         total_release, else turbine_release
@@ -178,9 +181,9 @@ unused (an open item from the review).
   feeds down it is still the error page.
 - **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails, `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed`), plus the stale banner once the cache ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the error page. The cache is **committed** by `run_white_hole.sh` (its `git stash -u` would destroy an untracked copy). Motivated by the Aug 27 2026 army.mil DNS outage.
 - **DNS fallback** (`data_fetcher.get_bull_shoals_data`): on `ERR_NAME_NOT_RESOLVED`, `resolve_via_doh` asks cloudflare-dns.com for the A record and Chromium is relaunched with `--host-resolver-rules=MAP host ip` (the existing `--ignore-certificate-errors` covers a mismatched cert on the pinned IP). Other errors are not retried. Added 2026-09-21 after the Pi's resolver failed army.mil; the Pi's resolver was also fixed (see Deployment).
-- **CWMS fallback** (`data_fetcher.get_cwms_data`, `build_cwms_entries`, `CWMS_SERIES`): the second source for the dam readings — the Corps' CWMS Data API (`cwms-data.usace.army.mil/cwms-data/timeseries`, office SWL, plain `requests`, no browser), which is what the district's replacement site reads. Public Affairs sent that site's two links (`water.usace.army.mil/office/swl/hourly` and `/reports`) on 2026-10-05 in reply to Brian's outage report; the pages are a JavaScript app behind a DoD consent banner, so the API is read directly. Five hourly series (headwater, tailwater, plant MWh, `Flow-Plant`, `Flow-Res Out`) merge into entries shaped like the legacy rows; spillway is total − plant. Verified 2026-10-05: identical to the legacy table row for row, complete through the Oct 1–4 blank spell, but ~2 h behind the legacy table that afternoon — so `get_bull_shoals_data` keeps legacy first and takes CWMS when the legacy fetch fails, the table is all dashes, or its newest row is older than `LEGACY_STALE_HOURS` (3) and CWMS is newer. The error sentinel (and its `reason`) only when both are empty. The new site says it "will replace our legacy website in 2026": when the legacy URL dies for good, CWMS is already carrying the page — promote it then.
+- **CWMS fallback** (`data_fetcher.get_cwms_data`, `build_cwms_entries`, `CWMS_SERIES`): the second source for the dam readings — the Corps' CWMS Data API (`cwms-data.usace.army.mil/cwms-data/timeseries`, office SWL, plain `requests`, no browser), which is what the district's replacement site reads. Public Affairs sent that site's two links (`water.usace.army.mil/office/swl/hourly` and `/reports`) on 2026-10-05 in reply to Brian's outage report; the pages are a JavaScript app behind a DoD consent banner, so the API is read directly. Five hourly series (headwater, tailwater, plant MWh, `Flow-Plant`, `Flow-Res Out`) merge into entries shaped like the legacy rows; spillway is total − plant. Verified 2026-10-05: identical to the legacy table row for row and complete through the Oct 1–4 blank spell — but **it stalls**: that afternoon every SWL series in the API (releases, turbines, lake, sensors, even Norfork and Calico Rock) stopped at 12:00 Central and was still there seven hours later while the legacy table had 18:00, and the outage days were presumably backfilled. So `get_bull_shoals_data` keeps legacy first and takes CWMS when the legacy fetch fails, the table is all dashes, or its newest row is older than `LEGACY_STALE_HOURS` (3) and CWMS is newer. The error sentinel (and its `reason`) only when both are empty. The new site says it "will replace our legacy website in 2026": when the legacy URL dies for good, CWMS is already carrying the page — promote it then.
 - **Lake level** (`release_outlook.get_lake_level` / `describe_lake`, riding on the outlook as `outlook["lake"]` and rendered in the same block and text line): Bull Shoals pool elevation, % of conservation pool, % of flood pool in use (hourly CWMS series) and the Corps' forecast elevation (stamped 07:00 on the day it is for — no shift, unlike the release forecast). Same convention as the Corps' own report: when the flood pool is above 0 it leads, otherwise the conservation percentage does. The sentence under it — flood water means heavier, longer generation until it is evacuated; an empty flood pool means releases follow power demand — is **this repo's inference** from how the pools are operated, not a Corps statement; keep it that modest. The lake renders alone when the release forecast is missing. Asked for by Brian 2026-10-05.
-- **Units running** (`data_fetcher.get_units_running` / `annotate_units_running`, `formatters.units_running_label`): the count of main units actually turning, from the eight CWMS per-turbine flow series (`Bull_Shoals_Dam-Turbine{n}.Flow-Power...Decodes-rev`), which sum to the plant flow exactly; a unit counts at ≥ `UNIT_RUNNING_MIN_CFS` (100 — a running unit never read under ~200 in the fortnight checked 2026-10-05). `get_bull_shoals_data` tags each reading with an optional `units_running` (so the outage cache carries it); it rides through `calculate_timeline` to the arrivals table's measured rows and, for the reading behind the White Hole flow, to the line under "Equivalent to N generators" and the text summary. **It is not the same thing as the equivalent-generators estimate and the two will disagree**: one unit carries the ~700 CFS minimum flow alone, and three units at part load made 3,021 CFS on 2026-10-04 (the estimate says "0–1"). CWMS has run ~2 h behind the legacy table, so the newest readings are usually untagged and the label simply does not render — never fill the gap with a guess. Scheduled rows have no unit count. `formatters.TURBINE_COUNT` mirrors `data_fetcher`'s; a test holds them together. Asked for by Brian 2026-10-05.
+- **Units running** (`data_fetcher.get_units_running` / `annotate_units_running`, `formatters.units_running_label`): the count of main units actually turning, from the eight CWMS per-turbine flow series (`Bull_Shoals_Dam-Turbine{n}.Flow-Power...Decodes-rev`), which sum to the plant flow exactly; a unit counts at ≥ `UNIT_RUNNING_MIN_CFS` (100 — a running unit never read under ~200 in the fortnight checked 2026-10-05). `get_bull_shoals_data` tags each reading with an optional `units_running` (so the outage cache carries it); it rides through `calculate_timeline` to the arrivals table's measured rows and, for the reading behind the White Hole flow, to the line under "Equivalent to N generators" and the text summary. **It is not the same thing as the equivalent-generators estimate and the two will disagree**: one unit carries the ~700 CFS minimum flow alone, and three units at part load made 3,021 CFS on 2026-10-04 (the estimate says "0–1"). CWMS runs behind the legacy table and stalls for hours at a time (see the CWMS fallback entry), so the newest readings are usually untagged and the label simply does not render — never fill the gap with a guess. Scheduled rows have no unit count. `formatters.TURBINE_COUNT` mirrors `data_fetcher`'s; a test holds them together. Asked for by Brian 2026-10-05.
 - **Days-ahead release outlook** (`release_outlook.get_release_outlook` / `describe`, rendered by `formatters.generate_release_outlook_html` under the arrivals table and `release_outlook_text` in both text summaries): the Corps' planned daily-average release for the days after today, from the CWMS series `Bull_Shoals_Dam.Flow-Res Out.Ave.~1Day.1Day.Forecast` — the only thing on the page that looks past SWPA's tomorrow. Asked for by Brian 2026-10-05. **A value stamped midnight is the average for the day that ends there (the day before the stamp)**: the measured daily series (`...Regi-Comp`) at a given stamp equals the mean of the previous day's 24 hourly rows, and the Corps' own Reservoir Forecast report code shifts this series by −1 day. Equal consecutive days collapse ("Tue–Fri 2,000 CFS"); yesterday's measured average sits beside it for scale. It is a planning figure — over the three weeks to 2026-10-05 the stored forecast missed the measured average by ~740 CFS on average and once by 2,400 — and a daily average says nothing about when the water comes, so **never run it through `get_fishing_condition` or label it wadeable**; the copy says "not a schedule". Optional like water quality: a failed fetch drops the line.
 - **Water quality** (`water_quality.get_water_quality`): one call to the USGS instantaneous-values service for gauges 07054527 (near Fairview, beside the Cane Island pin — preferred) and 07054502 (0.7 mi below the dam — fallback): water temperature and dissolved oxygen, 15-minute, **no discharge**. Thresholds: DO <5 mg/L low / <6 marginal; temp <50°F cold / 50–62 prime / 62–68 warm / ≥68 hot (commonly cited trout ranges — verify before tightening). Rendered as pills under Current Conditions (`formatters.generate_water_quality_html`, age shown past `STALE_READING_HOURS`), in the text summary, and as the lines under the fishing report's flow line (`fishing_report.water_notes` → `report["water"]`; a per-season fallback sentence when the fetch fails — the old fixed "~53–56°F" note contradicted the live gauge). Fetch failure never blanks the page.
 - **Temperature and oxygen at the dam** (`water_quality.get_dam_water_quality`, `dam_line`; series `DAM_TEMP_SERIES` / `DAM_DO_SERIES`): the Corps' own tailwater sensors at the dam, hourly from the CWMS Data API — the Corps' average of their two probes (the right-bank probe alone swings several mg/L in daylight at minimum flow). `get_water_quality` attaches it to the USGS reading as `wq["dam"]`, and it renders as one "At the dam: 57.9°F · oxygen 9.1 mg/L (Corps sensors, 12:00 PM)" line under the USGS pills, in both text summaries and in the fishing report's water lines; oxygen gets a word only when it is not good. Two uses: the gap to the USGS gauge is how much the reach warmed the water, and a low-oxygen release shows here first (2026-10-04: 8.9 mg/L at minimum flow, 5.9 the hour three units came on). **When USGS is down the dam reading stands in as the main reading**, labelled "Corps sensors at the dam" with no USGS link and its age past `STALE_READING_HOURS` — CWMS runs hours behind, so that is common. The stand-in carries `source: "corps_dam"` and `prediction_log` skips it: the log's water columns are the USGS gauge only. Asked for by Brian 2026-10-05.
@@ -377,10 +380,20 @@ Rules that matter:
   — Central time; midnight encoded as `2400` on the previous day's date; partial rows use
   `----`/`---` dashes; the hourly CFS is derived from generation and the row timestamp
   behaves as the start of the hour it summarises.
-- CWMS Data API (fallback for the above): `https://cwms-data.usace.army.mil/cwms-data/timeseries`
-  — JSON (`accept: application/json;version=2`), epoch-ms timestamps, units by request
-  (`ft`, `cfs`, `MWh`); series names in `data_fetcher.CWMS_SERIES`. The catalog's
-  `latest-time` extents are stale — query the series, not the catalog, to judge freshness.
+- CWMS Data API: `https://cwms-data.usace.army.mil/cwms-data/timeseries` — the Corps' public
+  JSON service behind their replacement site (`water.usace.army.mil/office/swl/`, a JS app
+  behind a DoD consent banner; the API needs none). `accept: application/json;version=2`,
+  epoch-ms timestamps, units by request (`ft`, `cfs`, `MWh`, `F`, `mg/l`, `%`), `begin`
+  as ISO or a negative duration (`PT-48H`). Series names live beside their use:
+  `data_fetcher.CWMS_SERIES` / `TURBINE_SERIES` (release fallback, units running),
+  `water_quality.DAM_*_SERIES` (sensors at the dam), `release_outlook.*_SERIES` (release
+  forecast, lake). Period-average series are stamped at the END of their period. The
+  catalog's `latest-time` extents are stale — query the series, not the catalog, to judge
+  freshness — and the whole district's feed stalls for hours at a time (2026-10-05).
+  Questions go to `dll-ceswl-wm-sysadmins@usace.army.mil` (the address the new site gives;
+  Brian asked them 2026-10-05 why `Tailwater.Flow` reads ~400 CFS above `Flow-Res Out` at
+  minimum flow — unresolved; if the release table undercounts, every low-flow figure here is
+  low by that much).
 - SWPA generation schedule: `https://www.energy.gov/swpa/{mon..sun}.htm` — hour-ending
   format (hour 1 = 00:00–01:00 Central); next-day schedules post ~5 p.m.; Friday posts
   Sat/Sun/Mon; the schedule date is in the `<pre>` header, never the `<title>`.
