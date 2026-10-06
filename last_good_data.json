@@ -1,15 +1,5 @@
 [
  {
-  "date_time": "2026-10-04T23:00:00-05:00",
-  "elevation": 654.23,
-  "tailwater": 450.78,
-  "generation": 8,
-  "turbine_release": 738,
-  "spillway_release": 0,
-  "total_release": 738,
-  "units_running": 1
- },
- {
   "date_time": "2026-10-05T00:00:00-05:00",
   "elevation": 654.27,
   "tailwater": 450.77,
@@ -206,7 +196,8 @@
   "generation": 155,
   "turbine_release": 10877,
   "spillway_release": 0,
-  "total_release": 10877
+  "total_release": 10877,
+  "units_running": 6
  },
  {
   "date_time": "2026-10-05T20:00:00-05:00",
@@ -215,7 +206,8 @@
   "generation": 46,
   "turbine_release": 3071,
   "spillway_release": 0,
-  "total_release": 3071
+  "total_release": 3071,
+  "units_running": 3
  },
  {
   "date_time": "2026-10-05T21:00:00-05:00",
@@ -224,7 +216,8 @@
   "generation": 8,
   "turbine_release": 786,
   "spillway_release": 0,
-  "total_release": 786
+  "total_release": 786,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-05T22:00:00-05:00",
@@ -233,7 +226,8 @@
   "generation": 8,
   "turbine_release": 734,
   "spillway_release": 0,
-  "total_release": 734
+  "total_release": 734,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-05T23:00:00-05:00",
@@ -242,7 +236,8 @@
   "generation": 7,
   "turbine_release": 674,
   "spillway_release": 0,
-  "total_release": 674
+  "total_release": 674,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T00:00:00-05:00",
@@ -251,7 +246,8 @@
   "generation": 8,
   "turbine_release": 740,
   "spillway_release": 0,
-  "total_release": 740
+  "total_release": 740,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T01:00:00-05:00",
@@ -260,7 +256,8 @@
   "generation": 7,
   "turbine_release": 696,
   "spillway_release": 0,
-  "total_release": 696
+  "total_release": 696,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T02:00:00-05:00",
@@ -269,7 +266,8 @@
   "generation": 7,
   "turbine_release": 701,
   "spillway_release": 0,
-  "total_release": 701
+  "total_release": 701,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T03:00:00-05:00",
@@ -278,7 +276,8 @@
   "generation": 7,
   "turbine_release": 695,
   "spillway_release": 0,
-  "total_release": 695
+  "total_release": 695,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T04:00:00-05:00",
@@ -287,7 +286,8 @@
   "generation": 9,
   "turbine_release": 700,
   "spillway_release": 0,
-  "total_release": 700
+  "total_release": 700,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T05:00:00-05:00",
@@ -296,7 +296,8 @@
   "generation": 8,
   "turbine_release": 763,
   "spillway_release": 0,
-  "total_release": 763
+  "total_release": 763,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T06:00:00-05:00",
@@ -305,7 +306,8 @@
   "generation": 7,
   "turbine_release": 676,
   "spillway_release": 0,
-  "total_release": 676
+  "total_release": 676,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T07:00:00-05:00",
@@ -314,7 +316,8 @@
   "generation": 7,
   "turbine_release": 693,
   "spillway_release": 0,
-  "total_release": 693
+  "total_release": 693,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T08:00:00-05:00",
@@ -323,7 +326,8 @@
   "generation": 8,
   "turbine_release": 770,
   "spillway_release": 0,
-  "total_release": 770
+  "total_release": 770,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T09:00:00-05:00",
@@ -332,7 +336,8 @@
   "generation": 8,
   "turbine_release": 725,
   "spillway_release": 0,
-  "total_release": 725
+  "total_release": 725,
+  "units_running": 1
  },
  {
   "date_time": "2026-10-06T10:00:00-05:00",
@@ -341,6 +346,17 @@
   "generation": 8,
   "turbine_release": 713,
   "spillway_release": 0,
-  "total_release": 713
+  "total_release": 713,
+  "units_running": 1
+ },
+ {
+  "date_time": "2026-10-06T11:00:00-05:00",
+  "elevation": 654.11,
+  "tailwater": 450.7,
+  "generation": 8,
+  "turbine_release": 746,
+  "spillway_release": 0,
+  "total_release": 746,
+  "units_running": 1
  }
 ]
