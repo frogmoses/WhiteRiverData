@@ -364,7 +364,8 @@ class TestFocusedLayout:
         report = generate_fishing_report(750, OCTOBER)
         actions = report["gear_actions"]
         assert list(actions) == ["buy", "verify", "bench", "pack"]
-        assert any("resident" in i or "browns rod" in i for i in actions["buy"]["spin"])
+        assert any("dip net" in i for i in actions["buy"]["spin"])
+        assert any("SCPS70MF2-SG" in i for i in actions["pack"]["spin"])
         assert any("8 lb fluorocarbon — OWNED" in i for i in actions["pack"]["spin"])
         assert any("Fly box audit" in i for i in actions["verify"]["fly"])
         assert any("leader wallet" in i for i in actions["bench"]["spin"])

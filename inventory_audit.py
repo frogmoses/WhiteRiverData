@@ -31,8 +31,9 @@ INVENTORY_PATH = os.path.expanduser(
 
 # (label, how the report mentions it, how the inventory row reads)
 OWNED_GEAR = [
-    # rods and reels — the AR pair (the Cherrywood stopped travelling and the
-    # report no longer names it)
+    # rods and reels — the AR pair plus the resident browns rod (the Cherrywood
+    # stopped travelling and the report no longer names it)
+    ("St. Croix SCPS70MF2-SG (resident browns rod)", r"SCPS70MF2|browns rod", r"SCPS70MF2-SG"),
     ("Daiwa Presso (AR)", r"Presso", r"AR \| \*\*6'\*\* Daiwa Presso"),
     ("St. Croix Premier PS60ULF", r"St\. Croix", r"PS60ULF"),
     ("Abu Garcia Black Max 30", r"Black Max", r"Black Max 30"),
@@ -101,9 +102,6 @@ OWNED_GEAR = [
 # wolf; the note on a row says which near-miss it is deliberately not matching.
 BUY_OR_VERIFY = [
     ("hand dip net", r"dip net", r"dip net"),
-    # decided 2026-09-28: the Cherrywood stops travelling and a rod matching its
-    # blank is bought for Dad's. Owned when the rack grows an AR row for it.
-    ("resident browns rod at Dad's", r"browns rod", r"AR \|[^|]*medium spinning"),
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory

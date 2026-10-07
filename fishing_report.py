@@ -557,7 +557,6 @@ GEAR_CHECK = {
         "buy": [
             "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
             "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
-            "Buy a 7 ft medium, 6-14 lb, 1/8-3/4 oz browns rod and leave it in Arkansas",
         ],
         "verify": [
             "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
@@ -573,6 +572,7 @@ GEAR_CHECK = {
             "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
             "#6 Aberdeens — OWNED, a 50-pack beside the #4s — the light-wire hook for eggs and Mice Tails, where the #4 is oversized",
             "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
+            "The browns rod — OWNED: St. Croix SCPS70MF2-SG, 7 ft medium, 10-17 lb, 1/4-3/4 oz, 2-piece — lives at Dad's (carry it down if it is still in New York). The Black Max 30 travels to meet it, respooled to 10 lb mono: the main out-tests the 8 lb browns leader so break-offs happen at the hook leader. Anything the browns program throws under 1/4 oz goes on the St. Croix ultralight",
             "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow hook leaders and carries the spinner work — but its ultralight blank can never take the browns main",
         ],
     },
