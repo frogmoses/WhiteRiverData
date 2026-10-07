@@ -972,3 +972,31 @@ class TestLakeLevelOnThePage:
         from formatters import generate_release_outlook_html
         html = generate_release_outlook_html({'days': [], 'yesterday_cfs': None, 'lake': self.LAKE})
         assert "Lake 654.2 ft" in html and "Days ahead" not in html
+
+
+class TestFreshness:
+    """A copy of the page knows how old it is and fetches a newer build itself."""
+
+    def test_both_pages_carry_the_stamp_and_the_script(self, normal_conditions_data):
+        import main
+        from zoneinfo import ZoneInfo
+        from datetime import datetime
+        from data_fetcher import OUTAGE_NO_DATA_PUBLISHED
+        now = max(e['date_time'] for e in normal_conditions_data)
+        html = main.generate_white_hole_summary("html", data=list(normal_conditions_data), current_time=now)
+        stamp = int(now.timestamp())
+        assert f'<meta name="generated" content="{stamp}">' in html
+        assert html.count('id="freshness"') == 1
+        assert 'cache: "no-store"' in html and "location.reload()" in html
+        assert "Reload" in html
+
+    def test_schedule_only_page_has_it_too(self):
+        from datetime import datetime
+        from formatters import generate_schedule_only_html
+        now = datetime(2026, 10, 7, 18, 30)
+        html = generate_schedule_only_html(now, [], 750, feed_reason="no_data_published")
+        assert 'name="generated"' in html and 'id="freshness"' in html
+
+    def test_stale_threshold_outlasts_one_hourly_publish(self):
+        from formatters import STALE_COPY_MINUTES
+        assert 60 < STALE_COPY_MINUTES <= 120

@@ -172,6 +172,70 @@ def release_outlook_text(outlook):
     return text
 
 
+# How long a copy of the page may be before it says so. The Pi publishes at
+# least hourly; GitHub Pages caches for 10 min; phones hold a tab for hours.
+# On 2026-10-07 Brian read "excellent wading, since 4:44 PM" at 6:23 PM with
+# 9,700 CFS in front of him — a copy from the 5:12 run his phone had kept.
+STALE_COPY_MINUTES = 75
+FRESHNESS_CHECK_SECONDS = 300
+
+
+def freshness_meta(current_time):
+    """A <meta> stamping when this copy was built, for the page's own script."""
+    return f'<meta name="generated" content="{int(current_time.timestamp())}">'
+
+
+def freshness_html(current_time):
+    """
+    The 'built N min ago' line and the script behind it: counts the copy's age
+    live, warns when it is older than STALE_COPY_MINUTES, and every
+    FRESHNESS_CHECK_SECONDS fetches the page uncached and reloads when a newer
+    build is up — so a tab left open, or a copy a phone cached, catches up on
+    its own. Pure client-side; nothing here depends on the build.
+    """
+    stamp = int(current_time.timestamp())
+    return f'''
+    <p id="freshness" class="subtitle" style="font-size: 0.85em; color: #718096;" data-generated="{stamp}">
+        Built {current_time.strftime('%-I:%M %p')} Central</p>
+    <div id="stale-copy" style="display: none; margin: 10px 0; padding: 10px 14px; background: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; color: #9b2c2c; font-weight: bold;">
+        This copy of the page is <span id="stale-age"></span> old — the river has moved on.
+        <a href="javascript:location.reload(true)" style="color: #9b2c2c;">Reload</a> for the latest.
+    </div>
+    <script>
+    (function () {{
+        var built = {stamp} * 1000;
+        var staleAfter = {STALE_COPY_MINUTES} * 60 * 1000;
+        var line = document.getElementById("freshness");
+        var warn = document.getElementById("stale-copy");
+        var ageEl = document.getElementById("stale-age");
+        function ageText(ms) {{
+            var m = Math.round(ms / 60000);
+            if (m < 60) return m + " min";
+            var h = Math.floor(m / 60);
+            return h + " h " + (m - 60 * h) + " min";
+        }}
+        function tick() {{
+            var age = Date.now() - built;
+            if (age < 0) age = 0;
+            line.textContent = "Built " + line.textContent.replace(/^Built /, "").replace(/ · .*$/, "") + " · " + ageText(age) + " ago";
+            var stale = age > staleAfter;
+            warn.style.display = stale ? "block" : "none";
+            if (stale) ageEl.textContent = ageText(age);
+        }}
+        function check() {{
+            fetch(location.pathname, {{cache: "no-store"}}).then(function (r) {{ return r.text(); }}).then(function (html) {{
+                var m = html.match(/name="generated" content="(\d+)"/);
+                if (m && parseInt(m[1], 10) * 1000 > built) location.reload();
+            }}).catch(function () {{}});
+        }}
+        tick();
+        setInterval(tick, 30000);
+        setInterval(check, {FRESHNESS_CHECK_SECONDS} * 1000);
+        document.addEventListener("visibilitychange", function () {{ if (!document.hidden) {{ tick(); check(); }} }});
+    }})();
+    </script>'''
+
+
 def outage_headline(reason):
     """The banner headline for an outage, by its reason (data_fetcher)."""
     if reason == OUTAGE_NO_DATA_PUBLISHED:
@@ -687,6 +751,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White Hole Conditions - {current_time.strftime('%Y-%m-%d %H:%M')}</title>
+    {freshness_meta(current_time)}
     <style>
 {page_css(banner_color, banner_text_color, wading_condition, boating_condition)}
     </style>
@@ -694,6 +759,7 @@ def generate_html_summary(current_time, white_hole_cfs, generators_equivalent, w
 <body>
     <h1>White Hole Current Conditions</h1>
     <p class="subtitle">{current_time.strftime('%A, %B %d, %Y at %I:%M %p')}</p>
+    {freshness_html(current_time)}
 {feed_failed_banner_html}
 {stale_banner_html}
     <!-- HEADLINE BANNER -->
@@ -813,6 +879,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White Hole Conditions - {current_time.strftime('%Y-%m-%d %H:%M')}</title>
+    {freshness_meta(current_time)}
     <style>
 {page_css("#991b1b", "white", wading, boating)}
         .scheduled-flow {{ font-size: 2em; font-weight: bold; color: #553c9a; }}
@@ -841,6 +908,7 @@ def generate_schedule_only_html(current_time, forecast_timeline, scheduled_cfs,
 <body>
     <h1>White Hole Conditions</h1>
     <p class="subtitle">{current_time.strftime('%A, %B %d, %Y at %-I:%M %p')} Central</p>
+    {freshness_html(current_time)}
 
     <div class="outage-banner">
         <div class="headline">\u26a0\ufe0f {outage_headline(feed_reason)} \u2014 NO MEASURED FLOW</div>
