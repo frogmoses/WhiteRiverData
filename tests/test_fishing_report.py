@@ -503,8 +503,10 @@ class TestTiming:
         }]
         timing = " ".join(build_timing(750, OCTOBER, None, forecast))
         assert "SCHEDULED RISE" in timing
-        # White Hole ETA in the message must match the repo travel model
-        expected = scheduled + timedelta(hours=calculate_travel_time(13504))
+        # White Hole ETA in the message must match the repo travel model —
+        # a scheduled rise on 750 CFS travels as a front
+        from water_calculator import front_travel_time
+        expected = scheduled + timedelta(hours=front_travel_time(13504, 750))
         assert expected.strftime("%I:%M %p").lstrip("0") in timing
 
     def test_scheduled_drop_detected(self):
