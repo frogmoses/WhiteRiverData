@@ -34,7 +34,9 @@ OWNED_GEAR = [
     # rods and reels — the AR pair plus the resident browns rod (the Cherrywood
     # stopped travelling and the report no longer names it)
     ("St. Croix SCPS70MF2-SG (resident browns rod)", r"SCPS70MF2|browns rod", r"SCPS70MF2-SG"),
-    ("Daiwa Presso (AR)", r"Presso", r"AR \| \*\*6'\*\* Daiwa Presso"),
+    # corrected 2026-10-07: the AR "Presso" never existed; the rod at Dad's is a
+    # Dforce DWB-562MLS (5'6" ML, 6-12 lb, 1/8-3/8 oz)
+    ("Dforce DWB-562MLS (AR rainbow rod)", r"Dforce|DWB-562MLS", r"AR \| \*\*5'6\"\*\* Dforce \*\*DWB-562MLS\*\*"),
     ("St. Croix Premier PS60ULF", r"St\. Croix", r"PS60ULF"),
     ("Abu Garcia Black Max 30", r"Black Max", r"Black Max 30"),
     ("Pflueger President 20 (AR travel reel)", r"President", r"Pflueger President size 20"),
@@ -121,7 +123,7 @@ GEAR_TOKENS = re.compile(
     r"Beetle Spin|Panther Martin|Rooster Tail|Mepps|Aglia|Black Fury|[Mm]arabou|Ned head|Senko|"
     r"Fire Tube|crappie jig|panfish head|slip float|bobber stop|Aberdeen|drop-shot hook|Kahle|"
     r"swivel|bell sinker|oz bell|bank sinker|egg sinker|split shot|rubber-core|Cherrywood|"
-    r"Black Max|Presso|St\. Croix|Exceler|President|XPS|Phoebe|Dardevle|Spinnie|Thomas|"
+    r"Black Max|Presso|Dforce|DWB-562MLS|St\. Croix|Exceler|President|XPS|Phoebe|Dardevle|Spinnie|Thomas|"
     r"Trout Magnet|Zoom|Smithwick|Recon|5-wt|VersiLeader|polyleader|Airlock|Thingamabobber|"
     r"browns rod|"
     r"tippet ring|worm blower|dip net|20 lb fluoro|30 lb fluoro|suspending perch|"
