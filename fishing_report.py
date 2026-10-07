@@ -559,7 +559,7 @@ GEAR_CHECK = {
             "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
         ],
         "verify": [
-            "Verify the bells cover the band ladder — 1/8, 1/4, 3/8, 1/2 and 1 oz (#10/#8/#7/#6/#4), one starting size per flow band",
+            "The bell ladder is OWNED in the middle — 3/16, 1/4, 3/8 and 1/2 oz (#9/#8/#7/#6) are on the shelf; verify or buy the two ends, 1/8 oz (#10) for minimum flow and 1 oz (#4) for 4+ units",
         ],
         "bench": [
             "2 mm tippet rings — OWNED, a 50-pack, so the rig is buildable. What is left is an evening pre-tying the leader wallet (12/24/36 in hook leaders in both line classes)",
