@@ -104,6 +104,11 @@ OWNED_GEAR = [
 # wolf; the note on a row says which near-miss it is deliberately not matching.
 BUY_OR_VERIFY = [
     ("hand dip net", r"dip net", r"dip net"),
+    # decided 2026-10-07: a Presso ultralight replaces the Dforce at Dad's next
+    # year. Owned when the rack's AR rows grow a Presso again
+    # (the Dforce row mentions the phantom "AR Presso" in passing, so the row
+    # pattern wants the brand)
+    ("Presso ultralight to replace the Dforce (2027)", r"Presso", r"AR \|[^|]*Daiwa Presso"),
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory
