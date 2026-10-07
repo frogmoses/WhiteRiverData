@@ -229,8 +229,9 @@ appended to the bottom of the page. Design rules:
   exchange, the AR rows' *duty and respool cells* are THIS repo's to govern — when the
   species-program doctrine here changes a gear prescription, edit those inventory cells in
   the same session; and when the inventory changes, re-audit `GEAR_CHECK`. Two standing
-  facts by Brian's word: ALL fly gear is uninventoried (Recon 5-wt etc. — a future
-  inventory section), and hellgrammite plastics are NOT owned — the soft craw half of that pair was closed
+  facts by Brian's word: fly gear is uninventoried (Recon 5-wt etc. — a future
+  inventory section; the one exception is the RIO VersiLeaders, which got the inventory's
+  first "Fly gear" row 2026-10-07), and hellgrammite plastics are NOT owned — the soft craw half of that pair was closed
   2026-09-28 by the Z-Man TRD CrawZ. Brian maintains
   the inventory file manually; never edit it from here. Fresh bait is bought in Arkansas.
 - **The drift test (2026-09-21)**: `inventory_audit.py` holds three registries —
