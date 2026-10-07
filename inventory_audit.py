@@ -61,6 +61,10 @@ OWNED_GEAR = [
     ("Zoom Tab Tail 4 in white pearl", r"Tab Tail", r"Tab Tail 4\" White Pearl"),
     # terminal
     ("Eagle Claw Aberdeen #4", r"Aberdeen", r"Aberdeen 202F-4"),
+    ("Eagle Claw Aberdeen #6 (eggs and Mice Tails)", r"#6 Aberdeen", r"Aberdeen #6 ×\d"),
+    # bought 2026-10-07 — the first fly item the inventory carries (its own
+    # "Fly gear" section); the rest of the fly gear stays uninventoried
+    ("RIO Trout VersiLeader (streamer sink leader)", r"VersiLeader|polyleader", r"RIO Trout VersiLeader ×\d"),
     ("Reaction Tackle #1 drop-shot hooks", r"drop-shot hook", r"Reaction Tackle #1 red"),
     ("size 10 swivels", r"swivel", r"size-10 ball-bearing swivels"),
     ("bell sinkers", r"bell sinker|oz bell", r"bell sinkers"),
@@ -100,11 +104,10 @@ BUY_OR_VERIFY = [
     # decided 2026-09-28: the Cherrywood stops travelling and a rod matching its
     # blank is bought for Dad's. Owned when the rack grows an AR row for it.
     ("resident browns rod at Dad's", r"browns rod", r"AR \|[^|]*medium spinning"),
-    # fly gear is uninventoried by Brian's standing decision — nothing to find
-    ("fast-sinking VersiLeader/polyleader", r"VersiLeader|polyleader", None),
 ]
 
-# Fly gear: uninventoried by Brian's standing decision (a future inventory section)
+# Fly gear: uninventoried by Brian's standing decision (a future inventory
+# section) — except the VersiLeaders, which have a row since 2026-10-07
 UNINVENTORIED = [
     r"Recon", r"5-wt", r"Airlock|Thingamabobber", r"indicator",
     r"Woolly Bugger", r"Girdle Bug", r"Sunday Special", r"sowbug", r"Zebra|Ruby Midge",

@@ -288,8 +288,8 @@ BAND_CONTENT = {
         },
         "fly": {
             "setup": "Indicator rig with real weight (Airlock/Thingamabobber class), the swing setup, "
-                     "or the streamer sink-leader: fast-sinking VersiLeader/polyleader looped on the "
-                     "floating line ('insta-sink-tip', ~$15).",
+                     "or the streamer sink-leader: the fast-sinking RIO VersiLeader looped on the "
+                     "floating line ('insta-sink-tip').",
             "browns": [
                 "Tippet: 8 lb fluoro on the sink leader; the same spool if nymphing the slots",
                 "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10, swung — not stripped — through bank seams and shoal tails",
@@ -555,7 +555,6 @@ GEAR_KINDS = [
 GEAR_CHECK = {
     "spin": {
         "buy": [
-            "Optional $3 upgrade: #6–#8 light-wire bait hooks (the #4 Aberdeens work, just oversized for eggs and Mice Tails)",
             "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
             "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
             "Buy a 7 ft medium, 6-14 lb, 1/8-3/4 oz browns rod and leave it in Arkansas",
@@ -572,19 +571,20 @@ GEAR_CHECK = {
             "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
             "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
             "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
+            "#6 Aberdeens — OWNED, a 50-pack beside the #4s — the light-wire hook for eggs and Mice Tails, where the #4 is oversized",
             "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
             "The AR reels are respooled and bagged: President 20 on 4 lb, Exceler 2000 SH on 6 lb, Black Max 30 on 10 lb. The RODS live at Dad's, the reels travel — so this is a bench job at home, not a job on arrival: the Presso is the rainbow rod on light mono, and the St. Croix out-tests the 4 lb rainbow hook leaders and carries the spinner work — but its ultralight blank can never take the browns main",
         ],
     },
     "fly": {
         "buy": [
-            "Fast-sinking VersiLeader/polyleader (~$15) — the 'insta-sink-tip' the brown streamer program runs on",
         ],
         "verify": [
             "Rainbow program tippet: 4 lb-class fluoro (5X) — VERIFY: fly gear isn't in the inventory yet",
             "Fly box audit (fly gear isn't inventoried yet — verify or buy): gray sowbug #14–16, Sunday Special #12–14 incl. tungsten, Zebra/Ruby Midge #16–18, pink San Juan worm, peach/orange egg, olive Woolly Bugger #8–10, black Girdle Bug #8–10, plus this season's adds",
         ],
         "pack": [
+            "RIO Trout VersiLeader, 7 ft 12 lb fast-sinking — OWNED, two of them — the 'insta-sink-tip' the brown streamer program runs on; loop one onto the floating line and leave it there for the trip",
             "Brown program tippet: the same OWNED 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
             "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin rig's rings",
         ],
