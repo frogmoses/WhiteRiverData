@@ -39,9 +39,29 @@ for filename in "${OUTPUT_FILES[@]}"; do
     fi
 done
 
+# The job runs every quarter hour so a dam row (posted ~10 min past the hour)
+# is read minutes after it lands, not an hour later — the 2026-10-07 rise was
+# flagged 12 min AFTER it reached the ramp because the :00 run missed the row.
+# But the chart is 130 KB and the repo is already 450 MB, so the page and
+# chart are only committed when the dam has published a new reading (the
+# cache changed) or on the hour (the "now" row, the schedule and the gauges
+# move between readings too). The cache and the prediction log are small and
+# always committed; a skipped page is discarded so no stash piles up.
+PUBLISH_PAGE=1
+if [[ -f "$BASE_DIR/last_good_data.json" ]] \
+   && git diff --quiet -- "$BASE_DIR/last_good_data.json" \
+   && [[ "$(date '+%M')" != "00" ]]; then
+    PUBLISH_PAGE=0
+fi
+
 # Commit and push to GitHub (served via GitHub Pages)
-echo "Committing updated output files..."
-git add "${OUTPUT_FILES[@]}"
+if [[ "$PUBLISH_PAGE" == "1" ]]; then
+    echo "Committing updated output files..."
+    git add "${OUTPUT_FILES[@]}"
+else
+    echo "No new dam reading and not on the hour; keeping the published page."
+    git checkout -q -- "${OUTPUT_FILES[@]}"
+fi
 
 # Outage-fallback cache: must be committed (the stash -u above would discard
 # an untracked copy), but is absent when no run has succeeded yet

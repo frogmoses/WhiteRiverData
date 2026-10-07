@@ -5,7 +5,9 @@ River below Bull Shoals Dam, Arkansas.
 
 **The page:** https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
 
-It rebuilds every hour on the hour. All times on it are Central, the dam's time.
+It checks the dam every 15 minutes and republishes as soon as a new hourly reading posts
+(about ten past the hour), and on the hour regardless. All times on it are Central, the
+dam's time.
 
 ## Reading the page
 
@@ -79,7 +81,7 @@ uv run python main.py
 
 That fetches the dam, the SWPA schedule, the USGS gauges and the Corps' data service live and writes
 `white_hole_conditions.html` and `vertical_flow_chart.png` into the repo root, the same
-files the Raspberry Pi commits every hour. Restore them with `git checkout` if the run was
+files the Raspberry Pi commits through the day. Restore them with `git checkout` if the run was
 not meant to be committed. Production runs also append one row of predictions to
 `predictions.csv`, the log the travel model will eventually be checked against.
 

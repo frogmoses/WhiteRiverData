@@ -7,7 +7,7 @@ the page and its workflows is in README.md; this file is about finding and chang
 
 Real-time water conditions for the White Hole on the White River below Bull Shoals Dam
 (Arkansas), plus a flow-driven fishing report for the Gaston's → Cranor's Island reach. A
-Raspberry Pi rebuilds the page hourly and commits it; GitHub Pages serves it. Two goals, in
+Raspberry Pi rebuilds the page every quarter hour and commits it; GitHub Pages serves it. Two goals, in
 Brian's words: predict the water at White Hole, and help him catch more and bigger trout on
 this stretch. The 2026-09-20 adversarial review against those goals and its fixes are
 summarised in the "Key Calculations" entries below.
@@ -22,7 +22,7 @@ summarised in the "Key Calculations" entries below.
 | `uv run python scripts/audit_gear_inventory.py [inventory.md]` | `inventory_audit.audit` | stdout; exit 1 on drift, 2 when the inventory file is absent |
 | `uv run python generate_test_html.py` | `generate_white_hole_summary` over 8 fixture scenarios | `white_hole_conditions_{scenario}.html` + charts (gitignored) |
 | `uv run pytest` | the suite, offline, from a tmp dir | — |
-| `./run_white_hole.sh` | production: pull, `main.py`, commit, push | see Deployment |
+| `./run_white_hole.sh` | production, every 15 min: pull, `main.py`, commit (page + chart only when a new dam row landed or on the hour), push | see Deployment |
 
 Setup: `uv sync --extra test` and `playwright install chromium` (only `main.py` and the
 standalone fishing report without `--cfs` launch a browser).
@@ -430,8 +430,9 @@ for three weeks before that existed.
   `last_good_data.json` and `predictions.csv` with `git checkout` if the run was not meant
   to be committed.
 - Never mix naive and aware datetimes in one dataset/call (comparison raises `TypeError`).
-- The remote `master` advances hourly (Pi output commits) — `git pull --rebase` before
-  pushing, and **do not push at the top of the hour** (see the push race under Deployment).
+- The remote `master` advances every quarter hour (Pi output commits) — `git pull --rebase`
+  before pushing, and **do not push just after a quarter hour** (see the push race under
+  Deployment).
 - `data_fetcher.get_error_data()` returns an error sentinel (single entry with `error: True`).
 - The chart x-axis scales to the data (floor 5,000 CFS), so bar lengths are not comparable
   across days — the CFS labels carry the magnitude.
@@ -447,16 +448,23 @@ for three weeks before that existed.
 - **Reach it**: `ssh briancarroll` (workstation alias → 192.168.1.181, user frogmoses).
 - **Serving**: GitHub Pages from `master`; live at
   https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
-- **Cron**: hourly on the hour —
-  `0 * * * * cd /home/frogmoses/WhiteRiverData && ./run_white_hole.sh >> /home/frogmoses/log/white_hole.log 2>&1`
+- **Cron**: every quarter hour —
+  `0,15,30,45 * * * * cd /home/frogmoses/WhiteRiverData && ./run_white_hole.sh >> /home/frogmoses/log/white_hole.log 2>&1`.
+  Was hourly on the hour until 2026-10-07; the dam's rows post ~10 min past the hour, so
+  the :00 run read each row an hour late and flagged that day's rise 12 min after it
+  reached the ramp. The :15 run now reads it within minutes.
 - **`run_white_hole.sh`**: venv Python if present; `git stash push -u`; `git pull --rebase`
   (not `--ff-only`: a stranded local output commit from a rejected push must ride on top of
-  origin, keeping its `predictions.csv` row); `main.py`; `git add` the two output files plus
-  `last_good_data.json` and `predictions.csv` when present; commit; `git push`, and on
-  rejection `git pull --rebase && git push` once.
-- **Push race**: the Pi pulls, runs and pushes at :00. A workstation push landing inside
-  that window gets the Pi's push rejected (it happened 2026-09-21 06:00); the script now
-  heals itself, but avoid pushing code at the top of the hour.
+  origin, keeping its `predictions.csv` row); `main.py`; `git add` `last_good_data.json` and
+  `predictions.csv` when present, plus the page and chart **only when the cache changed (a
+  new dam row) or the minute is 00** — the 130 KB chart is what has grown `.git` to 450 MB,
+  and between readings only the "now" row, the schedule and the gauges move; a skipped page
+  is `git checkout`ed away so no stash accumulates; commit; `git push`, and on rejection
+  `git pull --rebase && git push` once. The prediction log therefore gains four rows an hour.
+- **Push race**: the Pi pulls, runs and pushes at :00, :15, :30 and :45. A workstation push
+  landing inside one of those windows gets the Pi's push rejected (it happened 2026-09-21
+  06:00); the script heals itself, but avoid pushing code in the two minutes after a
+  quarter hour.
 - **DNS**: the Pi runs Pi-hole + unbound on :53. Its Wi-Fi connection ("Dar-ling-a-ling",
   NetworkManager) was pointed at the router (192.168.1.1), which returns SERVFAIL for
   army.mil (DNSSEC) — 114 `ERR_NAME_NOT_RESOLVED` runs in the log through 2026-09-21. Fixed
