@@ -566,3 +566,57 @@ class TestClock:
         assert clock(datetime(2026, 9, 20, 16, 39), ref) == "4:39 PM"
         assert clock(datetime(2026, 9, 21, 4, 39), ref) == "Mon 4:39 AM"
         assert clock(datetime(2026, 9, 21, 14, 0), ref, minutes=False) == "Mon 2 PM"
+
+
+@pytest.mark.unit
+class TestRisingFront:
+    """
+    A rise reaches White Hole ahead of its water: the front travels at
+    RISE_FRONT_FACTOR times the plug's water speed (journal, 2026-10-07:
+    generation ramped ~2:50 PM, the water came up at the ramp ~5:00 PM —
+    3.2 mph against the model's 2.4). Falls and steady water are untouched.
+    """
+
+    def test_front_is_faster_than_the_water(self):
+        from water_calculator import front_travel_time, calculate_travel_time, RISE_FRONT_FACTOR
+        water = calculate_travel_time(4938)
+        assert front_travel_time(4938, 645) == pytest.approx(water / RISE_FRONT_FACTOR)
+
+    def test_steady_and_falling_water_travel_at_water_speed(self):
+        from water_calculator import front_travel_time, calculate_travel_time
+        assert front_travel_time(4938, 4800) == calculate_travel_time(4938)
+        assert front_travel_time(645, 4938) == calculate_travel_time(645)
+        assert front_travel_time(4938, None) == calculate_travel_time(4938)
+
+    def test_scales_by_mile(self):
+        from water_calculator import front_travel_time
+        assert front_travel_time(4938, 645, mile=3.5) == pytest.approx(front_travel_time(4938, 645) / 2)
+
+    def test_the_october_seventh_rise(self):
+        """The ramp left the dam ~2:50 PM and was seen at the ramp ~5:00 PM."""
+        from water_calculator import front_travel_time
+        left = datetime(2026, 10, 7, 14, 50)
+        seen = left + timedelta(hours=front_travel_time(4938, 645))
+        assert datetime(2026, 10, 7, 16, 45) <= seen <= datetime(2026, 10, 7, 17, 10)
+
+    def test_timeline_arrival_uses_the_front(self):
+        from water_calculator import calculate_timeline, front_travel_time
+        base = datetime(2026, 10, 7, 13, 0)
+        data = [
+            {'date_time': base, 'turbine_release': 645, 'total_release': 645},
+            {'date_time': base + timedelta(hours=1), 'turbine_release': 1068, 'total_release': 1068},
+            {'date_time': base + timedelta(hours=2), 'turbine_release': 4938, 'total_release': 4938},
+        ]
+        now = base + timedelta(hours=2, minutes=5)
+        rise = [item for item in calculate_timeline(data, now) if item['cfs'] == 4938][0]
+        assert rise['change'] == 'rising'
+        assert rise['arrival_time'] == base + timedelta(hours=2) + timedelta(hours=front_travel_time(4938, 1068))
+
+    def test_forecast_timeline_seeds_the_first_hour_from_previous_cfs(self):
+        from water_calculator import calculate_forecast_timeline, front_travel_time, calculate_travel_time
+        start = datetime(2026, 10, 7, 15, 0)
+        forecast = [{'start_time': start, 'hour': 16, 'mw': 70, 'cfs': 4938},
+                    {'start_time': start + timedelta(hours=1), 'hour': 17, 'mw': 70, 'cfs': 4938}]
+        first, second = calculate_forecast_timeline(forecast, start, previous_cfs=645)
+        assert first['arrival_time'] == start + timedelta(hours=front_travel_time(4938, 645))
+        assert second['arrival_time'] == start + timedelta(hours=1) + timedelta(hours=calculate_travel_time(4938))

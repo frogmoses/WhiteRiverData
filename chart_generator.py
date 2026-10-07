@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timedelta
-from water_calculator import calculate_travel_time, format_generators, get_flow
+from water_calculator import (
+    calculate_travel_time, front_travel_time, flows_with_previous, format_generators, get_flow
+)
 from landmarks import LANDMARK_MILES, WHITE_HOLE_MILE
 
 
@@ -40,17 +42,18 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
         relevant_release_time = None
 
         # Find the most recent release whose water has arrived at this point
-        for entry in reversed(valid_data):
+        relevant_previous = None
+        for entry, flow, previous in reversed(flows_with_previous(valid_data)):
             if mile == 0:
                 # At the dam, show the latest release
-                relevant_entry = entry
+                relevant_entry, relevant_previous = entry, previous
                 relevant_release_time = entry['date_time']
                 break
             else:
-                travel_time_hours = calculate_travel_time(get_flow(entry)) * (mile / WHITE_HOLE_MILE)
+                travel_time_hours = front_travel_time(flow, previous, mile=mile)
                 arrival_time = entry['date_time'] + timedelta(hours=travel_time_hours)
                 if arrival_time <= current_time:
-                    relevant_entry = entry
+                    relevant_entry, relevant_previous = entry, previous
                     relevant_release_time = entry['date_time']
                     break
 
@@ -63,7 +66,7 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
             # Full-reach travel time from the release, the same model the
             # arrivals table uses, so the two agree to the minute
             white_hole_etas.append(
-                relevant_release_time + timedelta(hours=calculate_travel_time(flow)))
+                relevant_release_time + timedelta(hours=front_travel_time(flow, relevant_previous)))
         else:
             flows_at_points.append(0)
             release_times.append(None)

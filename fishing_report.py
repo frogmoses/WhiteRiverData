@@ -32,7 +32,7 @@ Standalone use:
 from datetime import datetime, timedelta
 
 from water_calculator import (
-    calculate_travel_time, get_flow, format_generators, get_fishing_condition,
+    calculate_travel_time, front_travel_time, get_flow, format_generators, get_fishing_condition,
     recession_window, clock
 )
 from landmarks import GASTONS_MILE, LANDMARK_COORDS, WHITE_HOLE_MILE
@@ -100,14 +100,14 @@ def get_effective_season(date):
     return ("spring" if date.month in (1, 2, 11, 12) else "fall"), False
 
 
-def spot_arrival_times(release_time, cfs):
+def spot_arrival_times(release_time, cfs, previous_cfs=None):
     """
     When water released at the dam reaches each reach landmark, using the
-    repo's travel model scaled by river mile (same method as the chart).
+    repo's travel model scaled by river mile (same method as the chart); a
+    significant rise on previous_cfs travels as a front.
     """
-    tt_white_hole = calculate_travel_time(cfs)
     return [
-        (name, release_time + timedelta(hours=tt_white_hole * (mile / WHITE_HOLE_MILE)))
+        (name, release_time + timedelta(hours=front_travel_time(cfs, previous_cfs, mile=mile)))
         for name, mile in REACH_SPOTS
     ]
 
@@ -906,7 +906,7 @@ def build_timing(current_cfs, current_time, timeline_data=None, forecast_timelin
         direction, entry, from_cfs = change
         when = clock(entry["scheduled_time"], current_time, minutes=False)
         if direction == "rise":
-            etas = spot_arrival_times(entry["scheduled_time"], entry["cfs"])
+            etas = spot_arrival_times(entry["scheduled_time"], entry["cfs"], from_cfs)
             eta_str = " · ".join(
                 f"{name} ~{clock(eta, current_time)}" for name, eta in etas
             )

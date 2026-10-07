@@ -66,6 +66,47 @@ SIGNIFICANT_RATIO = 1.2
 SIGNIFICANT_CFS = 500
 
 
+# The front of a rise outruns the water behind it: a flood wave travels at
+# roughly 1.3-1.7x the mean water velocity in a wide shallow channel, while
+# SPEED_ANCHORS are water speeds. The one observation so far (journal,
+# 2026-10-07: generation ramped ~2:50 PM, the water came up at the White Hole
+# ramp ~5:00 PM — 3.2 mph against the model's 2.4 for that plug) gives 1.36.
+# Provisional: tune against journal/build/stage_report.md as readings come in.
+# Falls are untouched — recession_window already starts a drop at the speed of
+# the higher flow it replaces.
+RISE_FRONT_FACTOR = 1.4
+
+
+def front_travel_time(cfs, previous_cfs=None, mile=WHITE_HOLE_MILE):
+    """
+    Hours for a release to reach `mile`: the water speed for its flow, or,
+    when it is a significant rise on the release before it, the faster speed
+    of the rising front. Every arrival on the page goes through here so the
+    table, the chart, the banner and the fishing report agree.
+    """
+    hours = calculate_travel_time(cfs) * (mile / WHITE_HOLE_MILE)
+    if significant_change(previous_cfs, cfs) == 'rising':
+        hours /= RISE_FRONT_FACTOR
+    return hours
+
+
+def flows_with_previous(data):
+    """
+    [(entry, flow, previous flow)] for every entry with a flow, in time order
+    — the previous flow is the reading before it, which decides whether its
+    arrival is a rising front.
+    """
+    out = []
+    prev = None
+    for entry in sorted(data, key=lambda e: e['date_time']):
+        flow = get_flow(entry)
+        if flow is None:
+            continue
+        out.append((entry, flow, prev))
+        prev = flow
+    return out
+
+
 def significant_change(from_cfs, to_cfs):
     """
     Classify a flow change as "rising", "falling", or None (not significant),
@@ -122,10 +163,9 @@ def determine_water_state(data, current_time):
     # Get the most recent entries that would affect White Hole
     relevant_entries = []
 
-    for entry in data:
-        flow = get_flow(entry)
-        if entry['date_time'] <= current_time and flow is not None:
-            travel_time = calculate_travel_time(flow)
+    for entry, flow, previous in flows_with_previous(data):
+        if entry['date_time'] <= current_time:
+            travel_time = front_travel_time(flow, previous)
             arrival_time = entry['date_time'] + timedelta(hours=travel_time)
 
             # If this water has already reached White Hole
@@ -282,21 +322,20 @@ def calculate_timeline(data, current_time):
     - recession_start: for a falling release, when the level starts dropping
       at White Hole (arrival_time is then when it is fully down); else None
     """
-    recent_entries = [entry for entry in data
-                      if entry['date_time'] <= current_time
-                      and get_flow(entry) is not None]
+    recent_entries = [(entry, flow, previous)
+                      for entry, flow, previous in flows_with_previous(data)
+                      if entry['date_time'] <= current_time]
 
     if not recent_entries:
         return []
 
-    recent_entries.sort(key=lambda x: x['date_time'], reverse=True)
+    recent_entries.sort(key=lambda x: x[0]['date_time'], reverse=True)
 
     timeline = []
     current_found = False
 
-    for entry in recent_entries[:6]:  # Look at last 6 entries
-        cfs = get_flow(entry)
-        travel_time = calculate_travel_time(cfs)
+    for entry, cfs, previous in recent_entries[:6]:  # Look at last 6 entries
+        travel_time = front_travel_time(cfs, previous)
         arrival_time = entry['date_time'] + timedelta(hours=travel_time)
 
         if arrival_time <= current_time:
@@ -387,10 +426,12 @@ def calculate_forecast_timeline(forecast_data, current_time=None, previous_cfs=N
         return []
 
     timeline = []
-    for entry in forecast_data:
+    prev = previous_cfs
+    for entry in sorted(forecast_data, key=lambda e: e['start_time']):
         cfs = entry['cfs']
-        travel_hours = calculate_travel_time(cfs)
+        travel_hours = front_travel_time(cfs, prev)
         arrival_time = entry['start_time'] + timedelta(hours=travel_hours)
+        prev = cfs
 
         wading, boating = get_fishing_condition(cfs)
 
