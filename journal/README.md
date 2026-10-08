@@ -117,7 +117,10 @@ claims to predict.
 
 A photo of the bank at a known time is a stage reading too: put it in `journal/photos/`,
 named `YYYY-MM-DD-HHMM-<what>.jpg` (Central time), and cite it in the entry with the
-model's flow for that hour. Shoot from the same spot each time so they compare.
+model's flow for that hour. Shoot from the same spot each time so they compare — **the
+spot is the lawn above the White Hole ramp, framed so the gravel bar in the river, the two
+trees on the bank and the pool in the grass are all in the picture** (set 2026-10-08; the
+minimum-flow reference is `photos/2026-10-08-0650-white-hole-minimum-flow-reference.jpg`).
 
 ### What the builder does with stage rows
 
