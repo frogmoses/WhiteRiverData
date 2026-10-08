@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timedelta
 from water_calculator import (
-    calculate_travel_time, front_travel_time, flows_with_previous, format_generators, get_flow
+    calculate_travel_time, front_travel_time, flows_with_previous, release_time as row_release_time,
+    format_generators, get_flow
 )
 from landmarks import LANDMARK_MILES, WHITE_HOLE_MILE
 
@@ -47,14 +48,14 @@ def generate_vertical_river_chart(data, current_time, filename="vertical_flow_ch
             if mile == 0:
                 # At the dam, show the latest release
                 relevant_entry, relevant_previous = entry, previous
-                relevant_release_time = entry['date_time']
+                relevant_release_time = row_release_time(entry)
                 break
             else:
                 travel_time_hours = front_travel_time(flow, previous, mile=mile)
-                arrival_time = entry['date_time'] + timedelta(hours=travel_time_hours)
+                arrival_time = row_release_time(entry) + timedelta(hours=travel_time_hours)
                 if arrival_time <= current_time:
                     relevant_entry, relevant_previous = entry, previous
-                    relevant_release_time = entry['date_time']
+                    relevant_release_time = row_release_time(entry)
                     break
 
         if relevant_entry:

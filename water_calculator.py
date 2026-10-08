@@ -66,23 +66,31 @@ SIGNIFICANT_RATIO = 1.2
 SIGNIFICANT_CFS = 500
 
 
-# The front of a rise outruns the water behind it: a flood wave travels at
-# roughly 1.3-1.7x the mean water velocity in a wide shallow channel, while
-# SPEED_ANCHORS are water speeds. The one observation so far (journal,
-# 2026-10-07: generation ramped ~2:50 PM, the water came up at the White Hole
-# ramp ~5:00 PM — 3.2 mph against the model's 2.4 for that plug) gives 1.36.
-# Provisional: tune against journal/build/stage_report.md as readings come in.
-# Falls are untouched — recession_window already starts a drop at the speed of
-# the higher flow it replaces.
-RISE_FRONT_FACTOR = 1.4
+# A dam row is stamped at the END of the hour it averages: the "1900" row is
+# 6-7 PM. The table has a 2400 row and no 0000 row (the hour-ending
+# convention), the Corps' data system stamps period averages at the end of
+# the period, and the first two stage observations (journal, 2026-10-07: the
+# rise at the ramp ~5:00 PM, the drop 8:13-8:29 PM) both land within 15 min
+# of the model read this way and an hour late read the other way. So the
+# water leaves the dam during the hour BEFORE the stamp; release_time() is
+# the start of that hour, and every arrival is computed from it. A rising
+# front was briefly modelled as 1.4x the water speed on the first of those
+# observations alone; the hour shift explains both, so that factor is 1.
+RELEASE_HOUR_OFFSET = timedelta(hours=1)
+RISE_FRONT_FACTOR = 1.0
+
+
+def release_time(entry):
+    """When the water in a dam row left the dam: the start of its hour."""
+    return entry['date_time'] - RELEASE_HOUR_OFFSET
 
 
 def front_travel_time(cfs, previous_cfs=None, mile=WHITE_HOLE_MILE):
     """
-    Hours for a release to reach `mile`: the water speed for its flow, or,
-    when it is a significant rise on the release before it, the faster speed
-    of the rising front. Every arrival on the page goes through here so the
-    table, the chart, the banner and the fishing report agree.
+    Hours for a release to reach `mile` at the water speed for its flow.
+    Every arrival on the page goes through here so the table, the chart, the
+    banner and the fishing report agree; a significant rise on previous_cfs
+    is scaled by RISE_FRONT_FACTOR (currently 1 — see above).
     """
     hours = calculate_travel_time(cfs) * (mile / WHITE_HOLE_MILE)
     if significant_change(previous_cfs, cfs) == 'rising':
@@ -166,7 +174,7 @@ def determine_water_state(data, current_time):
     for entry, flow, previous in flows_with_previous(data):
         if entry['date_time'] <= current_time:
             travel_time = front_travel_time(flow, previous)
-            arrival_time = entry['date_time'] + timedelta(hours=travel_time)
+            arrival_time = release_time(entry) + timedelta(hours=travel_time)
 
             # If this water has already reached White Hole
             if arrival_time <= current_time:
@@ -253,7 +261,7 @@ def forecast_conditions(data, current_time):
         return "unknown"
 
     travel_time = calculate_travel_time(latest_cfs)
-    latest_impact_time = latest_entry['date_time'] + timedelta(hours=travel_time)
+    latest_impact_time = release_time(latest_entry) + timedelta(hours=travel_time)
 
     # If the latest release hasn't reached White Hole yet
     if latest_impact_time > current_time:
@@ -264,7 +272,7 @@ def forecast_conditions(data, current_time):
             entry_flow = get_flow(entry)
             if entry_flow is not None:
                 entry_travel_time = calculate_travel_time(entry_flow)
-                entry_impact_time = entry['date_time'] + timedelta(hours=entry_travel_time)
+                entry_impact_time = release_time(entry) + timedelta(hours=entry_travel_time)
 
                 if entry_impact_time <= current_time:
                     current_cfs = entry_flow
@@ -336,7 +344,7 @@ def calculate_timeline(data, current_time):
 
     for entry, cfs, previous in recent_entries[:6]:  # Look at last 6 entries
         travel_time = front_travel_time(cfs, previous)
-        arrival_time = entry['date_time'] + timedelta(hours=travel_time)
+        arrival_time = release_time(entry) + timedelta(hours=travel_time)
 
         if arrival_time <= current_time:
             # Water has arrived
@@ -353,7 +361,7 @@ def calculate_timeline(data, current_time):
             minutes_until = int(delta.total_seconds() / 60)
 
         timeline.append({
-            'release_time': entry['date_time'],
+            'release_time': release_time(entry),
             'cfs': cfs,
             'generators': format_generators(cfs),
             'units_running': entry.get('units_running'),

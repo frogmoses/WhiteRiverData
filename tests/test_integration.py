@@ -240,10 +240,11 @@ class TestForecastIntegration:
         from datetime import timedelta
 
         # Simulate: currently 6000 CFS at White Hole, 12000 CFS incoming
+        # (a row's stamp is the end of its hour: stamped 1 h ago = left 2 h ago)
         data = [
             {'date_time': base_time - timedelta(hours=4),
              'turbine_release': 6000},
-            {'date_time': base_time - timedelta(hours=2),
+            {'date_time': base_time - timedelta(hours=1),
              'turbine_release': 12000},
         ]
 
@@ -255,10 +256,11 @@ class TestForecastIntegration:
         from datetime import timedelta
 
         # Simulate: currently 10647 CFS at White Hole, 6187 CFS incoming
+        # (stamped 1 h ago = left 2 h ago, not yet at White Hole)
         data = [
             {'date_time': base_time - timedelta(hours=4),
              'turbine_release': 10647},
-            {'date_time': base_time - timedelta(hours=2),
+            {'date_time': base_time - timedelta(hours=1),
              'turbine_release': 6187},
         ]
 
@@ -301,8 +303,8 @@ class TestBugFixes:
              'turbine_release': 5000},  # Old, already passed through
             {'date_time': base_time - timedelta(hours=4),
              'turbine_release': 10000},  # Current at White Hole
-            {'date_time': base_time - timedelta(hours=2),
-             'turbine_release': 6000},  # Incoming (lower than current)
+            {'date_time': base_time - timedelta(hours=1),
+             'turbine_release': 6000},  # Incoming (stamped 1 h ago, left 2 h ago)
         ]
 
         forecast = forecast_conditions(data, base_time)
