@@ -16,6 +16,11 @@ the channel along the far bank; both trees on dry grass; the whole grass bank ex
 to a cut edge; a small standing pool in the lawn where last night's water sat.
 `journal/photos/2026-10-08-0650-white-hole-minimum-flow-reference.jpg`.
 
+Second frame at 5:46 PM from the same spot, the dam's 1 PM hour (~4,000 CFS) at White Hole
+and the 3-4 PM hour (11,284) still on its way: gravel bar covered, river full across, both
+trees on dry grass, bank exposed to its edge.
+`journal/photos/2026-10-08-1746-white-hole-reference-spot.jpg`.
+
 Last night's three photos (`2026-10-07-1915`, `-2013`, `-2029`) were from a slightly
 different spot and are not directly comparable; from today, shoot from here.
 
@@ -29,3 +34,4 @@ different spot and are not directly comparable; from today, shoot from here.
 | time | reading | water | note |
 |---|---|---|---|
 | 06:50 |  | dead low | reference photo from the new spot: gravel bar out, trees dry, bank fully exposed |
+| 17:46 |  |  | photo from the reference spot: gravel bar covered, river full across, both trees dry, bank exposed — the ~4,000 CFS water in, the 11,000 due about 6 PM |
