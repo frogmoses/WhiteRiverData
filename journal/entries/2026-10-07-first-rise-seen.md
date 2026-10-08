@@ -22,6 +22,11 @@ right stands in it, and the mowed edge in the foreground is the next mark it wou
 `journal/photos/2026-10-07-1915-white-hole-grass-bank.jpg` — compare future photos from
 the same spot against it.
 
+Second photo at 8:13 PM from the same lawn, the model putting the 15,500 CFS plug at White
+Hole since ~7:34 and the dam's 6 PM hour (~16,000) behind it: the bank looks the same or
+a touch higher, the tree still in the water.
+`journal/photos/2026-10-07-2013-white-hole-grass-bank.jpg`.
+
 ## Catches
 
 | species | size | time | spot | water | boat | rig | bait | lost |
@@ -34,3 +39,4 @@ the same spot against it.
 | 16:00 |  | dead low | gravel bar showing in the river at the ramp |
 | 17:00 |  | rising | water started coming up about now, fast; bar covered soon after |
 | 19:14 |  | rising | grass bank at the White Hole half covered — still coming up |
+| 20:13 |  |  | photo: water still over the grass bank, the tree standing in it — at or near the evening's peak |
