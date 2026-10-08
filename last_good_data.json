@@ -1,23 +1,12 @@
 [
  {
-  "date_time": "2026-10-06T22:00:00-05:00",
-  "elevation": 654.05,
-  "tailwater": 450.67,
-  "generation": 7,
-  "turbine_release": 645,
-  "spillway_release": 0,
-  "total_release": 645,
-  "units_running": 1
- },
- {
   "date_time": "2026-10-06T23:00:00-05:00",
   "elevation": 654.05,
   "tailwater": 450.64,
   "generation": 7,
   "turbine_release": 650,
   "spillway_release": 0,
-  "total_release": 650,
-  "units_running": 1
+  "total_release": 650
  },
  {
   "date_time": "2026-10-07T00:00:00-05:00",
@@ -26,8 +15,7 @@
   "generation": 7,
   "turbine_release": 671,
   "spillway_release": 0,
-  "total_release": 671,
-  "units_running": 1
+  "total_release": 671
  },
  {
   "date_time": "2026-10-07T01:00:00-05:00",
@@ -36,8 +24,7 @@
   "generation": 7,
   "turbine_release": 654,
   "spillway_release": 0,
-  "total_release": 654,
-  "units_running": 1
+  "total_release": 654
  },
  {
   "date_time": "2026-10-07T02:00:00-05:00",
@@ -46,8 +33,7 @@
   "generation": 7,
   "turbine_release": 664,
   "spillway_release": 0,
-  "total_release": 664,
-  "units_running": 1
+  "total_release": 664
  },
  {
   "date_time": "2026-10-07T03:00:00-05:00",
@@ -56,8 +42,7 @@
   "generation": 7,
   "turbine_release": 669,
   "spillway_release": 0,
-  "total_release": 669,
-  "units_running": 1
+  "total_release": 669
  },
  {
   "date_time": "2026-10-07T04:00:00-05:00",
@@ -66,8 +51,7 @@
   "generation": 8,
   "turbine_release": 707,
   "spillway_release": 0,
-  "total_release": 707,
-  "units_running": 1
+  "total_release": 707
  },
  {
   "date_time": "2026-10-07T05:00:00-05:00",
@@ -76,8 +60,7 @@
   "generation": 7,
   "turbine_release": 643,
   "spillway_release": 0,
-  "total_release": 643,
-  "units_running": 1
+  "total_release": 643
  },
  {
   "date_time": "2026-10-07T06:00:00-05:00",
@@ -86,8 +69,7 @@
   "generation": 7,
   "turbine_release": 684,
   "spillway_release": 0,
-  "total_release": 684,
-  "units_running": 1
+  "total_release": 684
  },
  {
   "date_time": "2026-10-07T07:00:00-05:00",
@@ -96,8 +78,7 @@
   "generation": 7,
   "turbine_release": 662,
   "spillway_release": 0,
-  "total_release": 662,
-  "units_running": 1
+  "total_release": 662
  },
  {
   "date_time": "2026-10-07T08:00:00-05:00",
@@ -106,8 +87,7 @@
   "generation": 7,
   "turbine_release": 681,
   "spillway_release": 0,
-  "total_release": 681,
-  "units_running": 1
+  "total_release": 681
  },
  {
   "date_time": "2026-10-07T09:00:00-05:00",
@@ -116,8 +96,7 @@
   "generation": 7,
   "turbine_release": 634,
   "spillway_release": 0,
-  "total_release": 634,
-  "units_running": 1
+  "total_release": 634
  },
  {
   "date_time": "2026-10-07T10:00:00-05:00",
@@ -126,8 +105,7 @@
   "generation": 7,
   "turbine_release": 674,
   "spillway_release": 0,
-  "total_release": 674,
-  "units_running": 1
+  "total_release": 674
  },
  {
   "date_time": "2026-10-07T11:00:00-05:00",
@@ -136,8 +114,7 @@
   "generation": 7,
   "turbine_release": 681,
   "spillway_release": 0,
-  "total_release": 681,
-  "units_running": 1
+  "total_release": 681
  },
  {
   "date_time": "2026-10-07T12:00:00-05:00",
@@ -146,8 +123,7 @@
   "generation": 7,
   "turbine_release": 654,
   "spillway_release": 0,
-  "total_release": 654,
-  "units_running": 1
+  "total_release": 654
  },
  {
   "date_time": "2026-10-07T13:00:00-05:00",
@@ -156,8 +132,7 @@
   "generation": 7,
   "turbine_release": 645,
   "spillway_release": 0,
-  "total_release": 645,
-  "units_running": 1
+  "total_release": 645
  },
  {
   "date_time": "2026-10-07T14:00:00-05:00",
@@ -166,8 +141,7 @@
   "generation": 12,
   "turbine_release": 1068,
   "spillway_release": 0,
-  "total_release": 1068,
-  "units_running": 1
+  "total_release": 1068
  },
  {
   "date_time": "2026-10-07T15:00:00-05:00",
@@ -176,8 +150,7 @@
   "generation": 56,
   "turbine_release": 4938,
   "spillway_release": 0,
-  "total_release": 4938,
-  "units_running": 6
+  "total_release": 4938
  },
  {
   "date_time": "2026-10-07T16:00:00-05:00",
@@ -186,8 +159,7 @@
   "generation": 124,
   "turbine_release": 9710,
   "spillway_release": 0,
-  "total_release": 9710,
-  "units_running": 7
+  "total_release": 9710
  },
  {
   "date_time": "2026-10-07T17:00:00-05:00",
@@ -196,8 +168,7 @@
   "generation": 164,
   "turbine_release": 11930,
   "spillway_release": 0,
-  "total_release": 11930,
-  "units_running": 7
+  "total_release": 11930
  },
  {
   "date_time": "2026-10-07T18:00:00-05:00",
@@ -206,8 +177,7 @@
   "generation": 232,
   "turbine_release": 15574,
   "spillway_release": 0,
-  "total_release": 15574,
-  "units_running": 7
+  "total_release": 15574
  },
  {
   "date_time": "2026-10-07T19:00:00-05:00",
@@ -216,8 +186,7 @@
   "generation": 148,
   "turbine_release": 11048,
   "spillway_release": 0,
-  "total_release": 11048,
-  "units_running": 7
+  "total_release": 11048
  },
  {
   "date_time": "2026-10-07T20:00:00-05:00",
@@ -226,8 +195,7 @@
   "generation": 144,
   "turbine_release": 9975,
   "spillway_release": 0,
-  "total_release": 9975,
-  "units_running": 5
+  "total_release": 9975
  },
  {
   "date_time": "2026-10-07T21:00:00-05:00",
@@ -236,8 +204,7 @@
   "generation": 31,
   "turbine_release": 2544,
   "spillway_release": 0,
-  "total_release": 2544,
-  "units_running": 2
+  "total_release": 2544
  },
  {
   "date_time": "2026-10-07T22:00:00-05:00",
@@ -246,8 +213,7 @@
   "generation": 7,
   "turbine_release": 642,
   "spillway_release": 0,
-  "total_release": 642,
-  "units_running": 1
+  "total_release": 642
  },
  {
   "date_time": "2026-10-07T23:00:00-05:00",
@@ -256,8 +222,7 @@
   "generation": 7,
   "turbine_release": 668,
   "spillway_release": 0,
-  "total_release": 668,
-  "units_running": 1
+  "total_release": 668
  },
  {
   "date_time": "2026-10-08T00:00:00-05:00",
@@ -266,8 +231,7 @@
   "generation": 7,
   "turbine_release": 673,
   "spillway_release": 0,
-  "total_release": 673,
-  "units_running": 1
+  "total_release": 673
  },
  {
   "date_time": "2026-10-08T01:00:00-05:00",
@@ -276,8 +240,7 @@
   "generation": 7,
   "turbine_release": 677,
   "spillway_release": 0,
-  "total_release": 677,
-  "units_running": 1
+  "total_release": 677
  },
  {
   "date_time": "2026-10-08T02:00:00-05:00",
@@ -286,8 +249,7 @@
   "generation": 7,
   "turbine_release": 675,
   "spillway_release": 0,
-  "total_release": 675,
-  "units_running": 1
+  "total_release": 675
  },
  {
   "date_time": "2026-10-08T03:00:00-05:00",
@@ -296,8 +258,7 @@
   "generation": 7,
   "turbine_release": 686,
   "spillway_release": 0,
-  "total_release": 686,
-  "units_running": 1
+  "total_release": 686
  },
  {
   "date_time": "2026-10-08T04:00:00-05:00",
@@ -306,8 +267,7 @@
   "generation": 7,
   "turbine_release": 693,
   "spillway_release": 0,
-  "total_release": 693,
-  "units_running": 1
+  "total_release": 693
  },
  {
   "date_time": "2026-10-08T05:00:00-05:00",
@@ -316,8 +276,7 @@
   "generation": 7,
   "turbine_release": 694,
   "spillway_release": 0,
-  "total_release": 694,
-  "units_running": 1
+  "total_release": 694
  },
  {
   "date_time": "2026-10-08T06:00:00-05:00",
@@ -326,8 +285,7 @@
   "generation": 7,
   "turbine_release": 705,
   "spillway_release": 0,
-  "total_release": 705,
-  "units_running": 1
+  "total_release": 705
  },
  {
   "date_time": "2026-10-08T07:00:00-05:00",
@@ -336,8 +294,7 @@
   "generation": 7,
   "turbine_release": 675,
   "spillway_release": 0,
-  "total_release": 675,
-  "units_running": 1
+  "total_release": 675
  },
  {
   "date_time": "2026-10-08T08:00:00-05:00",
@@ -346,8 +303,7 @@
   "generation": 7,
   "turbine_release": 682,
   "spillway_release": 0,
-  "total_release": 682,
-  "units_running": 1
+  "total_release": 682
  },
  {
   "date_time": "2026-10-08T09:00:00-05:00",
@@ -356,7 +312,6 @@
   "generation": 7,
   "turbine_release": 681,
   "spillway_release": 0,
-  "total_release": 681,
-  "units_running": 1
+  "total_release": 681
  }
 ]
