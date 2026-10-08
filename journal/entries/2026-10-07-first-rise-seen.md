@@ -27,3 +27,4 @@ the page; on this showing he is right by about three quarters of an hour.
 |---|---|---|---|
 | 16:00 |  | dead low | gravel bar showing in the river at the ramp |
 | 17:00 |  | rising | water started coming up about now, fast; bar covered soon after |
+| 19:14 |  | rising | grass bank at the White Hole half covered — still coming up |
