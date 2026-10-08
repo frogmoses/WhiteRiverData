@@ -27,6 +27,10 @@ Hole since ~7:34 and the dam's 6 PM hour (~16,000) behind it: the bank looks the
 a touch higher, the tree still in the water.
 `journal/photos/2026-10-07-2013-white-hole-grass-bank.jpg`.
 
+Third photo at 8:29 PM, Brian's read: the drop is starting. The page's 9:12 PM for the
+start of the drop (the dam's 7 PM cut to 11,048 CFS) was still ahead.
+`journal/photos/2026-10-07-2029-white-hole-drop-starting.jpg`.
+
 ## Catches
 
 | species | size | time | spot | water | boat | rig | bait | lost |
@@ -40,3 +44,4 @@ a touch higher, the tree still in the water.
 | 17:00 |  | rising | water started coming up about now, fast; bar covered soon after |
 | 19:14 |  | rising | grass bank at the White Hole half covered — still coming up |
 | 20:13 |  |  | photo: water still over the grass bank, the tree standing in it — at or near the evening's peak |
+| 20:29 |  | falling | "I think it is starting to drop" — photo; time is when the message came, not a clock read |
