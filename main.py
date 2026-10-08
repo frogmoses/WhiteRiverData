@@ -5,7 +5,7 @@ from data_fetcher import (
 )
 from forecast_fetcher import get_swpa_forecast
 from water_calculator import (
-    calculate_travel_time, front_travel_time, flows_with_previous,
+    calculate_travel_time, front_travel_time, flows_with_previous, release_time,
     determine_water_state, get_fishing_condition,
     get_recent_trend, forecast_conditions, calculate_timeline,
     calculate_forecast_timeline, get_flow
@@ -189,7 +189,7 @@ def generate_white_hole_summary(output_format="text", data=None, dataset_name=No
     relevant_entry = None
     for entry, flow, previous in reversed(flows_with_previous(data)):
         travel_time = front_travel_time(flow, previous)
-        arrival_time = entry['date_time'] + timedelta(hours=travel_time)
+        arrival_time = release_time(entry) + timedelta(hours=travel_time)
 
         if arrival_time <= current_time:
             relevant_entry = entry

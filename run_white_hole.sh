@@ -47,10 +47,13 @@ done
 # cache changed) or on the hour (the "now" row, the schedule and the gauges
 # move between readings too). The cache and the prediction log are small and
 # always committed; a skipped page is discarded so no stash piles up.
+# FORCE_PUBLISH=1 ./run_white_hole.sh publishes regardless (after a code change
+# the page should not wait for the hour).
 PUBLISH_PAGE=1
 if [[ -f "$BASE_DIR/last_good_data.json" ]] \
    && git diff --quiet -- "$BASE_DIR/last_good_data.json" \
-   && [[ "$(date '+%M')" != "00" ]]; then
+   && [[ "$(date '+%M')" != "00" ]] \
+   && [[ "${FORCE_PUBLISH:-0}" != "1" ]]; then
     PUBLISH_PAGE=0
 fi
 
