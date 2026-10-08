@@ -309,4 +309,6 @@ class TestClassifiers:
         assert bj.spot_name("gastons") == "Gaston's"
         assert bj.spot_name("head of the White Hole") == "White Hole"
         assert bj.spot_name("Cranor's far side") == "Cranor's Island"
+        assert bj.spot_name("the Narrows") == "Cranor's Island"
+        assert bj.spot_name("head of the narrows") == "Cranor's Island"
         assert bj.spot_name("the honey hole") == ""

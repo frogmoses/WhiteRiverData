@@ -278,10 +278,19 @@ def program_for(group):
     return PROGRAM_FOR.get(group, DEFAULT_PROGRAM) if group else ""
 
 
+# Brian's other names for the report's spots. "The Narrows" is the run that
+# ends at Cranor's Island — his pin for it (2026-10-08) sits 70 m from the
+# island's; the research brief used the name for the same reach.
+SPOT_ALIASES = {"narrows": "Cranor's Island"}
+
+
 def spot_name(text):
     t = (text or "").strip().lower()
     if not t:
         return ""
+    for alias, name in SPOT_ALIASES.items():
+        if alias in t:
+            return name
     for name, _ in REACH_SPOTS:
         key = name.lower().replace("'", "")
         if key.split()[0] in t.replace("'", ""):

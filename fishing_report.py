@@ -52,6 +52,8 @@ REACH_SPOTS = [
 # Pinned coordinates (lat, lon) for reach landmarks, rendered as map links.
 # Gaston's and White Hole from landmarks.py; Cranor's Island pinned by Brian
 # (the island below Cranor's White River Lodge — his downstream turnaround).
+# The run into it is "the Narrows" — Brian's name and the research brief's;
+# the journal maps that word to this spot.
 SPOT_COORDS = {
     "Gaston's": dict(LANDMARK_COORDS)["Gaston's"],
     "White Hole": dict(LANDMARK_COORDS)["The White Hole"],
@@ -211,7 +213,7 @@ BAND_CONTENT = {
             "The downstream lip (drop-off) of every shoal, where gravel falls into the run",
             "The seam where the main tongue runs past a moss/grass bed — the single most important low-water feature",
             "Undercut banks, root wads, log jams, boulder pockets (brown water)",
-            "Cranor's Island — fish both sides, deepest water on the far side; downstream holds low water longest",
+            "Cranor's Island (the Narrows) — fish both sides, deepest water on the far side; downstream holds low water longest",
         ],
         "boat": [
             "Bank-tie is easy and anchoring is safe at this level",
