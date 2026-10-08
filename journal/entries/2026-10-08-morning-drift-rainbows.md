@@ -10,8 +10,10 @@ Minimum flow all morning (the dam at 640–700 CFS since the 10 PM row). Driftin
 White Hole down to the Narrows, then tied up at the head of the Narrows from about 9:30 and
 working that water; every fish a rainbow. Brian on orange PowerBait with a crawdad tail
 (confirmed — the voice log had it as rod tales / crowded tails), every one of his on the
-White River rig with a 44 in hook leader of 4 lb mono; Dad on nightcrawlers first, then
-the same orange PowerBait, and worms again later (his rig not recorded). One lost at the boat at 9:18. 25 rainbows landed between 8:45 and 11:09, Brian 17,
+White River rig tied in one piece of 4 lb Maxima Chameleon (brown): 3/16 oz bell (#9) at
+the bottom, a loop tied 7 in up from the sinker, 44 in to the hook — no tippet ring, no
+swappable hook leader. Dad on nightcrawlers first, then the same orange PowerBait, and
+worms again later (his rig not recorded). One lost at the boat at 9:18. 25 rainbows landed between 8:45 and 11:09, Brian 17,
 Dad 8 (the 9:58 line transcribed as "Nothing Rainbow" is read as "Another rainbow").
 
 **The Narrows is Cranor's Island** — Brian pinned it afterwards at 36.3336, -92.5614,
