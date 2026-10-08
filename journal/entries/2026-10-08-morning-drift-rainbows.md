@@ -1,6 +1,6 @@
 ---
 date: 2026-10-08
-title: Morning drift, White Hole to the Narrows — rainbows all morning
+title: White Hole to the Narrows — 37 rainbows in a day
 party: Brian, Dad
 spot: White Hole to the Narrows
 coords: 36.3365496207926, -92.55473395908888
@@ -48,6 +48,28 @@ Voice log as received, time | position | note:
 11:09 | 36.33458205320249,-92.55874951499287 | I caught a rainbow same bait same place. My dad caught a rainbow same place power bait crowded tails and worms
 ```
 
+**Afternoon.** Generation came on about 12:30 (the dam's 1 PM row 1,617 CFS, 2 PM 4,066,
+3 PM 3,830, 4 PM 11,284). The 1:54 fish was at the White Hole on the last of the low water;
+2:17–2:52 at the Narrows, still ahead of the rise; 3:58–4:23 half a mile below the White
+Hole on the first of the ~4,000 CFS water. 12 more rainbows, Brian 6, Dad 6 (the 2:17 line
+— "Connor Rainbow on Saint Beers before White River Ray" — is read as Brian, a rainbow on
+the same bait on the White River rig). Day: 37 landed, 1 lost.
+
+Afternoon voice log:
+
+```
+13:54 | 36.32980058547985,-92.5372796704391 | Dad got a rainbow using worms on a river rig
+14:17 | 36.33604840198373,-92.55780207471034 | Connor Rainbow on Saint Beers before White River Ray down by the Narrows
+14:29 | 36.33496035387128,-92.560690038776 | Dad got a rainbow with worms
+14:42 | 36.33503948873242,-92.5602021009077 | Dad got two rainbows on power bait worms and crawdads
+14:43 | 36.33520362842084,-92.56111852115328 | I got a rainbow on poor bait and crawdad tails in the narrows
+14:47 | 36.3340200784256,-92.55978974443329 | I got a rainbow on power bait and rotted tails in this spot
+14:52 | 36.33507780523175,-92.56055806695534 | I caught a rainbow on power bait and crowded tail
+15:58 | 36.33172760192961,-92.5443264295305 | Got a rainbow on orange power bait and crowded tail at this spot using the river rig.
+16:20 | 36.33163948180182,-92.54285589949725 | Dad got a rainbow on the river rig.
+16:23 | 36.33130900304352,-92.5425517541166 | I got a rainbow on orange power bait and crawdad tails at this location. My dad got a rainbow on Orange power bait worms and crawdad tails same location
+```
+
 ## Catches
 
 | species | size | time | spot | water | boat | rig | bait | lost |
@@ -78,3 +100,15 @@ Voice log as received, time | position | note:
 | rainbow |  | 11:02 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + worm |  |
 | rainbow |  | 11:09 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 11:09 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + worm |  |
+| rainbow |  | 13:54 | White Hole | dead low |  | WR rig | worm |  |
+| rainbow |  | 14:17 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 14:29 | the Narrows | dead low |  |  | worm |  |
+| rainbow |  | 14:42 | the Narrows | dead low |  |  | PowerBait + worm + crawdad tail |  |
+| rainbow |  | 14:42 | the Narrows | dead low |  |  | PowerBait + worm + crawdad tail |  |
+| rainbow |  | 14:43 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 14:47 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 14:52 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 15:58 | below the White Hole | rising |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 16:20 | below the White Hole | rising |  | WR rig |  |  |
+| rainbow |  | 16:23 | below the White Hole | rising |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 16:23 | below the White Hole | rising |  |  | orange PowerBait + worm + crawdad tail |  |
