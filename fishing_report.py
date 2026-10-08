@@ -158,6 +158,12 @@ SOURCES = {
 # behind the block and the dates. Empty until the first rows exist.
 EVIDENCE = {
     # ("minimum", "browns"): {"fish": 1, "dates": ["2026-10-06"], "note": "sculpin, split-shot, dawn"},
+    ("minimum", "rainbows"): {
+        "fish": 25, "dates": ["2026-10-08"],
+        # keep this line free of tackle words: it renders under the fly block too
+        "note": "all morning, 8:45-11:09, dead low, drifting White Hole to the Narrows then "
+                "tied at the head of the Narrows",
+    },
 }
 
 

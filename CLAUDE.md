@@ -322,8 +322,12 @@ appended to the bottom of the page. Design rules:
   same commit as any doctrine change it justifies. The builder never writes `EVIDENCE`.
 - **Cranor's Island** (Brian's name for the island below Cranor's White River Lodge, his
   downstream turnaround) is pinned at 36.333492497534266, -92.56191314472997 in
-  `SPOT_COORDS`, rendered as a map link. The brief called it "the Narrows"; that name found
-  no corroboration and was dropped.
+  `SPOT_COORDS`, rendered as a map link. The brief called the reach "the Narrows" and that name found
+  no corroboration — until Brian used it himself on the water (journal, 2026-10-08): **the
+  Narrows is his name for the run below the White Hole**, its head at about 36.3353,
+  -92.5573, the morning's fish between 36.3346–36.3359 N and -92.5547 to -92.5593 W, just
+  above the Cranor's Island pin. Not yet a `REACH_SPOTS` landmark — add it only with a
+  river mile; the journal's spot column already uses the name.
 - **`RIGGING_REFERENCE`**: static how-to content (White River rig build incl. the
   tippet-ring hook-leader system with its SVG diagram `SPIN_RIG_SVG`, bait prep, boat strategy
   — tie/drift/anchor, tied-boat presentations, fly-from-boat, etiquette) rendered as
