@@ -115,6 +115,10 @@ Read the post every 15–20 minutes across a predicted arrival (the page says "a
 before it; for a drop the series traces the recession, which is what the window model
 claims to predict.
 
+A photo of the bank at a known time is a stage reading too: put it in `journal/photos/`,
+named `YYYY-MM-DD-HHMM-<what>.jpg` (Central time), and cite it in the entry with the
+model's flow for that hour. Shoot from the same spot each time so they compare.
+
 ### What the builder does with stage rows
 
 Every reading gets the same `model_cfs` / `model_band` / `model_state` as a catch, plus the
