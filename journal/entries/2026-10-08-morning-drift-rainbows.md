@@ -8,10 +8,10 @@ coords: 36.3365496207926, -92.55473395908888
 
 Minimum flow all morning (the dam at 640–700 CFS since the 10 PM row). Drifting from the
 White Hole down to the Narrows, then tied up at the head of the Narrows from about 9:30 and
-working that water; every fish a rainbow. Brian on orange PowerBait with "crawdad tails"
-(as the voice log transcribed it — rod tales / crowded tails / crawdad tails; confirm the
-product); Dad on nightcrawlers first, then the same orange PowerBait, and worms again
-later. One lost at the boat at 9:18. 25 rainbows landed between 8:45 and 11:09, Brian 17,
+working that water; every fish a rainbow. Brian on orange PowerBait with a crawdad tail
+(confirmed — the voice log had it as rod tales / crowded tails), every one of his on the
+White River rig with a 44 in hook leader of 4 lb mono; Dad on nightcrawlers first, then
+the same orange PowerBait, and worms again later (his rig not recorded). One lost at the boat at 9:18. 25 rainbows landed between 8:45 and 11:09, Brian 17,
 Dad 8 (the 9:58 line transcribed as "Nothing Rainbow" is read as "Another rainbow").
 
 **The Narrows** is Brian's name for the run below the White Hole — the head of it is at
@@ -50,28 +50,28 @@ Voice log as received, time | position | note:
 | species | size | time | spot | water | boat | rig | bait | lost |
 |---|---|---|---|---|---|---|---|---|
 | rainbow |  | 08:45 | White Hole drift | dead low | drift |  | nightcrawler |  |
-| rainbow |  | 08:45 | White Hole drift | dead low | drift |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 08:57 | White Hole drift | dead low | drift |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 09:08 | White Hole drift | dead low | drift |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 09:18 | White Hole drift | dead low | drift |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 09:18 | White Hole drift | dead low | drift |  | orange PowerBait + crawdad tail | x |
-| rainbow |  | 09:33 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
+| rainbow |  | 08:45 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 08:57 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 09:08 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 09:18 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 09:18 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail | x |
+| rainbow |  | 09:33 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 09:38 | the Narrows | dead low | tie |  | orange PowerBait |  |
-| rainbow |  | 09:44 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 09:47 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 09:58 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 10:04 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
+| rainbow |  | 09:44 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 09:47 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 09:58 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:04 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:05 | the Narrows | dead low | tie |  | worm |  |
 | rainbow |  | 10:13 | the Narrows | dead low | tie |  | orange PowerBait |  |
-| rainbow |  | 10:23 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 10:36 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 10:38 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:23 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:36 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:38 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:39 | the Narrows | dead low | tie |  | orange PowerBait |  |
-| rainbow |  | 10:41 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:41 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:41 | the Narrows | dead low | tie |  | orange PowerBait |  |
-| rainbow |  | 10:48 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 10:56 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
-| rainbow |  | 11:02 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:48 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 10:56 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 11:02 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 11:02 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + worm |  |
-| rainbow |  | 11:09 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail |  |
+| rainbow |  | 11:09 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 11:09 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + worm |  |
