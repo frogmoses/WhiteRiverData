@@ -71,7 +71,7 @@ page that hour:
 | `species` | `rainbow`, `brown`, `cutthroat`, `brook`, `tiger`. The builder files browns under the browns program and everything else under rainbows & others — the same split as the report |
 | `size` | inches (a weight if you have one) |
 | `time` | clock time, Central, `HH:MM` — `14:35`. The most important cell: it is how the row finds the model's flow for that hour and its minutes vs sunset. `~14:30` is fine for a guess |
-| `spot` | `Gaston's`, `White Hole`, `Cranor's Island`, or a landmark in your words |
+| `spot` | `Gaston's`, `White Hole`, `Cranor's Island` (`the Narrows` counts as Cranor's), or a landmark in your words |
 | `water` | what the river was doing where you were: `rising`, `falling`, `steady`, `dead low`. Your read, not the model's — the builder puts the model's beside it so the two can disagree |
 | `boat` | `tie`, `drift`, `anchor`, or `wade` |
 | `rig` | `WR rig` (the White River rig), `split-shot`, `float`, `direct` (jerkbait, spinner, spoon or jig tied direct), `indicator`, `tightline`, `swing`, `dry` |

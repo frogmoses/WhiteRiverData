@@ -14,10 +14,11 @@ White River rig with a 44 in hook leader of 4 lb mono; Dad on nightcrawlers firs
 the same orange PowerBait, and worms again later (his rig not recorded). One lost at the boat at 9:18. 25 rainbows landed between 8:45 and 11:09, Brian 17,
 Dad 8 (the 9:58 line transcribed as "Nothing Rainbow" is read as "Another rainbow").
 
-**The Narrows** is Brian's name for the run below the White Hole — the head of it is at
-about 36.3353, -92.5573 and the morning's fish came between 36.3346 and 36.3359 N,
--92.5547 to -92.5593 W, just above the Cranor's Island pin (36.3335, -92.5619). The
-research brief's "the Narrows" was corroborated on the water after all.
+**The Narrows is Cranor's Island** — Brian pinned it afterwards at 36.3336, -92.5614,
+70 m from the report's island pin. The Narrows is the run that ends at the island; its
+head is about 700 m upstream, and the morning's fish came between 36.3346 and 36.3359 N,
+-92.5547 to -92.5593 W, in that run. The research brief's "the Narrows" was the same reach
+all along.
 
 Voice log as received, time | position | note:
 
