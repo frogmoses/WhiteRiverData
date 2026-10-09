@@ -75,6 +75,13 @@ gravel bar, about the centre of the picture.** When the water reaches it, the ri
 the White Hole; note the time.
 `journal/photos/2026-10-09-1410-white-hole-minimum-flow-daylight.jpg`.
 
+At 4:36 PM, from the boat on the water opposite that spot, the gravel bar was nearly gone:
+the rise had reached the White Hole. The dam's 1–2 PM hour averaged 2,338 CFS and 2–3 PM
+6,454; the model (hour-ending rows) has the first water at the White Hole about 4:20 and
+the 6,454 at about 4:50. No EXIF time or position survives in the photo as sent.
+`journal/photos/2026-10-09-1636-white-hole-from-the-boat-bar-nearly-under.jpg`.
+
 | time | reading | water | note |
 |---|---|---|---|
 | 14:10 |  | dead low | daylight reference photo; gravel bar fully out, the grey rock on its far edge dry; trees and bank dry |
+| 16:36 |  | rising | from the boat, opposite the reference spot: the gravel bar nearly gone — the rise is in |
