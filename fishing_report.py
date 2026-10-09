@@ -162,9 +162,13 @@ EVIDENCE = {
     # ("minimum", "browns"): {"fish": 1, "dates": ["2026-10-06"], "note": "sculpin, split-shot, dawn"},
     # keep these notes free of tackle words: they render under the fly block too
     ("minimum", "rainbows"): {
-        "fish": 50, "dates": ["2026-10-08", "2026-10-09"],
+        "fish": 51, "dates": ["2026-10-08", "2026-10-09"],
         "note": "two mornings on dead-low water, drifting White Hole to the Narrows then "
                 "tied at the head of the Narrows; the Narrows again after lunch the first day",
+    },
+    ("two_three_units", "rainbows"): {
+        "fish": 1, "dates": ["2026-10-09"],
+        "note": "the Honey Hole at 5:21 PM, the afternoon rise already through there",
     },
     ("one_unit", "rainbows"): {
         "fish": 3, "dates": ["2026-10-08"],
