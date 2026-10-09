@@ -21,6 +21,11 @@ and the 3-4 PM hour (11,284) still on its way: gravel bar covered, river full ac
 trees on dry grass, bank exposed to its edge.
 `journal/photos/2026-10-08-1746-white-hole-reference-spot.jpg`.
 
+Third frame at 8:40 PM, same spot, the model putting 13,860 CFS at White Hole: water over the
+grass bank and up to the mowed edge, the near tree standing in it — the same look as last
+night's 7:15 and 8:13 frames at 12,000-15,500 CFS.
+`journal/photos/2026-10-08-2040-white-hole-reference-spot.jpg`.
+
 Last night's three photos (`2026-10-07-1915`, `-2013`, `-2029`) were from a slightly
 different spot and are not directly comparable; from today, shoot from here.
 
@@ -35,3 +40,4 @@ different spot and are not directly comparable; from today, shoot from here.
 |---|---|---|---|
 | 06:50 |  | dead low | reference photo from the new spot: gravel bar out, trees dry, bank fully exposed |
 | 17:46 |  |  | photo from the reference spot: gravel bar covered, river full across, both trees dry, bank exposed — the ~4,000 CFS water in, the 11,000 due about 6 PM |
+| 20:40 |  |  | photo from the reference spot: water over the grass bank, the tree standing in it, up to the mowed edge — model 13,860 CFS at White Hole |
