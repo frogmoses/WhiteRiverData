@@ -1,6 +1,6 @@
 ---
 date: 2026-10-09
-title: Morning at the Narrows — 16 rainbows
+title: Morning at the Narrows — 16 rainbows; the rise marker
 party: Brian, Dad
 spot: the Narrows
 coords: 36.33580543569891, -92.55930391148904
@@ -52,3 +52,15 @@ Voice log as received:
 | rainbow |  | 09:55 | the Narrows | dead low |  |  | orange PowerBait + worm |  |
 | rainbow |  | 10:10 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 10:24 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
+
+## Stage
+
+The daylight minimum-flow frame from the reference spot, 2:10 PM — better than the dawn one
+for the gravel bar. **The marker for a rise: the rounded grey rock on the far edge of the
+gravel bar, about the centre of the picture.** When the water reaches it, the rise is at
+the White Hole; note the time.
+`journal/photos/2026-10-09-1410-white-hole-minimum-flow-daylight.jpg`.
+
+| time | reading | water | note |
+|---|---|---|---|
+| 14:10 |  | dead low | daylight reference photo; gravel bar fully out, the grey rock on its far edge dry; trees and bank dry |
