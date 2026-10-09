@@ -1,6 +1,6 @@
 ---
 date: 2026-10-09
-title: Morning at the Narrows — 16 rainbows; the rise marker
+title: The Narrows — 16 rainbows, the first on the fly rod, and the rise marker
 party: Brian, Dad
 spot: the Narrows
 coords: 36.33580543569891, -92.55930391148904
@@ -32,6 +32,18 @@ Voice log as received:
 10:24 | 36.33583368271248,-92.55936484792508 | Got another Rainbow same place same beat
 ```
 
+**Afternoon.** 3:48, still dead low at the Narrows: Brian's first fish on the fly rod on
+this water — a rainbow on a ruby midge dropped under an egg attractor. Then the rise:
+the dam's 1–2 PM hour 2,338 CFS, 2–3 PM 6,454, 3–4 PM 10,201. At 5:21 Dad took a rainbow
+on a Little Cleo up at the Honey Hole (36.3499, -92.5364), a mile above Gaston's, where the
+~10,000 CFS water had already arrived; the model has White Hole itself at ~6,500 that
+minute with the 10,000 twenty minutes out, so the builder files the fish under 2–3 units.
+
+```
+15:48 | 36.33528046222196,-92.55776190329249 | Connor Rainbow on the flyrod on a ruby midge fly with an egg tractor fly
+17:21 | 36.34991127944232,-92.53637872406736 | Dad got a rainbow on a Cleo at this location
+```
+
 ## Catches
 
 | species | size | time | spot | water | boat | rig | bait | lost |
@@ -52,6 +64,8 @@ Voice log as received:
 | rainbow |  | 09:55 | the Narrows | dead low |  |  | orange PowerBait + worm |  |
 | rainbow |  | 10:10 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 10:24 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
+| rainbow |  | 15:48 | the Narrows | dead low |  | indicator | egg attractor + ruby midge dropper |  |
+| rainbow |  | 17:21 | the Honey Hole | rising |  | direct | Little Cleo |  |
 
 ## Stage
 
