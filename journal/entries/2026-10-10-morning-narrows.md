@@ -101,8 +101,14 @@ and the grey rock marker is already under "quite a distance" (Brian). The rise w
 6:13, while the model, with the dam's 3–4 PM hour (2,372 CFS) leaving at 3:00, had the
 first water arriving at 6:31 — so this rise beat the model by half an hour or more, the
 same direction as Wednesday's. The trees and the bank are still dry: the rise is in, the
-big water (6,079 in the 4–5 PM hour) is not. `journal/photos/2026-10-10-1813-white-hole-reference-spot.jpg`.
+big water (6,079 in the 4–5 PM hour) is not.
+
+At 6:31 PM, same spot: the gravel bar nearly submerged, the river full across, trees and
+bank still dry — the model has the 2,372 water at White Hole from 6:31 and the 6,079
+arriving 6:50, so this frame is the bar going under just ahead of the bigger water.
+`journal/photos/2026-10-10-1831-white-hole-reference-spot.jpg`. `journal/photos/2026-10-10-1813-white-hole-reference-spot.jpg`.
 
 | time | reading | water | note |
 |---|---|---|---|
 | 18:13 |  | rising | reference-spot photo: the grey rock already well under, the bar's far edge pulled back; trees and bank dry — the rise was in before this |
+| 18:31 |  | rising | reference-spot photo: the gravel bar nearly submerged, river full across; trees and bank still dry |
