@@ -58,3 +58,13 @@ Voice log as received:
 | rainbow |  | 10:04 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:19 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:25 | the Narrows | dead low |  |  | pink PowerBait + crawdad tail + Gulp worm (smorgasbord) |  |
+
+## Stage
+
+Evening frame from the reference spot, 6:13 PM: the gravel bar fully out, the grey rock on
+its far edge dry, both trees and the bank dry — still minimum flow, the model putting
+759 CFS at White Hole. `journal/photos/2026-10-10-1813-white-hole-reference-spot.jpg`.
+
+| time | reading | water | note |
+|---|---|---|---|
+| 18:13 |  | dead low | reference-spot photo: gravel bar fully out, grey rock dry, trees and bank dry |
