@@ -344,6 +344,19 @@ appended to the bottom of the page. Design rules:
   further notice" (it replaced an emergency order — do not call it emergency management).
   Re-verified against AGFC 2026-09-20; re-verify before edits.
 
+- **Open doctrine items from the October 2026 trip (Brian's word, 2026-10-10; he asked that
+  nothing be rewritten until he has said more)**: (1) the Z-Man CrawZ on the 1/10 oz Ned head
+  cannot be fished at the White Hole/Narrows — aquatic weed fouls it every cast — so the fall
+  browns `spin_add` bullet and the "Ned-head crawdad presentation" pack item are suspect;
+  (2) the small Keitech rode too high — he wants at least two sizes up for depth; (3) the
+  tippet-ring White River rig is "completely unworkable" as constructed — keep the
+  leader-length-by-band idea, drop the base/ring/swappable-leader construction for the
+  one-piece tie he fishes (3/16 oz bell, loop 7 in above the sinker, 44 in — geometry still
+  to be confirmed; see `journal/entries/2026-10-08-morning-drift-rainbows.md`). Also open: the
+  minimum-flow bell is prescribed 1/8 oz (unowned) and he fished the 3/16 all trip. Rewrite
+  `RIGGING_REFERENCE`, the Rig lines, `SPIN_RIG_SVG` and `GEAR_CHECK` together when he gives
+  the word, with the journal rows as the evidence.
+
 ### The journal — the feedback loop (`journal/`)
 
 Same model as `new-croton-fishing/journal/` (its README and `build_journal.py` are the

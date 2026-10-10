@@ -51,6 +51,21 @@ Tail, on the last of the low water there. Day: 22 rainbows.
 16:02 | 36.34999062696591,-92.53694326936689 | I caught one on the gray and black rooster tail at this location. A rainbow
 ```
 
+## Observations for the doctrine (Brian, end of the trip — nothing rewritten yet)
+
+1. **The crawdad on the Ned head does not fish here.** The bottom at minimum flow is
+   aquatic weed; a 1/10 oz head drags it every cast. Brian saw a crawdad on the gravel
+   today — the forage is real — but the presentation is not workable in this reach.
+2. **The small Keitech was too small.** It rode too high; go up at least two sizes so it
+   runs deeper. (The report names the 3.3/3.8 FAT for low water and 3.8/4.3 for 2–3 units.)
+3. **The tippet-ring White River rig is unworkable as built.** What is useful is the idea
+   of different hook-leader lengths by flow band; the construction — base, ring, swappable
+   pre-tied leaders — is not how it gets fished. Brian ties the rig in one piece (see the
+   8 Oct entry). More to come from him before the rigging section changes.
+
+Every fish of the trip came on the one-piece bait rig, the smorgasbord, a Cleo, a Rooster
+Tail or the fly rod; none on the Ned craw or a Keitech.
+
 ## Catches
 
 | species | size | time | spot | water | boat | rig | bait | lost |
