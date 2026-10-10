@@ -1,6 +1,6 @@
 ---
 date: 2026-10-10
-title: The Narrows again — 17 rainbows, two on hardware, the smorgasbord rig
+title: The Narrows again — 22 rainbows, hardware and the smorgasbord rig
 party: Brian, Dad
 spot: the Narrows
 coords: 36.33585797216595, -92.55931280487655
@@ -37,6 +37,20 @@ Voice log as received:
 10:25 | 36.33591360415922,-92.55924775273778 | Dad got a Rainbow on the smorgasbord rig. Note they're not real nightcrawlers they are gulp worms.
 ```
 
+**Afternoon, upstream.** Still dead low until the dam's 3–4 PM hour. 1:02–1:38 between the
+Honey Hole and Big Island (36.3457–36.3462, -92.5287), about half a mile below the Honey
+Hole: Dad two on the smorgasbord rig, Brian one on a gold Cleo and one on orange PowerBait
+with a crawdad tail. 4:02 at the Honey Hole: Brian a rainbow on a grey-and-black Rooster
+Tail, on the last of the low water there. Day: 22 rainbows.
+
+```
+13:02 | 36.34568273284133,-92.52876707712802 | Dad caught a rainbow at this location on his smorgasbord ring not ring rig
+13:06 | 36.34615870640641,-92.52882048814689 | I caught a rainbow on a gold Cleo
+13:15 | 36.34587561482206,-92.5286567150206 | Dad caught a rainbow on the smartest board rig not smallest but smorgasbord
+13:38 | 36.34602399224769,-92.52870072680018 | I caught a rainbow on orange power bait and crawdad tails at this location
+16:02 | 36.34999062696591,-92.53694326936689 | I caught one on the gray and black rooster tail at this location. A rainbow
+```
+
 ## Catches
 
 | species | size | time | spot | water | boat | rig | bait | lost |
@@ -58,6 +72,11 @@ Voice log as received:
 | rainbow |  | 10:04 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:19 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:25 | the Narrows | dead low |  |  | pink PowerBait + crawdad tail + Gulp worm (smorgasbord) |  |
+| rainbow |  | 13:02 | below the Honey Hole | dead low |  |  | pink PowerBait + crawdad tail + Gulp worm (smorgasbord) |  |
+| rainbow |  | 13:06 | below the Honey Hole | dead low |  | direct | gold Cleo |  |
+| rainbow |  | 13:15 | below the Honey Hole | dead low |  |  | pink PowerBait + crawdad tail + Gulp worm (smorgasbord) |  |
+| rainbow |  | 13:38 | below the Honey Hole | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
+| rainbow |  | 16:02 | the Honey Hole | dead low |  | direct | grey/black Rooster Tail |  |
 
 ## Stage
 
