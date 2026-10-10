@@ -9,7 +9,7 @@ coords: 36.33580543569891, -92.55930391148904
 Back on yesterday morning's water at the Narrows (36.3344–36.3359 N, -92.5573 to -92.5594
 W), 8:18 to 10:24. 16 rainbows, Brian 11, Dad 5; one "nice big" one for Brian at 8:24.
 Brian started on orange PowerBait with a crawdad tail, then from 8:47 a white-head /
-orange-tail Mice Tail with a crawdad tail. Dad on orange PowerBait and a worm throughout.
+orange-tail Mice Tail with a crawdad tail. Dad on orange PowerBait and a Gulp worm throughout.
 The 8:18 fish is logged as a rainbow (the voice log says "a fish"; everything after it was
 a rainbow on the same bait). Brian's rig is assumed the same one-piece White River rig as
 yesterday — not restated in the log; Dad's not recorded.
@@ -52,16 +52,16 @@ minute with the 10,000 twenty minutes out, so the builder files the fish under 2
 | rainbow | big | 08:24 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 08:26 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 08:28 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
-| rainbow |  | 08:40 | the Narrows | dead low |  |  | orange PowerBait + worm |  |
+| rainbow |  | 08:40 | the Narrows | dead low |  |  | orange PowerBait + Gulp worm |  |
 | rainbow |  | 08:47 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
-| rainbow |  | 08:54 | the Narrows | dead low |  |  | orange PowerBait + worm |  |
+| rainbow |  | 08:54 | the Narrows | dead low |  |  | orange PowerBait + Gulp worm |  |
 | rainbow |  | 08:54 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 09:10 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
-| rainbow |  | 09:18 | the Narrows | dead low |  |  | orange PowerBait + worm |  |
+| rainbow |  | 09:18 | the Narrows | dead low |  |  | orange PowerBait + Gulp worm |  |
 | rainbow |  | 09:18 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 09:46 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 09:55 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
-| rainbow |  | 09:55 | the Narrows | dead low |  |  | orange PowerBait + worm |  |
+| rainbow |  | 09:55 | the Narrows | dead low |  |  | orange PowerBait + Gulp worm |  |
 | rainbow |  | 10:10 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 10:24 | the Narrows | dead low |  | WR rig | Mice Tail (white/orange) + crawdad tail |  |
 | rainbow |  | 15:48 | the Narrows | dead low |  | indicator | egg attractor + ruby midge dropper |  |

@@ -11,7 +11,7 @@ Brian 11, Dad 6. The first two came on hardware — Dad's on a gold Cleo, Brian'
 Rooster Tail — then Brian went back to orange PowerBait with a crawdad tail for the other
 ten. Dad fished what they are now calling **the smorgasbord rig**: a pink PowerBait, a
 crawdad tail and a worm on the one hook — and the worms are Gulp worms, not real
-nightcrawlers (Dad's "worm" rows on the earlier days may be Gulp too; not confirmed).
+nightcrawlers — and so were all of Dad's worms on the earlier days (confirmed).
 The 8:01 line ("They had caught a rainbow") is read as Dad. Brian's rig assumed the
 one-piece White River rig as before, except the two hardware fish.
 

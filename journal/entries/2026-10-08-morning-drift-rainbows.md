@@ -74,7 +74,7 @@ Afternoon voice log:
 
 | species | size | time | spot | water | boat | rig | bait | lost |
 |---|---|---|---|---|---|---|---|---|
-| rainbow |  | 08:45 | White Hole drift | dead low | drift |  | nightcrawler |  |
+| rainbow |  | 08:45 | White Hole drift | dead low | drift |  | Gulp worm |  |
 | rainbow |  | 08:45 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 08:57 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 09:08 | White Hole drift | dead low | drift | WR rig | orange PowerBait + crawdad tail |  |
@@ -86,7 +86,7 @@ Afternoon voice log:
 | rainbow |  | 09:47 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 09:58 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:04 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
-| rainbow |  | 10:05 | the Narrows | dead low | tie |  | worm |  |
+| rainbow |  | 10:05 | the Narrows | dead low | tie |  | Gulp worm |  |
 | rainbow |  | 10:13 | the Narrows | dead low | tie |  | orange PowerBait |  |
 | rainbow |  | 10:23 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:36 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
@@ -97,18 +97,18 @@ Afternoon voice log:
 | rainbow |  | 10:48 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 10:56 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 11:02 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
-| rainbow |  | 11:02 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + worm |  |
+| rainbow |  | 11:02 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + Gulp worm |  |
 | rainbow |  | 11:09 | the Narrows | dead low | tie | WR rig | orange PowerBait + crawdad tail |  |
-| rainbow |  | 11:09 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + worm |  |
-| rainbow |  | 13:54 | White Hole | dead low |  | WR rig | worm |  |
+| rainbow |  | 11:09 | the Narrows | dead low | tie |  | orange PowerBait + crawdad tail + Gulp worm |  |
+| rainbow |  | 13:54 | White Hole | dead low |  | WR rig | Gulp worm |  |
 | rainbow |  | 14:17 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
-| rainbow |  | 14:29 | the Narrows | dead low |  |  | worm |  |
-| rainbow |  | 14:42 | the Narrows | dead low |  |  | PowerBait + worm + crawdad tail |  |
-| rainbow |  | 14:42 | the Narrows | dead low |  |  | PowerBait + worm + crawdad tail |  |
+| rainbow |  | 14:29 | the Narrows | dead low |  |  | Gulp worm |  |
+| rainbow |  | 14:42 | the Narrows | dead low |  |  | PowerBait + Gulp worm + crawdad tail |  |
+| rainbow |  | 14:42 | the Narrows | dead low |  |  | PowerBait + Gulp worm + crawdad tail |  |
 | rainbow |  | 14:43 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 14:47 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 14:52 | the Narrows | dead low |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 15:58 | below the White Hole | rising |  | WR rig | orange PowerBait + crawdad tail |  |
 | rainbow |  | 16:20 | below the White Hole | rising |  | WR rig |  |  |
 | rainbow |  | 16:23 | below the White Hole | rising |  | WR rig | orange PowerBait + crawdad tail |  |
-| rainbow |  | 16:23 | below the White Hole | rising |  |  | orange PowerBait + worm + crawdad tail |  |
+| rainbow |  | 16:23 | below the White Hole | rising |  |  | orange PowerBait + Gulp worm + crawdad tail |  |
