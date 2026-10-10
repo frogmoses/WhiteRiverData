@@ -61,10 +61,14 @@ Voice log as received:
 
 ## Stage
 
-Evening frame from the reference spot, 6:13 PM: the gravel bar fully out, the grey rock on
-its far edge dry, both trees and the bank dry — still minimum flow, the model putting
-759 CFS at White Hole. `journal/photos/2026-10-10-1813-white-hole-reference-spot.jpg`.
+Evening frame from the reference spot, 6:13 PM — misread at first as dead low. Against the
+2:10 PM reference from the day before, the bar is well down: its far edge has pulled back
+and the grey rock marker is already under "quite a distance" (Brian). The rise was in by
+6:13, while the model, with the dam's 3–4 PM hour (2,372 CFS) leaving at 3:00, had the
+first water arriving at 6:31 — so this rise beat the model by half an hour or more, the
+same direction as Wednesday's. The trees and the bank are still dry: the rise is in, the
+big water (6,079 in the 4–5 PM hour) is not. `journal/photos/2026-10-10-1813-white-hole-reference-spot.jpg`.
 
 | time | reading | water | note |
 |---|---|---|---|
-| 18:13 |  | dead low | reference-spot photo: gravel bar fully out, grey rock dry, trees and bank dry |
+| 18:13 |  | rising | reference-spot photo: the grey rock already well under, the bar's far edge pulled back; trees and bank dry — the rise was in before this |
