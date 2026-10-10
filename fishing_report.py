@@ -162,8 +162,8 @@ EVIDENCE = {
     # ("minimum", "browns"): {"fish": 1, "dates": ["2026-10-06"], "note": "sculpin, split-shot, dawn"},
     # keep these notes free of tackle words: they render under the fly block too
     ("minimum", "rainbows"): {
-        "fish": 51, "dates": ["2026-10-08", "2026-10-09"],
-        "note": "two mornings on dead-low water, drifting White Hole to the Narrows then "
+        "fish": 68, "dates": ["2026-10-08", "2026-10-09", "2026-10-10"],
+        "note": "three mornings on dead-low water, drifting White Hole to the Narrows then "
                 "tied at the head of the Narrows; the Narrows again after lunch the first day",
     },
     ("two_three_units", "rainbows"): {
