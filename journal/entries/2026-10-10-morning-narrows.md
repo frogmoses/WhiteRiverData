@@ -51,7 +51,7 @@ Tail, on the last of the low water there. Day: 22 rainbows.
 16:02 | 36.34999062696591,-92.53694326936689 | I caught one on the gray and black rooster tail at this location. A rainbow
 ```
 
-## Observations for the doctrine (Brian, end of the trip — nothing rewritten yet)
+## Observations for the doctrine (Brian, end of the trip — written into the report 10 Oct)
 
 1. **The crawdad on the Ned head does not fish here.** The bottom at minimum flow is
    aquatic weed; a 1/10 oz head drags it every cast. Brian saw a crawdad on the gravel
@@ -60,8 +60,16 @@ Tail, on the last of the low water there. Day: 22 rainbows.
    runs deeper. (The report names the 3.3/3.8 FAT for low water and 3.8/4.3 for 2–3 units.)
 3. **The tippet-ring White River rig is unworkable as built.** What is useful is the idea
    of different hook-leader lengths by flow band; the construction — base, ring, swappable
-   pre-tied leaders — is not how it gets fished. Brian ties the rig in one piece (see the
-   8 Oct entry). More to come from him before the rigging section changes.
+   pre-tied leaders — is not how it gets fished. Brian ties the rig in one piece: bell on
+   the bottom, a loop 7 in above it that the main line clinches to, the hook leg running on
+   from the loop (44 / 32 / 20 in by band). The report, its diagram and the gear check now
+   say so.
+4. **The 1/8 oz bell** is still unowned and untried; the 3/16 fished the whole trip. The
+   prescription keeps the 1/8 for minimum flow with that said beside it — to test next time.
+5. **The rubber-band breakaway** is on probation: hard to tie on and it collects weed.
+   Brian may drop it; the gear check says decide before pre-tying rigs around it.
+6. **Keitech:** the one fished was the 2.8. The report now names the 3.8 and says the small
+   ones ride too high here.
 
 **Colour caveat (Brian).** The other group fishing alongside us used *white* Power Eggs with
 crawdad tails and "caught a lot". Our 38 on orange with a crawdad tail says the crawdad

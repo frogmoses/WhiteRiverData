@@ -329,8 +329,12 @@ appended to the bottom of the page. Design rules:
   36.3346–36.3359 N, -92.5547 to -92.5593 W). The report's bullet reads "Cranor's Island
   (the Narrows)" and `build_journal.SPOT_ALIASES` maps the word to the spot; `REACH_SPOTS`
   keeps the one name and mile.
-- **`RIGGING_REFERENCE`**: static how-to content (White River rig build incl. the
-  tippet-ring hook-leader system with its SVG diagram `SPIN_RIG_SVG`, bait prep, boat strategy
+- **`RIGGING_REFERENCE`**: static how-to content (the White River rig as Brian ties it — ONE
+  piece of leader, the bell on the bottom, a loop 7 in above it that the main line clinches
+  to, the hook leg running on from the loop, 44 / 32 / 20 in by band — with its SVG diagram
+  `SPIN_RIG_SVG`; the tippet-ring base-and-swappable-leader construction was retired after
+  the first trip, "completely unworkable" in Brian's words, the rings now fly-only; the
+  rubber-band breakaway is on probation, hard to tie and a weed collector; bait prep, boat strategy
   — tie/drift/anchor, tied-boat presentations, fly-from-boat, etiquette) rendered as
   collapsible blocks after the gear check. Unchanged by flow/season; spin and fly blocks
   tagged and kept separate; boat handling and etiquette shared.
@@ -344,18 +348,16 @@ appended to the bottom of the page. Design rules:
   further notice" (it replaced an emergency order — do not call it emergency management).
   Re-verified against AGFC 2026-09-20; re-verify before edits.
 
-- **Open doctrine items from the October 2026 trip (Brian's word, 2026-10-10; he asked that
-  nothing be rewritten until he has said more)**: (1) the Z-Man CrawZ on the 1/10 oz Ned head
-  cannot be fished at the White Hole/Narrows — aquatic weed fouls it every cast — so the fall
-  browns `spin_add` bullet and the "Ned-head crawdad presentation" pack item are suspect;
-  (2) the small Keitech rode too high — he wants at least two sizes up for depth; (3) the
-  tippet-ring White River rig is "completely unworkable" as constructed — keep the
-  leader-length-by-band idea, drop the base/ring/swappable-leader construction for the
-  one-piece tie he fishes (3/16 oz bell, loop 7 in above the sinker, 44 in — geometry still
-  to be confirmed; see `journal/entries/2026-10-08-morning-drift-rainbows.md`). Also open: the
-  minimum-flow bell is prescribed 1/8 oz (unowned) and he fished the 3/16 all trip. Rewrite
-  `RIGGING_REFERENCE`, the Rig lines, `SPIN_RIG_SVG` and `GEAR_CHECK` together when he gives
-  the word, with the journal rows as the evidence.
+- **What the October 2026 trip changed (Brian's word, written in 2026-10-10)**: the
+  one-piece rig above; the fall browns `spin_add` crawdad bullet now says a crawdad
+  presentation is still to be found (the CrawZ or Senko half on the open Ned head fouls in
+  the White Hole weed every cast — the forage is confirmed, one seen on the gravel) and the
+  soft craw moved from pack to a bench item (find a weedless way to fish it); the 2–3 unit
+  Keitech bullet names the 3.8 and says the 2.8/3.3 ride too high (he fished the 2.8); the
+  minimum-flow Rig line keeps the 1/8 oz bell with "the 3/16 did the job on the first trip;
+  the 1/8 is still to be tried" (unowned, test next time). Still open: whether the breakaway
+  stays; a crawdad presentation; the crawler line ("the guide bait") against 70 fish on
+  moulded baits and none on a natural bait — leave until Brian says.
 
 ### The journal — the feedback loop (`journal/`)
 

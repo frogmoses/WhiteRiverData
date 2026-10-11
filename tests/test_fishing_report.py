@@ -368,7 +368,7 @@ class TestFocusedLayout:
         assert any("SCPS70MF2-SG" in i for i in actions["pack"]["spin"])
         assert any("8 lb fluorocarbon — OWNED" in i for i in actions["pack"]["spin"])
         assert any("Fly box audit" in i for i in actions["verify"]["fly"])
-        assert any("leader wallet" in i for i in actions["bench"]["spin"])
+        assert any("Pre-tie whole White River rigs" in i for i in actions["bench"]["spin"])
         assert any("Worm blower" in i for i in actions["pack"]["spin"])
         # Nothing is lost between the grouped view and the flat lists
         for kind in ("spin", "fly", "boat"):
@@ -631,27 +631,42 @@ class TestQuietSummary:
         assert "list-style: none" in summary
 
 
-class TestHookLeaderRig:
-    """The tippet-ring hook-leader upgrade lives in the rig-build reference."""
+class TestOnePieceRig:
+    """The White River rig is tied in one piece, as Brian fishes it: the main
+    line clinches to a loop 7 in above the bell; the hook leg runs on from the
+    loop. The tippet-ring base-and-leader construction is gone (first trip:
+    "completely unworkable"); the hook-leg ladder by flow band stays."""
 
-    def test_hook_leader_system_documented(self):
+    def test_rig_reference_describes_the_one_piece_tie(self):
         report = generate_fishing_report(750, OCTOBER)
         rig = next(s for s in report["rigging"]
                    if s["title"].startswith("The White River rig"))
-        text = " ".join(rig["items"])
-        # The ladder and its band mapping — the tuning knob, which survived the
-        # 2026-09-29 removal of the tying steps
-        assert "12, 24 or 36 in" in text
-        assert "20, 32 or 44 in" in text
-        # Species selection moves to the hook leader
+        text = " ".join([rig["intro"]] + rig["items"])
+        assert "loop 7 in above" in text and "One piece of leader" in text
+        assert "44, 32 or 20 in" in text
         assert "4 lb mono = rainbows, 8 lb fluoro = browns" in text
-        # and the sacrificial logic that makes the system worth having
-        assert "costs the hook leader" in text
+        assert "costs the whole rig" in text
+        assert "tippet ring" not in text and "base" not in rig["intro"]
 
-    def test_rings_in_both_gear_lists(self):
+    def test_band_rig_lines_give_the_hook_leg(self):
+        report = generate_fishing_report(750, OCTOBER)
+        legs = {b["key"]: b["spin"]["rig"] for b in report["bands"]}
+        assert "44 in hook leg" in legs["minimum"]
+        assert "32 in hook leg" in legs["one_unit"]
+        for key in ("two_three_units", "four_five_units", "high"):
+            assert "20 in hook leg" in legs[key]
+        assert "hook leader" not in " ".join(legs.values())
+
+    def test_rings_stay_only_in_the_fly_list(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
-        assert any("tippet rings" in item for item in gear["spin"])
+        assert not any("tippet ring" in item for item in gear["spin"])
         assert any("tippet ring" in item for item in gear["fly"])
+
+    def test_breakaway_is_on_probation(self):
+        gear = generate_fishing_report(750, OCTOBER)["gear_actions"]
+        bench = " ".join(gear["bench"]["spin"])
+        assert "rubber bands" in bench and "probation" in bench
+        assert not any("rubber band" in item for item in gear["pack"]["spin"])
 
 
 class TestGearDoctrine:
@@ -679,14 +694,17 @@ class TestGearDoctrine:
         fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
         assert "soft craw" in fall_spin.lower()
 
-    def test_soft_craw_leads_the_crawdad_bullet(self):
-        """The soft craw was bought 2026-09-28, so the fall crawdad bullet
-        leads with it and keeps the Senko as the alternative."""
+    def test_crawdad_presentation_is_open_not_prescribed(self):
+        """First trip: the CrawZ on the open Ned head fouls in the weed every
+        cast. The bullet keeps the forage and names the problem; the gear
+        check benches the craw instead of packing it."""
         fall = generate_fishing_report(750, OCTOBER)
         craw = [item for item in fall["spin"]["browns"] if "TRD CrawZ" in item]
-        assert craw and craw[0].startswith("The Z-Man TRD CrawZ")
-        assert "green pumpkin Senko" in craw[0]
-        assert "not owned" not in craw[0]
+        assert craw and craw[0].startswith("A crawdad presentation is still to be found")
+        assert "fouls" in craw[0] and "not owned" not in craw[0]
+        actions = fall["gear_actions"]
+        assert any("TRD CrawZ" in i for i in actions["bench"]["spin"])
+        assert not any("TRD CrawZ" in i for i in actions["pack"]["spin"])
 
     def test_fly_gear_marked_unverified(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]
@@ -825,9 +843,9 @@ class TestRigDiagram:
     def test_rig_reference_carries_the_drawing(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         rig = html.split("The White River rig (spin)", 1)[1].split("</details>", 1)[0]
-        assert "<svg" in rig and "2 mm tippet ring" in rig and "12 / 24 / 36 in" in rig
-        assert "20 / 32 / 44 in" in rig
-        assert "hook-leader line" in rig
+        assert "<svg" in rig and "loop 7 in above the bell" in rig and "44 / 32 / 20 in" in rig
+        assert "one piece" in rig.lower()
+        assert "tippet ring" not in rig
 
     def test_split_shot_rig_has_its_own_drawing(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))

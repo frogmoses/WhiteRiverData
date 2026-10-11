@@ -229,7 +229,7 @@ BAND_CONTENT = {
             "Low water lingers longest downstream — run down early, work back upstream as any afternoon water arrives",
         ],
         "spin": {
-            "rig": "White River rig — 1/8 oz bell (#10), 36 in hook leader",
+            "rig": "White River rig — 1/8 oz bell (#10), 44 in hook leg (the 3/16 did the job on the first trip; the 1/8 is still to be tried)",
             "browns": [
                 "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
                 "Sculpin on the split-shot rig (not the Y) presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
@@ -282,7 +282,7 @@ BAND_CONTENT = {
             "Drifting works well at this level: drift the seams, motor back up, repeat — the driver's on the tiller and sits out, so rotate who drives",
         ],
         "spin": {
-            "rig": "White River rig — 1/4 oz bell (#8), 24 in hook leader",
+            "rig": "White River rig — 1/4 oz bell (#8), 32 in hook leg",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "The sinking swimmers (Countdown class — brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
@@ -337,11 +337,11 @@ BAND_CONTENT = {
             "Know what's downstream before committing to a spot; there is no warning siren on this river",
         ],
         "spin": {
-            "rig": "White River rig — 3/8 oz bell (#7), 12 in hook leader",
+            "rig": "White River rig — 3/8 oz bell (#7), 20 in hook leg",
             "browns": [
                 "Leader: 8 lb fluorocarbon — the trophy window is open, fish accordingly",
                 "Jerkbait prime time (2–4 units): the sinking swimmers and the suspending perch deep jerkbait, twitch-pause along the banks",
-                "Keitech Swing Impact FAT 3.3/3.8 on a Flashy Swimmer, or the 4 in white-pearl Tab Tail, swum along the bank edge — white is the named color for White River browns",
+                "Keitech Swing Impact FAT 3.8 on a Flashy Swimmer — not the 2.8 or 3.3, the small ones ride too high in this water — or the 4 in white-pearl Tab Tail, swum along the bank edge — white is the named color for White River browns",
                 "TWO whole crawlers on the White River rig (#4 or a #1 drop-shot hook), downstream and held in the soft lane",
                 "Walk the White River rig down: lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
             ],
@@ -385,7 +385,7 @@ BAND_CONTENT = {
             "Debris starts moving at these flows; keep watch upstream",
         ],
         "spin": {
-            "rig": "White River rig — 1/2 oz bell (#6), 12 in hook leader",
+            "rig": "White River rig — 1/2 oz bell (#6), 20 in hook leg",
             "browns": [
                 "Leader: 8 lb fluorocarbon — guide-class line for exactly this water",
                 "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted down the bank edge — from a tied boat, work the lane flowing past you with a quartering-upstream cast and fed line; on a boat drift, cover the whole bank. The documented high-water big-trout method",
@@ -428,7 +428,7 @@ BAND_CONTENT = {
             "Re-check the schedule and the ramp before committing — this level with a rental jon is a risk decision, not a tactics decision",
         ],
         "spin": {
-            "rig": "White River rig — 1 oz bell (#4), 12 in hook leader; slack-water soaks only",
+            "rig": "White River rig — 1 oz bell (#4), 20 in hook leg; slack-water soaks only",
             "browns": [
                 "Leader: 8 lb fluorocarbon",
                 "4 in white Tab Tail or Keitech 4.3 on its swimbait head (tied direct), pitched along slack margins for a hunting brown",
@@ -470,7 +470,7 @@ SEASON_CONTENT = {
         ],
         "spin_add": {
             "browns": [
-                "The Z-Man TRD CrawZ 2.5 in Mudbug or green pumpkin Senko on the 1/10 oz Ned head",
+                "A crawdad presentation is still to be found: the forage is real (one seen on the gravel at the White Hole) but the Z-Man TRD CrawZ on the open 1/10 oz Ned head fouls in the aquatic weed every cast, and the green pumpkin Senko half on the same head has the same problem — not a program yet; sculpin and the two-crawler soak stay the browns baits",
             ],
             "rainbows": [
                 "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough",
@@ -488,10 +488,10 @@ SEASON_CONTENT = {
             "spin": {
                 "bench": [
                     "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
+                
+                    "The soft craw — Z-Man TRD CrawZ 2.5 in Mudbug x12 and tungsten 1/10 oz mushroom heads x5 — is OWNED but the open Ned head drags weed every cast at the White Hole, so it does not pack as a program: find a weedless way to fish the craw (a weed-guard head, or the craw on a light Texas rig) before it goes back in the box",
                 ],
-                "pack": [
-                    "The soft craw upgrade is bought, not optional any more: Z-Man TRD CrawZ 2.5 in Mudbug x12 plus tungsten 1/10 oz mushroom heads x5 — pack both for the Ned-head crawdad presentation. At 2.5 in the CrawZ lands inside the 2–2.75 in finesse window this rig wants, matching the half-Senko profile the 1/10 oz head already carries: a 3.5 in flipping craw would overpower a light Ned head, slow the fall and kill the action the rig runs on",
-                ],
+                
             },
             "fly": {
                 "buy": [
@@ -578,14 +578,13 @@ GEAR_CHECK = {
             "The bell ladder is OWNED in the middle — 3/16, 1/4, 3/8 and 1/2 oz (#9/#8/#7/#6) are on the shelf; verify or buy the two ends, 1/8 oz (#10) for minimum flow and 1 oz (#4) for 4+ units",
         ],
         "bench": [
-            "2 mm tippet rings — OWNED, a 50-pack, so the rig is buildable. What is left is an evening pre-tying the leader wallet (12/24/36 in hook leaders in both line classes)",
+            "Pre-tie whole White River rigs at home, wound on a foam disc: one piece of leader per rig, a few at each hook-leg length (44 / 32 / 20 in) in each line class — 4 lb mono for rainbows, 8 lb fluoro for browns",
+            "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment, on probation after the first trip: hard to tie on and they collect weed. Decide whether the breakaway stays before pre-tying rigs around it; if it stays, pull-test one on the tailgate before the first cast — the band must let go before the rig does",
             "Marabou jigs: the inventory records their hooks as failed inspection — file the points sharp or replace them before the 'sculpin' jig presentations count on them",
         ],
         "pack": [
             "Brown program leader: a spool of 8 lb fluorocarbon — OWNED",
-            "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is the hook-leader material, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
-            "#16 orthodontic rubber bands — OWNED, a bag of 100 ¼ in dental elastics — the breakaway sinker attachment for snaggy bottom. Pull-test one on the tailgate before the first cast: the band must let go before the hook leader does",
-            "Quick weight changes (the river demands them) come free from the rubber-band breakaway, not from a separate scheme: the overhand loop the #16 elastic hitches to IS the quick-change point on the #10–#7 bells — unhitch, hitch a fresh bell, cast. A small loop or cheap snap is only for the #6 and #4 bells, which stretch the band on the cast and get clinched direct (see Rigging). Skip rubber-core sinkers either way — they nick light mono and drop off",
+            "Rainbow program leader: 4 lb, and it is OWNED, not a purchase — the Maxima Chameleon 4 lb wheel on the line shelf is what the whole rig is tied from, with a boxed Trilene XL 4 lb clear behind it for bulk. The 20/30 lb fluoro is rope in this water",
             "#6 Aberdeens — OWNED, a 50-pack beside the #4s — the light-wire hook for eggs and Mice Tails, where the #4 is oversized",
             "Worm blower — OWNED (Magic 1004); the inflated-crawler presentations depend on it, so it packs rather than gets bought",
             "The browns rod — OWNED: St. Croix SCPS70MF2-SG, 7 ft medium, 10-17 lb, 1/4-3/4 oz, 2-piece — lives at Dad's. The Black Max 30 travels to meet it, respooled to 10 lb mono: the main out-tests the 8 lb browns leader so break-offs happen at the hook leader. Anything the browns program throws under 1/4 oz goes on the St. Croix ultralight",
@@ -624,33 +623,26 @@ GEAR_CHECK = {
 # blocks stay separate; boat handling and etiquette are shared seamanship.
 # ---------------------------------------------------------------------------
 
-# Inline diagram of the tippet-ring rig. Literal colours, because
-# the report page has no CSS custom properties and no dark mode. The base is
-# drawn in ink and the hook leader in orange: that split is the whole point of
-# the system, so it carries the one colour distinction in the drawing.
+# Inline diagram of the one-piece White River rig as Brian ties it. Literal
+# colours, because the report page has no CSS custom properties and no dark
+# mode. The main line is drawn in ink and the rig — one piece of leader — in
+# orange: everything orange is tied at home and swapped as a unit.
 SPIN_RIG_SVG = '''
 <svg viewBox="0 0 420 356" role="img" aria-labelledby="rigttl"
      style="width:100%;max-width:430px;height:auto;display:block;margin:10px auto 0;">
-  <title id="rigttl">The White River rig built as the tippet-ring system: main line to a
-  barrel swivel, then a permanent 8 lb fluorocarbon base carrying a 12 inch butt and a surgeon's loop
-  that splits into a 7 inch sinker leg with a bell sinker and an 8 inch stub ending in a 2 mm tippet
-  ring; a swappable pre-tied hook leader clinches to that ring and runs down to the hook, where the
-  bait rides up off the bottom</title>
+  <title id="rigttl">The White River rig tied in one piece: the main line clinches to a loop
+  tied in a single length of leader; below the loop a 7 inch sinker leg ends in a bell sinker on the
+  bottom; above it the same leader runs on as the hook leg, 44, 32 or 20 inches to the hook, where
+  the bait rides up off the bottom</title>
   <g fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round">
-    <path d="M100 10 L100 44"/>
-    <ellipse cx="100" cy="52" rx="5" ry="8" stroke-width="1.4"/>
-    <path d="M100 60 L100 88"/>
-    <circle cx="100" cy="95" r="6" stroke-width="1.4"/>
-    <path d="M97 101 L83 246"/>
-    <path d="M104 101 C 128 126, 152 148, 176 163"/>
+    <path d="M100 10 L100 118"/>
+  </g>
+  <g fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round">
+    <path d="M100 118 c -9 6, -9 18, 0 24 c 9 -6, 9 -18, 0 -24"/>
+    <path d="M97 142 L83 246"/>
+    <path d="M104 140 C 170 170, 250 212, 320 246"/>
   </g>
   <path d="M83 246 l-11 30 h22 z" fill="#4a5568" stroke="none"/>
-  <g fill="none" stroke="#2d3748">
-    <circle cx="182" cy="168" r="6" stroke-width="1.5"/>
-    <circle cx="182" cy="168" r="2.6" stroke-width="1"/>
-  </g>
-  <path d="M187 172 C 228 200, 275 226, 320 246"
-        fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round"/>
   <path d="M0 280 C 70 272, 140 288, 210 278 S 340 284, 420 274"
         fill="none" stroke="#cbd5e0" stroke-width="2.5"/>
   <g fill="#cbd5e0" stroke="none" opacity=".75">
@@ -661,29 +653,26 @@ SPIN_RIG_SVG = '''
         fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
   <circle cx="323" cy="248" r="9" fill="#2b6cb0" stroke="none"/>
   <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" fill="#718096">
-    <text x="114" y="28">main line, as spooled</text>
-    <text x="114" y="56">size 10 barrel swivel</text>
-    <text x="114" y="80" fill="#2b6cb0">12 in butt</text>
-    <text x="114" y="99">surgeon's loop</text>
-    <text x="2" y="180" fill="#2b6cb0">7 in</text>
+    <text x="114" y="40">main line, as spooled</text>
+    <text x="114" y="96">clinch knot to the loop</text>
+    <text x="114" y="132" fill="#c05621">loop 7 in above the bell</text>
+    <text x="2" y="190" fill="#c05621">7 in</text>
     <text x="2" y="232">bell #10–#4</text>
-    <text x="142" y="126" fill="#2b6cb0">8 in stub</text>
-    <text x="196" y="160">2 mm tippet ring</text>
-    <text x="112" y="252" fill="#c05621">hook leader  12 / 24 / 36 in</text>
-    <text x="112" y="267">= hook leg  20 / 32 / 44 in</text>
+    <text x="150" y="252" fill="#c05621">hook leg  44 / 32 / 20 in</text>
+    <text x="150" y="267">minimum · 1 unit · 2+ units</text>
     <text x="418" y="266" text-anchor="end">bait rides up</text>
   </g>
   <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#718096">
     <path d="M8 314 l22 0" fill="none" stroke="#2d3748" stroke-width="1.6" stroke-linecap="round"/>
-    <text x="38" y="318">permanent base · 8 lb fluoro · stays on the rod</text>
+    <text x="38" y="318">main line · 4 lb (rainbows) or 10 lb (browns) as spooled</text>
     <path d="M8 338 l22 0" fill="none" stroke="#c05621" stroke-width="1.9" stroke-linecap="round"/>
-    <text x="38" y="342">hook leader · clinched on · 4 lb rainbows, 8 lb browns</text>
+    <text x="38" y="342">the rig · one piece · 4 lb mono rainbows, 8 lb fluoro browns</text>
   </g>
 </svg>
 <p style="font-size: 0.82em; color: #718096; text-align: center; margin: 8px auto 4px; max-width: 430px; line-height: 1.5;">
-  The base never comes off the rod. A hook snag costs the hook leader and never the base, the ring or
-  the bell, which is why a 4&nbsp;lb rainbow hook leader hangs under an 8&nbsp;lb base. The base sits
-  more than 20&nbsp;in above the bait, so the fish only ever inspects hook-leader line.
+  One piece of leader, tied at home and swapped whole: a snag costs the rig, so carry several at
+  each hook-leg length. The loop sits 7&nbsp;in above the bell on every rig; only the hook leg
+  changes with the flow.
 </p>'''
 
 
@@ -738,17 +727,17 @@ SPLIT_SHOT_RIG_SVG = '''
 RIGGING_REFERENCE = [
     {
         "title": "The White River rig (spin)",
-        "intro": "The tippet-ring system: a permanent base that stays on the "
-                 "rod, and a swappable pre-tied hook leader clinched to "
-                 "the ring. The diagram is the rig. What follows is how to size it, tune "
-                 "it and fish it, not how to tie it.",
+        "intro": "One piece of leader, tied at home: the bell on the bottom end, a "
+                 "loop 7 in above it that the main line clinches to, and the hook leg "
+                 "running on from the loop to the hook. The diagram is the rig. What "
+                 "follows is how to size it, tune it and fish it, not how to tie it.",
         "figure": SPIN_RIG_SVG,
         "items": [
-            "Tune the hook leg, never the weight leg. The hook-leader ladder does it without retying anything: a 12, 24 or 36 in leader gives a hook leg of 20, 32 or 44 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up. Faster water wants it shorter, because a long leader lays flat; minimum flow wants it long. Trim to tune, swap up when the water drops",
-            "The hook leader picks the species program — each program's 'Leader' spec applies to the hook leader, not the base: 4 lb mono = rainbows, 8 lb fluoro = browns. The base sits 20+ in above the bait, so the fish only inspects hook-leader line, and a lighter leader under a heavier base is automatically sacrificial: a hook snag costs the hook leader, never the base, the ring or the bell",
-            "The rubber-band breakaway, what it actually looks like: finish the bell end with a small overhand loop instead of clinching it to the bell. Girth-hitch a #16 orthodontic rubber band (the ¼ in dental elastic) through that loop, then pass the band's free end through the bell's eye and back over the bell — a second girth hitch. No knots in the band and nothing else holding the sinker; fishing, the band lies slack and the bell hangs as if tied. Hung up, point the rod at the snag and pull steadily: the band stretches, snaps, and the rig comes back whole minus one bell — hitch on a fresh band and bell and cast again. Check it on the tailgate before the first cast: pull the bell against the tied rig by hand and make sure the band lets go before anything else does; a band that out-pulls the 4 lb hook leader has defeated the point. Sized for the #10–#7 bells; a #6 or #4 bell for the 3+ unit bands stretches the band on the cast, so up there clinch the bell direct and accept that a bad hang costs the base",
-            "Pre-tie the leader wallet at home, wound on a foam disc: a few of each length in each line class, plus a couple of #1 sculpin leaders. An evening's work that turns a mid-drift re-rig into a ten-second swap",
-            "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7–#6 · 4+ units #6–#4. Calibrate on the water: it should tick bottom on the swing and slip when the tip lifts, never plant",
+            "Tune the hook leg, never the weight leg: the sinker leg is 7 in on every rig, the hook leg is 44, 32 or 20 in — 44 at minimum flow, 32 around 1 unit, 20 from 2 units up — and you change it by swapping to the next pre-tied rig, not by retying on the water. Faster water wants it shorter, because a long leg lays flat; minimum flow wants it long. Trim to tune, swap up when the water drops",
+            "The whole rig is tied in the species program's line — 4 lb mono = rainbows, 8 lb fluoro = browns — because there is no base to hide behind: the main line clinches straight to the loop, so the fish inspects the rig's own line and a snag costs the whole rig. That is why they are pre-tied in numbers, and why the main line is spooled at or above the rig's test, so the knot at the loop is where it breaks",
+            "The rubber-band breakaway — on probation after the first trip (hard to tie on, collects weed; it may go): finish the bell end with a small overhand loop instead of clinching it to the bell, girth-hitch a #16 orthodontic rubber band through that loop, pass the band's free end through the bell's eye and back over the bell. A snagged bell then tears the band and the rig comes back",
+            "Pre-tie the rigs at home, wound on a foam disc: a few at each hook-leg length in each line class, plus a couple of #1 sculpin rigs. An evening's work that turns a mid-drift re-rig into a ten-second swap",
+            "Bell sinker numbers (local shorthand): #10 = 1/8 oz · #9 = 3/16 · #8 = 1/4 · #7 = 3/8 · #6 = 1/2 · #5 = 3/4 · #4 = 1 oz — bells only, skip the rubber-core sinkers. Starting size by flow band: minimum #10 · 1 unit #8 · 2–3 units #7–#6 · 4+ units #6–#4. Calibrate on the water: it should tick bottom on the swing and slip when the tip lifts, never plant",
             "Hook by bait: eggs or Mice Tail #6–#8 · whole crawler #2–#4 Aberdeen · red worm #4 · sculpin/shrimp/crawdad #1–#2 · minnow #6 through both lips · corn or single egg #10–#12",
         ],
     },

@@ -11,8 +11,9 @@ White Hole down to the Narrows, then tied up at the head of the Narrows from abo
 working that water; every fish a rainbow. Brian on orange PowerBait with a crawdad tail
 (confirmed — the voice log had it as rod tales / crowded tails), every one of his on the
 White River rig tied in one piece of 4 lb Maxima Chameleon (brown): 3/16 oz bell (#9) at
-the bottom, a loop tied 7 in up from the sinker, 44 in to the hook — no tippet ring, no
-swappable hook leader. Dad on nightcrawlers first, then the same orange PowerBait, and
+the bottom, a loop tied 7 in up from the sinker — the main line clinches to that loop — and
+the same leader running on from the loop 44 in to the hook. No tippet ring, no swappable
+hook leader (geometry confirmed 10 Oct; it is now the report's rig). Dad on nightcrawlers first, then the same orange PowerBait, and
 worms again later (his rig not recorded). One lost at the boat at 9:18. 25 rainbows landed between 8:45 and 11:09, Brian 17,
 Dad 8 (the 9:58 line transcribed as "Nothing Rainbow" is read as "Another rainbow").
 
