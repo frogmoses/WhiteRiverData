@@ -601,7 +601,7 @@ GEAR_CHECK = {
         "pack": [
             "RIO Trout VersiLeader, 7 ft 12 lb fast-sinking — OWNED, two of them — the 'insta-sink-tip' the brown streamer program runs on; loop one onto the floating line and leave it there for the trip",
             "Brown program tippet: the same OWNED 8 lb fluoro spool as spin — 3–4 ft on the sink leader for the streamer swing",
-            "A 2 mm tippet ring finishes the tightline leader butt — out of the same owned 50-pack as the spin rig's rings",
+            "A 2 mm tippet ring finishes the tightline leader butt (out of the owned 50-pack) — on probation after the first trip: the ring stops the indicator sliding, and Brian is minded to drop it, though a knot in the same place would stop it just the same",
         ],
     },
     "boat": {

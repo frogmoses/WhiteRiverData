@@ -356,7 +356,9 @@ appended to the bottom of the page. Design rules:
   Keitech bullet names the 3.8 and says the 2.8/3.3 ride too high (he fished the 2.8); the
   minimum-flow Rig line keeps the 1/8 oz bell with "the 3/16 did the job on the first trip;
   the 1/8 is still to be tried" (unowned, test next time). Still open: whether the breakaway
-  stays; a crawdad presentation; the crawler line ("the guide bait") against 70 fish on
+  stays; whether the tippet ring on the fly tightline leader stays (it blocked the indicator
+  from sliding — a knot there would too — Brian is minded to drop it; the fly gear item says
+  so); a crawdad presentation; the crawler line ("the guide bait") against 70 fish on
   moulded baits and none on a natural bait — leave until Brian says.
 
 ### The journal — the feedback loop (`journal/`)

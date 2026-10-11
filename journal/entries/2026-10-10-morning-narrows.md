@@ -70,6 +70,9 @@ Tail, on the last of the low water there. Day: 22 rainbows.
    Brian may drop it; the gear check says decide before pre-tying rigs around it.
 6. **Keitech:** the one fished was the 2.8. The report now names the 3.8 and says the small
    ones ride too high here.
+7. **The tippet ring on the fly leader** is on probation too: the indicator could not be slid
+   past it. A knot in the same place would stop it just the same, so the ring may go either
+   way; Brian is minded to drop it.
 
 **Colour caveat (Brian).** The other group fishing alongside us used *white* Power Eggs with
 crawdad tails and "caught a lot". Our 38 on orange with a crawdad tail says the crawdad
