@@ -63,6 +63,11 @@ Tail, on the last of the low water there. Day: 22 rainbows.
    pre-tied leaders — is not how it gets fished. Brian ties the rig in one piece (see the
    8 Oct entry). More to come from him before the rigging section changes.
 
+**Colour caveat (Brian).** The other group fishing alongside us used *white* Power Eggs with
+crawdad tails and "caught a lot". Our 38 on orange with a crawdad tail says the crawdad
+tail more than it says orange — don't let the tally over-sell orange. (Reported by that
+group, not seen; no count.)
+
 Every fish of the trip came on the one-piece bait rig, the smorgasbord, a Cleo, a Rooster
 Tail or the fly rod; none on the Ned craw or a Keitech.
 
