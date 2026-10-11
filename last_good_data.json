@@ -348,5 +348,15 @@
   "spillway_release": 0,
   "total_release": 8710,
   "units_running": 4
+ },
+ {
+  "date_time": "2026-10-10T19:00:00-05:00",
+  "elevation": 653.77,
+  "tailwater": 454.14,
+  "generation": 90,
+  "turbine_release": 6414,
+  "spillway_release": 0,
+  "total_release": 6414,
+  "units_running": 4
  }
 ]
