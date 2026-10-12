@@ -455,8 +455,8 @@
   "tailwater": 450.72,
   "generation": 8,
   "turbine_release": 785,
-  "spillway_release": null,
-  "total_release": null,
+  "spillway_release": 0,
+  "total_release": 785,
   "units_running": 1
  },
  {
@@ -465,8 +465,8 @@
   "tailwater": 450.72,
   "generation": 8,
   "turbine_release": 769,
-  "spillway_release": null,
-  "total_release": null,
+  "spillway_release": 0,
+  "total_release": 769,
   "units_running": 1
  }
 ]
