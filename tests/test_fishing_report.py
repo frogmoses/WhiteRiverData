@@ -63,7 +63,7 @@ class TestSeasonGating:
         report = generate_fishing_report(750, JULY)
         assert report["in_window"] is False
         assert report["season"] == "fall"
-        assert report["spin"]["browns"] and report["fly"]["rainbows"]
+        assert report["spin"]["notes"] and report["fly"]["notes"]
 
     def test_off_season_html_carries_preview_note(self):
         html = render_fishing_report_html(generate_fishing_report(750, JULY))
@@ -134,7 +134,8 @@ class TestReportStructure:
         report = generate_fishing_report(750, OCTOBER)
         assert report["in_window"] is True
         for key in ("band_label", "summary", "where", "boat", "timing",
-                    "spin", "fly", "season_notes", "regulations", "gear_check"):
+                    "spin", "fly", "season_notes", "regulations", "gear_check",
+                    "core", "experiments", "parked"):
             assert report[key]
 
     def test_band_follows_cfs(self):
@@ -185,75 +186,86 @@ class TestSpinFlySeparation:
     def test_high_band_fly_rod_cased(self):
         report = generate_fishing_report(20000, OCTOBER)
         assert "cased" in report["fly"]["setup"]
-        assert report["fly"]["browns"] == []
-        assert report["fly"]["rainbows"] == []
+        assert report["fly"]["notes"] == []
 
 
-class TestSpeciesPrograms:
-    """Advice is split into a browns program and a rainbows/others program."""
+class TestCoreAndExperiments:
+    """The report is a core program (what catches fish) plus one experiment
+    per session; the species split lives in the experiment list, not in the
+    band panels (Brian, after the first trip)."""
 
     ALL_BANDS_CFS = [750, 3300, 6600, 12000, 20000]
 
+    def test_core_program_is_the_same_in_every_band_and_renders_first(self):
+        from fishing_report import CORE_PROGRAM
+        for cfs in self.ALL_BANDS_CFS:
+            report = generate_fishing_report(cfs, OCTOBER)
+            assert report["core"]["lines"] == CORE_PROGRAM["lines"]
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        order = [html.index(m) for m in (">This season<", "The core program", "One experiment per session",
+                                         "The playbook by flow")]
+        assert order == sorted(order)
+        assert "Journal: 77 fish on record" in html or "fish on record —" in html
+
+    def test_core_names_both_line_classes_and_the_crawdad_tail(self):
+        text = " ".join(generate_fishing_report(750, OCTOBER)["core"]["lines"])
+        assert "4 lb mono" in text and "8 lb fluoro" in text
+        assert "crawdad tail" in text and "nightcrawler" in text
+        assert "Cleo" in text and "Rooster Tail" in text
+
+    def test_experiments_carry_the_species_split(self):
+        from fishing_report import EXPERIMENTS, FLOW_BANDS, SOURCES
+        keys = [x["key"] for x in EXPERIMENTS]
+        assert keys == sorted(keys) and len(keys) == len(set(keys))
+        assert {x["program"] for x in EXPERIMENTS} == {"browns", "rainbows"}
+        band_keys = {key for _, _, key in FLOW_BANDS}
+        for x in EXPERIMENTS:
+            assert x["bands"] and set(x["bands"]) <= band_keys, x["key"]
+            assert x["needs"] and x["status"] and x["text"], x["key"]
+            assert all(src in SOURCES for src in x["sources"]), x["key"]
+        # the fly rod is an experiment, not a parallel program
+        assert any("fly rod" in x["title"].lower() for x in EXPERIMENTS)
+
     @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
-    def test_spin_has_both_programs(self, cfs):
+    def test_each_band_points_at_the_experiments_that_fit(self, cfs):
+        from fishing_report import EXPERIMENTS
         report = generate_fishing_report(cfs, OCTOBER)
-        assert report["spin"]["browns"]
-        assert report["spin"]["rainbows"]
+        band = report["band"]
+        expected = [x["key"] for x in EXPERIMENTS if band in x["bands"]]
+        current = next(b for b in report["bands"] if b["key"] == band)
+        assert current["experiments"] == expected
+        html = render_fishing_report_html(report)
+        assert "Experiments that fit this water:" in html
 
-    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000])
-    def test_fly_has_both_programs_below_heavy_water(self, cfs):
-        report = generate_fishing_report(cfs, OCTOBER)
-        assert report["fly"]["browns"]
-        assert report["fly"]["rainbows"]
+    def test_experiments_render_with_needs_and_journal_status(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        block = html.split("One experiment per session", 1)[1].split("The playbook by flow", 1)[0]
+        for key in ("A.", "B.", "C.", "D.", "E.", "F."):
+            assert f"<strong>{key}" in block
+        assert block.count("<strong>Needs:</strong>") == 6
+        assert "trophy, all released" in block and "keep 2 under 14 in" in block
 
-    @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
-    def test_leader_guidance_differs_by_species(self, cfs):
-        """The core of the split: browns get heavier leaders than rainbows."""
-        report = generate_fishing_report(cfs, OCTOBER)
-        browns_leader = report["spin"]["browns"][0]
-        rainbows_leader = report["spin"]["rainbows"][0]
-        assert browns_leader.startswith("Leader:")
-        assert rainbows_leader.startswith("Leader:")
-        assert "fluoro" in browns_leader.lower()
-        assert browns_leader != rainbows_leader
-
-    def test_species_bait_assignment(self):
-        """Sculpin/big baits belong to browns; PowerBait belongs to rainbows."""
+    def test_parked_renders_collapsed_with_reasons(self):
         report = generate_fishing_report(750, OCTOBER)
-        browns_text = " ".join(report["spin"]["browns"])
-        rainbows_text = " ".join(report["spin"]["rainbows"])
-        assert "culpin" in browns_text
-        assert "PowerBait" not in browns_text
-        assert "PowerBait" in rainbows_text
-        assert "culpin" not in rainbows_text
-
-    def test_fly_tippet_differs_by_species(self):
-        report = generate_fishing_report(750, OCTOBER)
-        browns_text = " ".join(report["fly"]["browns"])
-        rainbows_text = " ".join(report["fly"]["rainbows"])
-        assert "8 lb" in browns_text
-        assert "4 lb" in rainbows_text
+        assert any("Night browns" in p["what"] for p in report["parked"])
+        html = render_fishing_report_html(report)
+        tail = html.split("<!-- /bands -->", 1)[1]
+        assert ">Tried and parked <span" in tail and "<details open" not in tail
 
     @pytest.mark.parametrize("when", [OCTOBER, APRIL])
     @pytest.mark.parametrize("cfs", ALL_BANDS_CFS)
     def test_only_two_line_weights_prescribed(self, cfs, when):
-        """Leader prescriptions run on exactly two spools: 4 lb
-        (rainbows), 8 lb (browns). 20 lb is allowed only as the fly leader's
-        butt section. Any other pound-test (6, 10, 12, 16, ranges like 6-8 or
-        8-10...) in the prescriptions is drift.
-
-        Scoped to the spin/fly programs and the rigging how-to — the gear check
-        is deliberately excluded, since it records rod main lines and owned
-        inventory (10 lb Cherrywood main, 20/30 lb fluoro spools) rather than
-        prescribing a leader class.
-        """
+        """Prescriptions run on exactly two spools: 4 lb (rainbows), 8 lb
+        (browns). 20 lb is allowed only as the fly leader's butt section. Any
+        other pound-test in the prescriptions is drift. The gear check is
+        excluded: it records owned main lines and spools, not a leader class."""
         import re
         report = generate_fishing_report(cfs, when)
         prescriptions = [report["spin"]["rig"], report["fly"]["setup"]]
-        for program in ("browns", "rainbows", "notes"):
-            prescriptions += report["spin"].get(program, [])
-        for program in ("browns", "rainbows"):
-            prescriptions += report["fly"][program]
+        prescriptions += report["spin"]["notes"] + report["fly"]["notes"]
+        prescriptions += report["core"]["lines"]
+        for x in report["experiments"]:
+            prescriptions += [x["text"], x["needs"]]
         for section in report["rigging"]:
             prescriptions.append(section["intro"] or "")
             prescriptions += section["items"]
@@ -271,31 +283,24 @@ class TestSpeciesPrograms:
 
     @pytest.mark.parametrize("cfs,sinker", list(BAND_SINKERS.items()))
     def test_one_fixed_sinker_weight_per_band(self, cfs, sinker):
-        """Each band prescribes a single starting sinker, no ranges.
-
-        Within-band variation is handled by the on-water calibration rule,
-        not by making the reader choose from a range at the bench.
-        """
+        """Each band prescribes a single starting sinker, no ranges."""
         import re
         report = generate_fishing_report(cfs, OCTOBER)
         assert sinker in report["spin"]["rig"]
         html = render_fishing_report_html(report)
         assert re.findall(r"[\d/]+–[\d/]+ oz", html) == []
 
-    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000])
-    def test_both_program_headers_render_in_each_section(self, cfs):
-        """Every band panel carries both program headers in spin and, where
-        the fly rod is out, in fly — so the live panel shows 2 of each."""
+    @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
+    def test_band_panels_carry_no_species_headers(self, cfs):
+        """The species split left the panels: no program headers in any band."""
         import re
         html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
         panels = re.split(r"<!-- band:\w+ -->", html)[1:]
         assert len(panels) == 5
         for panel in panels:
             panel = panel.split("<!-- /bands -->", 1)[0]
-            fly_cased = "stays cased" in panel
-            expected = 1 if fly_cased else 2
-            assert panel.count("trophy program") == expected
-            assert panel.count("numbers program") == expected
+            assert "trophy program" not in panel and "numbers program" not in panel
+            assert ">Wading<" in panel
 
     def test_gear_check_is_seasonal(self):
         """Core packing list plus season-specific additions."""
@@ -338,10 +343,11 @@ class TestFocusedLayout:
     """What flow, time and season drive stays expanded and in that order;
     everything else is a collapsed reference block below the band panels."""
 
-    def test_expanded_order_is_timing_season_playbook(self):
+    def test_expanded_order_is_timing_season_core_experiments_playbook(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         order = [html.index(marker) for marker in (
-            ">Timing<", ">This season<", "The playbook by flow", "<!-- /bands -->")]
+            ">Timing<", ">This season<", "The core program", "One experiment per session",
+            "The playbook by flow", "<!-- /bands -->")]
         assert order == sorted(order)
 
     def test_reference_blocks_are_collapsed_below_the_bands(self):
@@ -446,13 +452,14 @@ class TestRiggingReference:
         assert "sinker" not in fly_block.lower()
         assert "PowerBait" not in fly_block
 
-    def test_season_adds_land_in_the_right_program(self):
+    def test_season_adds_land_in_the_right_section(self):
         fall = generate_fishing_report(750, OCTOBER)
-        assert any("TRD CrawZ" in item for item in fall["spin"]["browns"])
-        assert any("garlic" in item for item in fall["spin"]["rainbows"])
+        assert any("garlic" in item for item in fall["spin"]["notes"])
+        assert any("hopper" in item for item in fall["fly"]["notes"])
         spring = generate_fishing_report(750, APRIL)
-        assert any("caddis pupa" in item for item in spring["fly"]["browns"])
-        assert any("Elk Hair Caddis" in item for item in spring["fly"]["rainbows"])
+        assert any("Flashy Swimmer" in item for item in spring["spin"]["notes"])
+        assert any("caddis pupa" in item for item in spring["fly"]["notes"])
+        assert any("Elk Hair Caddis" in item for item in spring["fly"]["notes"])
 
 
 class TestTiming:
@@ -594,11 +601,12 @@ class TestRigClarity:
     def test_livebait_drifts_name_the_split_shot_rig(self):
         """Sculpin (minimum) and minnows (1 unit, 3-5 units) use the
         split-shot rig, explicitly."""
-        minimum = generate_fishing_report(750, OCTOBER)["spin"]["browns"]
-        assert any("split-shot rig" in item and "culpin" in item for item in minimum)
-        one_unit = generate_fishing_report(3300, OCTOBER)["spin"]["browns"]
+        from fishing_report import EXPERIMENTS
+        sculpin = next(x for x in EXPERIMENTS if "culpin" in x["title"] and "jig" not in x["title"])
+        assert "split-shot rig" in sculpin["text"]
+        one_unit = generate_fishing_report(3300, OCTOBER)["spin"]["notes"]
         assert any("split-shot rig" in item and "minnow" in item for item in one_unit)
-        mid = generate_fishing_report(12000, OCTOBER)["spin"]["browns"]
+        mid = generate_fishing_report(12000, OCTOBER)["spin"]["notes"]
         assert any("split-shot rig" in item and "minnow" in item for item in mid)
 
     @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
@@ -609,12 +617,11 @@ class TestRigClarity:
         report = generate_fishing_report(cfs, OCTOBER)
         assert "White River rig" in report["spin"]["rig"]
         other_rigs = ("float", "tied direct")
-        for program in ("browns", "rainbows"):
-            for item in report["spin"][program]:
-                text = item.lower()
-                if ("crawler" in text or "shrimp" in text) and "split-shot" not in text:
-                    assert ("white river rig" in text
-                            or not any(rig in text for rig in other_rigs)), item
+        for item in report["spin"]["notes"] + [x["text"] for x in report["experiments"]]:
+            text = item.lower()
+            if ("crawler" in text or "shrimp" in text) and "split-shot" not in text:
+                assert ("white river rig" in text or "the rig" in text
+                        or not any(rig in text for rig in other_rigs)), item
 
 
 class TestQuietSummary:
@@ -694,14 +701,14 @@ class TestGearDoctrine:
         fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
         assert "soft craw" in fall_spin.lower()
 
-    def test_crawdad_presentation_is_open_not_prescribed(self):
+    def test_crawdad_presentation_is_parked_not_prescribed(self):
         """First trip: the CrawZ on the open Ned head fouls in the weed every
-        cast. The bullet keeps the forage and names the problem; the gear
-        check benches the craw instead of packing it."""
+        cast. It is parked with the reason; no experiment prescribes it; the
+        gear check benches the craw instead of packing it."""
         fall = generate_fishing_report(750, OCTOBER)
-        craw = [item for item in fall["spin"]["browns"] if "TRD CrawZ" in item]
-        assert craw and craw[0].startswith("A crawdad presentation is still to be found")
-        assert "fouls" in craw[0] and "not owned" not in craw[0]
+        craw = [p for p in fall["parked"] if "TRD CrawZ" in p["what"]]
+        assert craw and "Fouls" in craw[0]["why"] and "still to be found" in craw[0]["why"]
+        assert not any("TRD CrawZ" in x["text"] for x in fall["experiments"])
         actions = fall["gear_actions"]
         assert any("TRD CrawZ" in i for i in actions["bench"]["spin"])
         assert not any("TRD CrawZ" in i for i in actions["pack"]["spin"])
@@ -800,8 +807,8 @@ class TestProvenance:
         monkeypatch.setitem(fishing_report.EVIDENCE, ("minimum", "browns"),
                             {"fish": 2, "dates": ["2026-10-06"], "note": "sculpin at dawn"})
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
-        assert "Journal: 2 fish on record (2026-10-06) — sculpin at dawn" in html
-        assert "no fish on record yet" in html      # the rainbows block is still empty
+        assert "Journal — browns: 2 fish on record (2026-10-06) — sculpin at dawn" in html
+        assert "no fish on record yet in this band" in html      # the heavy-water band is still empty
 
 
 class TestBandPicker:
@@ -834,9 +841,9 @@ class TestBandPicker:
                             {"fish": 1, "dates": ["2026-10-07"], "note": "swimbait in the slack"})
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         heavy = html.split("<!-- band:high -->", 1)[1]
-        assert "Journal: 1 fish on record (2026-10-07)" in heavy
+        assert "Journal — browns: 1 fish on record (2026-10-07)" in heavy
         minimum = html.split("<!-- band:minimum -->", 1)[1].split("<!-- band:one_unit -->", 1)[0]
-        assert "no fish on record yet" in minimum
+        assert "Journal — rainbows &amp; others" in minimum or "Journal — rainbows & others" in minimum
 
 
 class TestRigDiagram:
@@ -884,9 +891,11 @@ class TestNoHousekeepingDates:
 
     def test_rendered_content_carries_no_iso_dates(self):
         from fishing_report import (
-            BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE)
+            BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE,
+            CORE_PROGRAM, EXPERIMENTS, PARKED)
         offenders = [text for block in (BAND_CONTENT, SEASON_CONTENT,
-                                        GEAR_CHECK, RIGGING_REFERENCE)
+                                        GEAR_CHECK, RIGGING_REFERENCE,
+                                        CORE_PROGRAM, EXPERIMENTS, PARKED)
                      for text in self._strings(block)
                      if self.ISO_DATE.search(text)]
         assert not offenders, (

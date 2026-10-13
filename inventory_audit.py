@@ -24,7 +24,7 @@ Three registries below:
 import os
 import re
 
-from fishing_report import BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE
+from fishing_report import CORE_PROGRAM, EXPERIMENTS, PARKED, BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE
 
 INVENTORY_PATH = os.path.expanduser(
     "~/CodeProjects/new-croton-fishing/reference/tackle-inventory.md")
@@ -154,7 +154,8 @@ def _walk(value):
 def report_text():
     """Every string the fishing report can render, joined."""
     parts = []
-    for source in (BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE):
+    for source in (BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE,
+                   CORE_PROGRAM, EXPERIMENTS, PARKED):
         parts.extend(s for s in _walk(source) if not s.lstrip().startswith("<svg"))
     return "\n".join(parts)
 

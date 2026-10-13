@@ -187,6 +187,138 @@ def evidence_line(band, program):
     return f"Journal: {e['fish']} fish on record ({dates}){note}"
 
 
+PROGRAM_LABELS = {"browns": "browns", "rainbows": "rainbows & others"}
+
+
+def evidence_lines(band):
+    """
+    One 'Journal — <program>: N fish on record (dates) — note' line per
+    program with fish behind it in this band, or the honest default.
+    """
+    lines = []
+    for program in ("browns", "rainbows"):
+        e = EVIDENCE.get((band, program))
+        if e and e.get("fish"):
+            dates = ", ".join(e.get("dates", []))
+            note = f" — {e['note']}" if e.get("note") else ""
+            lines.append(f"Journal — {PROGRAM_LABELS[program]}: {e['fish']} fish on record ({dates}){note}")
+    return lines or ["Journal: no fish on record yet in this band"]
+
+
+def core_evidence_line():
+    """'Journal: 77 fish on record — 73 at minimum flow, 3 around 1 unit, …' from EVIDENCE."""
+    per_band = {}
+    for (band, _program), e in EVIDENCE.items():
+        per_band[band] = per_band.get(band, 0) + int(e.get("fish", 0))
+    total = sum(per_band.values())
+    if not total:
+        return "Journal: no fish on record yet"
+    parts = [f"{per_band[key]} {BAND_PICKER_SHORT[key]}" for _, _, key in FLOW_BANDS if per_band.get(key)]
+    return f"Journal: {total} fish on record — " + ", ".join(parts)
+
+
+BAND_PICKER_SHORT = {
+    "minimum": "at minimum flow",
+    "one_unit": "around 1 unit",
+    "two_three_units": "at 2–3 units",
+    "four_five_units": "at 3–5 units",
+    "high": "on heavy water",
+}
+
+# ---------------------------------------------------------------------------
+# The core program: what has actually caught fish for Brian and Dad from a
+# driven boat in daylight. Written from the journal after the first trip; the
+# band panels say WHERE at each flow, the experiments carry the species split.
+# ---------------------------------------------------------------------------
+CORE_PROGRAM = {
+    "title": "The core program — what catches fish here",
+    "lines": [
+        "The one-piece White River rig: 4 lb mono for rainbows and others, 8 lb fluoro when a brown is the point (the rig is tied in the program's line — see Rigging). Bell and hook leg by flow band, below",
+        "On it, a Power Egg (orange or white) or a Mice Tail with a crawdad tail — the crawdad tail is the common factor, 60 of the first trip's 77 fish — or a nightcrawler, whole or in stubs, bought once at the start of the trip and kept in the cooler",
+        "At first light, hardware before bait: a gold Cleo or a Rooster Tail — 5 fish before 8:30 on the first trip",
+        "Fish it wherever the flow band says the fish hold. On the first trip's low water that was the Narrows — drift down from the White Hole, then tie at its head and work it; the group beside us, in an eddy at the head of a rapid upriver, reported about 60 rainbows the same way",
+        "Dad fishes the drift while Brian drives; tied up, both fish. The fly rod and the brown-specific presentations are the experiments, one or two a session — pick the night before",
+    ],
+    "sources": ["brian", "brief"],
+}
+
+# One experiment per session, chosen the night before and in the boat before
+# launch. Each says what it needs and what the journal has so far; the stop
+# rule is advice, not law: an hour or until the water changes, then back to
+# the core. 'bands' lists the flow bands the experiment fits, which is how the
+# band panels point at them. This is where the species split lives now.
+EXPERIMENTS = [
+    {
+        "key": "A", "title": "Dawn hardware for a brown", "program": "browns",
+        "bands": ["minimum", "one_unit", "two_three_units"],
+        "text": "First light, before the bait rods go in: a Rooster Tail 1/6 oz gold/orange (the brief's most-cited brown spinner) or the gold Cleo, worked deep along the wood and across the slot. Low light is the one edge a daylight brown program has here.",
+        "needs": "Nothing new — both are owned, and both caught rainbows on the first trip",
+        "sources": ["brief", "brian"],
+        "status": "5 fish on hardware so far, all rainbows, all before 8:30",
+    },
+    {
+        "key": "B", "title": "The first hour of the drop — big bait, tied near wood", "program": "browns",
+        "bands": ["minimum", "one_unit", "two_three_units"],
+        "text": "When the page says the drop is starting, tie up by an undercut bank or a root wad and fish the 8 lb rig with the biggest bait aboard: two whole nightcrawlers threaded on a #4, tails dangling, or a Mice Tail with a crawdad tail. Hold it in the soft lane; don't drift it.",
+        "needs": "Nightcrawlers in the cooler (bought at the start of the trip) and the 8 lb rigs pre-tied",
+        "sources": ["brief"],
+        "status": "untested — the first hour of falling water is the brief's best-documented window [CONFIRMED]; two whole crawlers is its trophy bait [REPORTED]",
+    },
+    {
+        "key": "C", "title": "Sculpin on the split-shot rig", "program": "browns",
+        "bands": ["minimum", "one_unit"],
+        "text": "THE trophy bait: a live sculpin, lips-hooked on the split-shot rig (not the White River rig), presented at the openings around the base of big rocks at first or last light. Legal to catch your own — see Bait prep in the rigging reference.",
+        "needs": "The dip net (to buy) and a half hour catching them — the one experiment that costs effort on the day, so do the catching the evening before",
+        "sources": ["brief", "agfc_code"],
+        "status": "untested",
+    },
+    {
+        "key": "D", "title": "The sculpin jig at first light", "program": "browns",
+        "bands": ["minimum", "one_unit"],
+        "text": "A 1/16 oz marabou jig in 'sculpin' olive/brown (the brief's #1 colour), swum through the deep slot at first light — swum over the weed, not hopped through it.",
+        "needs": "The jigs' hooks filed sharp or replaced first — the inventory recorded them as failed",
+        "sources": ["brief"],
+        "status": "untested",
+    },
+    {
+        "key": "E", "title": "The Keitech on its Flashy Swimmer", "program": "browns",
+        "bands": ["two_three_units", "four_five_units", "high"],
+        "text": "Keitech Swing Impact FAT 3.8 or 4.3 on the Flashy Swimmer — the buried point makes it weedless — swum along the bank edge on moving water, white being the named colour for White River browns. Not the 2.8: it rode too high on the first trip.",
+        "needs": "Nothing new — the Keitech wallet is owned",
+        "sources": ["brief", "brian"],
+        "status": "the 2.8 fished once, no fish; the 3.8 and 4.3 untested",
+    },
+    {
+        "key": "F", "title": "The fly rod, with Dad drifting a bait rod beside you", "program": "rainbows",
+        "bands": ["minimum", "one_unit"],
+        "text": "Tied up on dead-low water, the 9 ft 5-wt with an indicator and a sowbug or ruby midge under an egg, on the same water the bait catches on. An hour, then back to the core — this is a learning block, not a parallel program.",
+        "needs": "The fly box as it stands, and indicators",
+        "sources": ["brief", "brian"],
+        "status": "1 landed, 2 lost on the first trip",
+    },
+]
+
+# Tried, or ruled out on contact with the river, and parked with the reason —
+# kept on the page so it is not re-learned next year.
+PARKED = [
+    {
+        "what": "Night browns",
+        "why": "Prime time for the big fish, and not fishable for us — we are off the water by dark",
+        "sources": ["brief"],
+    },
+    {
+        "what": "The crawdad on the open Ned head — the Z-Man TRD CrawZ, or the green pumpkin Senko half, on the 1/10 oz mushroom head",
+        "why": "Fouls in the aquatic weed every cast at the White Hole. The forage is real (one seen on the gravel), so a crawdad presentation is still to be found; until then the soft craw is a bench item, not a program",
+        "sources": ["brian"],
+    },
+]
+
+
+def experiments_for(band):
+    """The experiment keys that fit a flow band, in letter order."""
+    return [x["key"] for x in EXPERIMENTS if band in x["bands"]]
+
+
 def sources_html(keys):
     """A grey 'Sources:' line with links where a source has one."""
     parts = []
@@ -200,9 +332,11 @@ def sources_html(keys):
 
 
 # ---------------------------------------------------------------------------
-# Band content. Spin and fly are separate by design; within each, 'browns'
-# and 'rainbows' are separate programs with their own leader guidance.
-# Do not merge any of them.
+# Band content: what changes with the flow — where the fish hold, how the boat
+# is handled, whether wading is on, the rig for the band and the tackle notes
+# that only make sense at that level. Spin and fly are separate by design.
+# The species split (browns vs rainbows & others) lives in EXPERIMENTS, not
+# here: the core program is the same rig and bait in every band.
 # ---------------------------------------------------------------------------
 
 BAND_CONTENT = {
@@ -221,47 +355,36 @@ BAND_CONTENT = {
             "The downstream lip (drop-off) of every shoal, where gravel falls into the run",
             "The seam where the main tongue runs past a moss/grass bed — the single most important low-water feature",
             "Undercut banks, root wads, log jams, boulder pockets (brown water)",
-            "Cranor's Island (the Narrows) — fish both sides, deepest water on the far side; downstream holds low water longest",
+            "Cranor's Island (the Narrows) — fish both sides, deepest water on the far side; downstream holds low water longest. Where the first trip's fish came from — but an eddy at the head of a rapid upriver fished as well for the group beside us",
         ],
         "boat": [
             "Bank-tie is easy and anchoring is safe at this level",
             "Watch the prop over gravel bars; know the channel before running",
             "Low water lingers longest downstream — run down early, work back upstream as any afternoon water arrives",
         ],
+        "wading": [
+            "Wide open: the bars, the shoal tails and the weed-bed edges above the ramp. One wade on the first trip caught nothing — water to try from the bank, not the program",
+        ],
         "spin": {
             "rig": "White River rig — 1/8 oz bell (#10), 44 in hook leg (the 3/16 did the job on the first trip; the 1/8 is still to be tried)",
-            "browns": [
-                "Leader: 8 lb fluorocarbon, tied direct — drop the swivel for these fish. You can't land this program's target on 4 lb around wood; fish lower light instead of lighter line",
-                "Sculpin on the split-shot rig (not the Y) presented at the openings around the base of big rocks. THE trophy bait — legal to catch your own (see Bait prep in the rigging reference)",
-                "Whole inflated night crawler",
-                "Marabou jig in the 'sculpin' olive/brown, hopped along the deep slots at first and last light",
-            ],
-            "rainbows": [
-                "Leader: 4 lb mono — this is 'the lighter the better' water, and the fish won't test it",
-                "PowerBait pink or white floating worm / Mice Tail on the White River rig",
-                "Also on the White River rig: 1½-in crawler or red-worm stubs, peeled shrimp chunks (they stay on the hook in current), or the egg-bead variant — orange bead pegged a couple inches above a bare #4 on the hook leg",
-                "Float rig — the highest-leverage method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
-                "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges",
-            ],
             "notes": [
-                "One rod per angler in the water (regulation) — keep the other program's rod rigged and ready to swap, not fishing",
+                "The core bait on the rig: a Power Egg (orange or white) or a Mice Tail with a crawdad tail; the changes are crawler stubs, peeled shrimp chunks (they stay on in current) or the egg-bead variant — an orange bead pegged a couple of inches above a bare #4 on the hook leg",
+                "Float rig — the highest-leverage low-water method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
+                "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges; the Cleo or Rooster Tail at first light (experiment A)",
+                "Sculpin on the split-shot rig at the rock openings is experiment C; the sculpin jig is D",
+                "One rod per angler in the water (regulation) — keep the second rod rigged and ready to swap, not fishing",
             ],
         },
         "fly": {
-            "setup": "9 ft 5-wt (Recon). Mechanics are shared: tightline the near seam with a 10–12 ft "
-                     "thin leader (the owned 20 lb fluoro makes the butt, down to a tippet ring), or swing on a "
-                     "shortened 6–7½ ft leader. Species decide the tippet and the fly.",
-            "browns": [
-                "Tippet: 8 lb fluoro — nymphs and the streamer swing alike",
-                "Olive Woolly Bugger #8–10 or black Girdle Bug #8–10 swung at first and last light",
-                "Sunday Special #12 tungsten dredged through the deep slots where the big fish hold",
-                "Swing the soft hackle through shoal tails and hang it 6–10 seconds at the dangle — a trophy-finding presentation",
-            ],
-            "rainbows": [
-                "Tippet: 4 lb-class fluoro (5X)",
-                "Gray sowbug #14–16 point + Zebra/Ruby Midge #16–18 dropper 18 in above, tightlined on the near seam",
-                "Short indicator drift, 20–25 ft max, indicator ~1.5× depth; stick-on indicators hold on fine tippet at this flow",
+            "setup": "9 ft 5-wt (Recon). Tightline the near seam with a 10–12 ft thin leader (the owned "
+                     "20 lb fluoro makes the butt), or a short indicator drift, 20–25 ft max, indicator "
+                     "~1.5× depth — stick-on indicators hold on fine tippet at this flow. 4 lb-class "
+                     "tippet (5X) on the nymph rig; 8 lb on the sink leader for the swing.",
+            "notes": [
+                "Gray sowbug #14–16 point + Zebra/Ruby Midge #16–18 dropper 18 in above, on the near seam — the rig that took the first fly fish here (experiment F)",
                 "Pink San Juan worm or peach/orange egg the moment any water starts moving up",
+                "Olive Woolly Bugger #8–10 or black Girdle Bug #8–10 swung at first and last light; the Sunday Special #12 tungsten dredged through the deep slots where the big fish hold",
+                "Swing the soft hackle through shoal tails and hang it 6–10 seconds at the dangle — a trophy-finding presentation",
             ],
         },
     },
@@ -279,43 +402,34 @@ BAND_CONTENT = {
         "boat": [
             "Tie from the BOW, bow pointed upstream, slip knot at the cleat, knife within reach",
             "Rotate spots every 45–60 minutes: untie, drop 100 yards, retie",
-            "Drifting works well at this level: drift the seams, motor back up, repeat — the driver's on the tiller and sits out, so rotate who drives",
+            "Drifting works well at this level: drift the seams, motor back up, repeat — Dad fishes the drift while Brian drives, and the driver sits out",
+        ],
+        "wading": [
+            "Still possible, with caution near the edges — the bars go under first, so wade from the bank side, not off a bar",
         ],
         "spin": {
             "rig": "White River rig — 1/4 oz bell (#8), 32 in hook leg",
-            "browns": [
-                "Leader: 8 lb fluorocarbon",
-                "The sinking swimmers (Countdown class — brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
-                "3-in minnow on the split-shot rig, lips-hooked: cast quartering upstream and drift it naturally past structure and drop-offs, feeding line to stretch the drift — drift speed is the whole game",
-                "TWO whole night crawlers on the White River rig — threaded on a #4, tails dangling, cast downstream from the tied boat and held",
-                "The downstream hang with a spinner: let it swing dead below the boat and hold — the blade works on current alone",
-                "Marabou 'sculpin' jig along the bottom of the slots",
-            ],
-            "rainbows": [
-                "Leader: 4 lb mono",
-                "Crawler stubs, Power Eggs or a Mice Tail, shrimp on the White River rig through the seams",
-                "1/4 oz spoons — Kastmaster chrome or blue/chrome, the gold Kastmaster or the gold Cleo. Gold in bright sun, silver under cloud",
-                "1/4 oz Rooster Tail (flame/chartreuse) or Mepps Aglia #3, quartering upstream, sink first, steady retrieve — the take comes on the swing (Black Fury #3 on dark days)",
-                "Float rig in the slower lanes, still effective to ~2 units",
-            ],
             "notes": [
+                "The core bait on the rig through the seams: a Power Egg or Mice Tail with a crawdad tail, crawler stubs or shrimp",
+                "1/4 oz spoons — Kastmaster chrome or blue/chrome, the gold Kastmaster or the gold Cleo; gold in bright sun, silver under cloud",
+                "1/4 oz Rooster Tail (flame/chartreuse) or Mepps Aglia #3, quartering upstream, sink first, steady retrieve — the take comes on the swing (Black Fury #3 on dark days)",
+                "The downstream hang with a spinner: let it swing dead below the tied boat and hold — the blade works on current alone",
+                "3-in minnow on the split-shot rig, lips-hooked: cast quartering upstream and drift it past structure and drop-offs, feeding line to stretch the drift",
+                "The sinking swimmers (Countdown class — brown-trout, brook-trout patterns) counted down and twitched along the drop-offs",
+                "Float rig in the slower lanes, still effective to ~2 units",
                 "Never clip a snap swivel to a spinner — run an 18 in leader to a small barrel swivel up the line",
             ],
         },
         "fly": {
             "setup": "Indicator rig with real weight (Airlock/Thingamabobber class), the swing setup, "
                      "or the streamer sink-leader: the fast-sinking RIO VersiLeader looped on the "
-                     "floating line ('insta-sink-tip').",
-            "browns": [
-                "Tippet: 8 lb fluoro on the sink leader; the same spool if nymphing the slots",
-                "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10, swung — not stripped — through bank seams and shoal tails",
-                "Sunday Special #12 tungsten deep in the slots",
-            ],
-            "rainbows": [
-                "Tippet: 4 lb-class fluoro (5X)",
+                     "floating line ('insta-sink-tip'). 4 lb-class tippet (5X) under the indicator; "
+                     "8 lb fluoro on the sink leader.",
+            "notes": [
                 "Sowbug/midge pair under the indicator through the seams; lengthen the drift by feeding line",
                 "Swing soft hackles, covering water by lengthening 20, 25, 30, 35 ft",
                 "Egg and pink San Juan worm near the banks whenever the water is moving up",
+                "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10 on the sink leader, swung — not stripped — through bank seams and shoal tails; Sunday Special #12 tungsten deep in the slots",
             ],
         },
     },
@@ -333,37 +447,27 @@ BAND_CONTENT = {
         "boat": [
             "Tie high to a tree, not the anchor — a bump in generation reaches this reach fast",
             "Tie from the BOW with slack, re-tend the rope every 20–30 minutes on rising water",
-            "Bank-lane drifts are the coverage alternative to tying — trade the driver's rod for water covered",
+            "Bank-lane drifts are the coverage alternative to tying — Dad fishes the drift, the driver sits out",
             "Know what's downstream before committing to a spot; there is no warning siren on this river",
+        ],
+        "wading": [
+            "No wading",
         ],
         "spin": {
             "rig": "White River rig — 3/8 oz bell (#7), 20 in hook leg",
-            "browns": [
-                "Leader: 8 lb fluorocarbon — the trophy window is open, fish accordingly",
-                "Jerkbait prime time (2–4 units): the sinking swimmers and the suspending perch deep jerkbait, twitch-pause along the banks",
-                "Keitech Swing Impact FAT 3.8 on a Flashy Swimmer — not the 2.8 or 3.3, the small ones ride too high in this water — or the 4 in white-pearl Tab Tail, swum along the bank edge — white is the named color for White River browns",
-                "TWO whole crawlers on the White River rig (#4 or a #1 drop-shot hook), downstream and held in the soft lane",
-                "Walk the White River rig down: lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
-            ],
-            "rainbows": [
-                "Leader: 4 lb mono",
+            "notes": [
                 "Worms cast near the banks in the first hour of the rise — a documented, predictable pattern, not folklore",
-                "White River rig with crawler stubs or shrimp in the soft lanes off the main push",
-                "Float rig only in true slack edges at this flow",
+                "The rig with crawler stubs, shrimp, or the egg and crawdad tail in the soft lanes off the main push; walk it down — lift, feed 3–6 ft, re-settle — a 100-yard drift from a fixed boat",
                 "3/8 oz Kastmaster (blue/chrome) in the defined runs when the 1/4 oz won't stay down",
+                "Float rig only in true slack edges at this flow",
+                "Jerkbait prime time (2–4 units): the sinking swimmers and the suspending perch deep jerkbait, twitch-pause along the banks; the Keitech on its Flashy Swimmer is experiment E",
             ],
-            "notes": [],
         },
         "fly": {
-            "setup": "Streamer water: fast-sinking polyleader, weighted #6–10 flies, swung not stripped. "
-                     "Nymphing gets hard at 3+ units from a seat.",
-            "browns": [
-                "Tippet: 8 lb fluoro on the sink leader",
-                "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10 swung through the bank seams — this is the program now",
-                "Hang every swing at the dangle before recasting",
-            ],
-            "rainbows": [
-                "Tippet: 4 lb-class fluoro (5X)",
+            "setup": "Streamer water: fast-sinking polyleader, weighted #6–10 flies, swung not stripped, "
+                     "8 lb fluoro on the sink leader. Nymphing gets hard at 3+ units from a seat.",
+            "notes": [
+                "Olive Woolly Bugger #8–10 / black Girdle Bug #8–10 swung through the bank seams — this is the program now; hang every swing at the dangle before recasting",
                 "Pink San Juan worm or egg dead-drifted tight to the flooded grass on the rise",
             ],
         },
@@ -381,36 +485,27 @@ BAND_CONTENT = {
         "boat": [
             "Do NOT anchor in current — this is how people drown on this river. Drag chain (legal on the White) or tie high in a genuine eddy",
             "Bow upstream, slip knot, knife in reach, re-tend the rope constantly",
-            "Drifting the soft bank lane covers the minnow/swimbait water a tied boat can't reach — driver on the tiller, everyone else fishes",
+            "Drifting the soft bank lane covers the minnow/swimbait water a tied boat can't reach — Dad fishes, the driver drives",
             "Debris starts moving at these flows; keep watch upstream",
+        ],
+        "wading": [
+            "No wading anywhere",
         ],
         "spin": {
             "rig": "White River rig — 1/2 oz bell (#6), 20 in hook leg",
-            "browns": [
-                "Leader: 8 lb fluorocarbon — guide-class line for exactly this water",
-                "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted down the bank edge — from a tied boat, work the lane flowing past you with a quartering-upstream cast and fed line; on a boat drift, cover the whole bank. The documented high-water big-trout method",
-                "Keitech FAT 3.8/4.3 on the 3/8 oz Flashy Swimmer swum along the bank",
-                "Suspending perch jerkbait with long pauses in eddies and seams",
-                "Two whole crawlers on the White River rig (#1 drop-shot hook), downstream and held",
-            ],
-            "rainbows": [
-                "Leader: 4 lb mono",
-                "Soft-water soaks only: whole crawler or shrimp on the White River rig in eddies and slack lanes off the push",
-                "Honestly, this is a browns level — save the numbers game for the drop",
-            ],
             "notes": [
+                "Soft-water soaks only: the rig with a whole crawler or shrimp in eddies and slack lanes off the push — honestly a browns level; save the numbers game for the drop",
+                "3-in minnow on the split-shot rig (stack shot to match the push), lips-hooked, drifted down the bank edge from a tied boat — work the lane flowing past you",
+                "Keitech FAT 3.8/4.3 on the 3/8 oz Flashy Swimmer swum along the bank (experiment E); the suspending perch jerkbait with long pauses in eddies and seams",
                 "Calibrate weight: the rig should hold, then slip a few inches when the tip is lifted. Never moves = too heavy; never stops = too light",
             ],
         },
         "fly": {
             "setup": "Honestly limited water for a floating-line 5-wt. If you fish it: the sink-leader "
-                     "swing from a boat tied in a true eddy, or park the fly rod until the drop.",
-            "browns": [
-                "Tippet: 8 lb fluoro on the sink leader",
+                     "swing (8 lb fluoro) from a boat tied in a true eddy, or park the fly rod until the drop.",
+            "notes": [
                 "Olive Woolly Bugger / black Girdle Bug #8 swung slow and deep through eddy seams",
-            ],
-            "rainbows": [
-                "Sit this level out, or dredge a worm/egg under a heavily weighted indicator in true slack only",
+                "A worm or egg under a heavily weighted indicator in true slack only",
             ],
         },
     },
@@ -427,24 +522,20 @@ BAND_CONTENT = {
             "Never anchor. Never tie in current. If afloat, stay in slack water and off the main flow",
             "Re-check the schedule and the ramp before committing — this level with a rental jon is a risk decision, not a tactics decision",
         ],
+        "wading": [
+            "No wading anywhere",
+        ],
         "spin": {
             "rig": "White River rig — 1 oz bell (#4), 20 in hook leg; slack-water soaks only",
-            "browns": [
-                "Leader: 8 lb fluorocarbon",
-                "4 in white Tab Tail or Keitech 4.3 on its swimbait head (tied direct), pitched along slack margins for a hunting brown",
-            ],
-            "rainbows": [
-                "Leader: 4 lb mono",
-                "Whole crawlers or shrimp soaked on the White River rig in true slack edges — that's the whole program",
-            ],
             "notes": [
+                "Whole crawlers or shrimp soaked on the rig in true slack edges — that's the whole program",
+                "4 in white Tab Tail or Keitech 4.3 on its swimbait head (tied direct), pitched along slack margins for a hunting brown (experiment E)",
                 "The honest play is timing, not tackle: fish the first hours after the cut, when the river drops back through the good bands",
             ],
         },
         "fly": {
             "setup": "The fly rod stays cased at this level.",
-            "browns": [],
-            "rainbows": [],
+            "notes": [],
         },
     },
 }
@@ -468,22 +559,12 @@ SEASON_CONTENT = {
             "Rainbow forage: sowbug/scud > midge > worms-on-the-rise; brown forage: sculpin > crawdad > everything else",
             "Not a dry-fly month — nymphs and streamers; hoppers on warm afternoons are the exception",
         ],
-        "spin_add": {
-            "browns": [
-                "A crawdad presentation is still to be found: the forage is real (one seen on the gravel at the White Hole) but the Z-Man TRD CrawZ on the open 1/10 oz Ned head fouls in the aquatic weed every cast, and the green pumpkin Senko half on the same head has the same problem — not a program yet; sculpin and the two-crawler soak stay the browns baits",
-            ],
-            "rainbows": [
-                "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough",
-            ],
-        },
-        "fly_add": {
-            "browns": [
-                "A #10 hopper on warm afternoons — browns here reportedly favor pink and black/purple hoppers",
-            ],
-            "rainbows": [
-                "Dry-dropper a hopper over the soft bank water on warm afternoons",
-            ],
-        },
+        "spin_add": [
+            "Orange garlic is the named fall color — buy it as Power Eggs: Brian fishes the preformed eggs and the moulded baits, never the jarred dough. White eggs with a crawdad tail caught plenty for the group beside us",
+        ],
+        "fly_add": [
+            "A #10 hopper on warm afternoons — browns here reportedly favor pink and black/purple; dry-dropper it over the soft bank water",
+        ],
         "gear_add": {
             "spin": {
                 "bench": [
@@ -513,22 +594,14 @@ SEASON_CONTENT = {
             "BWOs on grey days; shad get pulled through the dam on big water",
             "When Crooked Creek and the Buffalo rise on rain, the Corps cuts generation to protect Newport — rain can hand you surprise low water",
         ],
-        "spin_add": {
-            "browns": [
-                "On big spring water, white swimbaits on their Flashy Swimmer heads (tied direct) imitate shad pulled through the dam — fish them along the banks",
-            ],
-            "rainbows": [
-                "Yellow and orange egg colors are the named March–April producers — run them as the egg-bead variant or Power Eggs on the White River rig",
-            ],
-        },
-        "fly_add": {
-            "browns": [
-                "Swing the caddis pupa — one of the best trophy-brown presentations of the spring",
-            ],
-            "rainbows": [
-                "Add the Tailwater Soft Hackle in caddis green #14 (the swinging fly) and an Elk Hair Caddis #14 for the after-5-pm window",
-            ],
-        },
+        "spin_add": [
+            "Yellow and orange egg colors are the named March–April producers — run them as the egg-bead variant or Power Eggs on the White River rig",
+            "On big spring water, white swimbaits on their Flashy Swimmer heads (tied direct) imitate shad pulled through the dam — fish them along the banks for a brown",
+        ],
+        "fly_add": [
+            "Swing the caddis pupa — one of the best trophy-brown presentations of the spring",
+            "Add the Tailwater Soft Hackle in caddis green #14 (the swinging fly) and an Elk Hair Caddis #14 for the after-5-pm window",
+        ],
         "gear_add": {
             "spin": {
                 "bench": [
@@ -572,7 +645,7 @@ GEAR_CHECK = {
     "spin": {
         "buy": [
             "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
-            "Bait is bought fresh in Arkansas, not packed: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
+            "Bait is bought fresh in Arkansas on the way in — one stop, kept in the cooler, not a run after each session: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
         ],
         "verify": [
             "The bell ladder is OWNED in the middle — 3/16, 1/4, 3/8 and 1/2 oz (#9/#8/#7/#6) are on the shelf; verify or buy the two ends, 1/8 oz (#10) for minimum flow and 1 oz (#4) for 4+ units",
@@ -976,20 +1049,18 @@ def _band_block(band, season_content):
         "sources": content["sources"],
         "where": content["where"],
         "boat": content["boat"],
+        "wading": content["wading"],
         "spin": {
             "rig": content["spin"]["rig"],
-            "browns": list(content["spin"]["browns"]) + season_content["spin_add"]["browns"],
-            "rainbows": list(content["spin"]["rainbows"]) + season_content["spin_add"]["rainbows"],
-            "notes": list(content["spin"].get("notes", [])),
+            "notes": list(content["spin"]["notes"]) + list(season_content["spin_add"]),
         },
         "fly": {
             "setup": content["fly"]["setup"],
-            "browns": (list(content["fly"]["browns"]) + season_content["fly_add"]["browns"]
-                       if content["fly"]["browns"] else []),
-            "rainbows": (list(content["fly"]["rainbows"]) + season_content["fly_add"]["rainbows"]
-                         if content["fly"]["rainbows"] else []),
+            "notes": (list(content["fly"]["notes"]) + list(season_content["fly_add"])
+                      if content["fly"]["notes"] else []),
         },
-        "evidence": {program: evidence_line(band, program) for program in ("browns", "rainbows")},
+        "experiments": experiments_for(band),
+        "evidence": evidence_lines(band),
     }
 
 
@@ -1046,6 +1117,9 @@ def generate_fishing_report(white_hole_cfs, current_time,
         "sources": content["sources"],
         "season_sources": season_content["sources"],
         "evidence": current["evidence"],
+        "core": {**CORE_PROGRAM, "evidence": core_evidence_line()},
+        "experiments": EXPERIMENTS,
+        "parked": PARKED,
         "bands": bands,
         "where": content["where"],
         "boat": content["boat"],
@@ -1071,8 +1145,10 @@ def generate_fishing_report(white_hole_cfs, current_time,
 # HTML rendering (a section spliced into the conditions page, or standalone)
 # ---------------------------------------------------------------------------
 
-BROWNS_HEADER = "Browns — trophy program (all released)"
-RAINBOWS_HEADER = "Rainbows &amp; others — numbers program (keep 2 under 14 in)"
+PROGRAM_BADGES = {
+    "browns": ("🟤 browns — trophy, all released", "#7b4a12"),
+    "rainbows": ("🌈 rainbows &amp; others — keep 2 under 14 in", "#9d2f4c"),
+}
 
 
 def _items_html(items):
@@ -1156,21 +1232,43 @@ def _evidence_html(text):
     return f'<p style="color: #999; font-size: 0.8em; margin: 2px 0 6px;">{text}</p>'
 
 
-def _species_block_html(browns, rainbows, evidence=None):
-    """Render the two species programs; either may be empty."""
-    evidence = evidence or {}
-    html = ""
-    if browns:
-        html += f'''
-            <p style="margin: 10px 0 4px;"><strong style="color: #7b4a12;">🟤 {BROWNS_HEADER}</strong></p>
-            <ul style="margin: 0 0 0 5px;">{_items_html(browns)}</ul>
-            {_evidence_html(evidence["browns"]) if evidence.get("browns") else ""}'''
-    if rainbows:
-        html += f'''
-            <p style="margin: 10px 0 4px;"><strong style="color: #9d2f4c;">🌈 {RAINBOWS_HEADER}</strong></p>
-            <ul style="margin: 0 0 0 5px;">{_items_html(rainbows)}</ul>
-            {_evidence_html(evidence["rainbows"]) if evidence.get("rainbows") else ""}'''
-    return html
+def _core_program_html(core):
+    """The core program, expanded: the rig, the bait, the dawn hardware, where."""
+    return f'''
+        <div style="background-color: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 8px; padding: 12px 15px; margin-top: 18px;">
+            <h4 style="color: #2c3e50; margin: 0 0 8px;">{core["title"]}</h4>
+            <ul style="margin: 0 0 0 5px;">{_items_html(core["lines"])}</ul>
+            {_evidence_html(core["evidence"])}
+            {sources_html(core["sources"])}
+        </div>'''
+
+
+def _experiments_html(experiments):
+    """One experiment per session: each a short block with its program badge,
+    what it needs and what the journal has."""
+    blocks = []
+    for x in experiments:
+        badge, colour = PROGRAM_BADGES[x["program"]]
+        blocks.append(f'''
+            <div style="margin: 10px 0 0; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <p style="margin: 0 0 4px;"><strong>{x["key"]}. {x["title"]}</strong>
+                    <span style="margin-left: 8px; font-size: 0.8em; color: {colour};">{badge}</span></p>
+                <p style="margin: 0 0 4px; color: #444;">{x["text"]}</p>
+                <p style="margin: 0; color: #666; font-size: 0.9em;"><strong>Needs:</strong> {x["needs"]}</p>
+                {_evidence_html("Journal: " + x["status"])}
+                {sources_html(x["sources"])}
+            </div>''')
+    return (f'''
+        <h4 style="color: #2c3e50; margin: 18px 0 2px;">One experiment per session</h4>
+        <p style="color: #666; margin: 0 0 4px; font-size: 0.9em;">Pick one or two the night before and have
+        them in the boat. An hour, or until the water changes, then back to the core. The browns program lives
+        here: A–E; F is the fly rod.</p>{"".join(blocks)}''')
+
+
+def _parked_html(parked):
+    items = [f"<strong>{p['what']}</strong> — {p['why']}" for p in parked]
+    return _collapsible_html("Tried and parked", f'<ul style="margin: 0 0 0 5px;">{_items_html(items)}</ul>',
+                             "what the river ruled out, and why")
 
 
 PICKER_STYLE = '''<style>
@@ -1208,19 +1306,18 @@ def _band_picker_html(report):
     )
     return (f'{PICKER_STYLE}<h4 style="color: #2c3e50; margin: 18px 0 6px;">The playbook by flow</h4>'
             f'<p style="color: #666; margin: 0 0 8px; font-size: 0.9em;">Tap a level. The live one is '
-            f'selected; the others are what to do when the water changes.</p>'
+            f'selected; the others are what to do when the water changes — where the fish hold, the boat, the rig.</p>'
             f'<div class="wh-flowpick" role="group" aria-label="Flow band">{buttons}</div>')
 
 
 def _band_panel_html(b, is_current):
-    """One band's where / boat / spin / fly, hidden unless it is the live band."""
-    spin_notes_html = ""
-    if b["spin"]["notes"]:
-        spin_notes_html = f'''
-            <p style="margin: 10px 0 4px;"><strong>Notes:</strong></p>
-            <ul style="margin: 0 0 0 5px;">{_items_html(b["spin"]["notes"])}</ul>'''
+    """One band's where / boat / wading / spin / fly, hidden unless it is the live band."""
     badge = ('<span style="margin-left: 8px; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; '
              'background: #e6fffa; color: #319795;">at White Hole now</span>' if is_current else "")
+    fly_notes = (f'<ul style="margin: 0 0 0 5px;">{_items_html(b["fly"]["notes"])}</ul>'
+                 if b["fly"]["notes"] else "")
+    fits = ", ".join(b["experiments"]) if b["experiments"] else "none at this level"
+    evidence = "".join(_evidence_html(line) for line in b["evidence"])
     return f'''
         <!-- band:{b["key"]} -->
         <div class="wh-band-panel" data-band="{b["key"]}"{"" if is_current else " hidden"}>
@@ -1233,18 +1330,23 @@ def _band_panel_html(b, is_current):
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Boat &amp; anchoring</h4>
         <ul style="margin: 0 0 0 5px;">{_items_html(b["boat"])}</ul>
 
+        <h4 style="color: #2c3e50; margin: 18px 0 6px;">Wading</h4>
+        <ul style="margin: 0 0 0 5px;">{_items_html(b["wading"])}</ul>
+
         <div style="background-color: #f0f7f4; border-radius: 8px; padding: 15px; margin-top: 18px;">
             <h4 style="color: #2c3e50; margin: 0 0 8px;">🎣 Spin Fishing</h4>
             <p style="margin: 4px 0;"><strong>Rig:</strong> {b["spin"]["rig"]}</p>
-            {_species_block_html(b["spin"]["browns"], b["spin"]["rainbows"], b["evidence"])}
-            {spin_notes_html}
+            <ul style="margin: 0 0 0 5px;">{_items_html(b["spin"]["notes"])}</ul>
         </div>
 
         <div style="background-color: #f4f2f7; border-radius: 8px; padding: 15px; margin-top: 12px;">
             <h4 style="color: #2c3e50; margin: 0 0 8px;">🪶 Fly Fishing (9 ft 5-wt)</h4>
             <p style="margin: 4px 0;"><strong>Setup:</strong> {b["fly"]["setup"]}</p>
-            {_species_block_html(b["fly"]["browns"], b["fly"]["rainbows"], b["evidence"])}
+            {fly_notes}
         </div>
+
+        <p style="margin: 10px 0 2px; color: #444;"><strong>Experiments that fit this water:</strong> {fits}</p>
+        {evidence}
         </div>'''
 
 
@@ -1287,6 +1389,9 @@ def render_fishing_report_html(report):
         <ul style="margin: 0 0 0 5px;">{season_html}</ul>
         {sources_html(report["season_sources"])}
 
+        {_core_program_html(report["core"])}
+        {_experiments_html(report["experiments"])}
+
         {_band_picker_html(report)}
         {"".join(_band_panel_html(b, b["key"] == report["band"]) for b in report["bands"])}
         <!-- /bands -->
@@ -1294,6 +1399,7 @@ def render_fishing_report_html(report):
         <h4 style="color: #2c3e50; margin: 22px 0 6px;">Before the trip (reference)</h4>
         {_regulations_html(report["regulations"])}
         {_gear_check_html(report["gear_actions"])}
+        {_parked_html(report["parked"])}
 
         <h4 style="color: #2c3e50; margin: 18px 0 6px;">Rigging &amp; techniques (reference)</h4>
         {_rigging_html(report["rigging"])}

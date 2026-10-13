@@ -270,26 +270,43 @@ appended to the bottom of the page. Design rules:
   a bait bullet on any rig other than the section's Rig line names it (split-shot / float /
   tied direct); a bullet that names none is on the White River rig the Rig line gives;
   "bottom rig" is banned vocabulary.
-- **Within each section, advice splits into two species programs** (Brian's requested
-  grouping, behaviorally validated): **browns** (trophy, all released, big baits near
-  structure, 8 lb fluoro) vs **rainbows & others** (numbers, keep 2 under 14 in, small baits
-  in open drifts, 4 lb mono; cutthroat/brook/tiger fish like rainbows here). Every band's
-  first bullet in each program is its leader spec — keep it that way; tests assert it.
+- **The shape since the first trip (Brian, 2026-10-12): a core program, an experiment list,
+  the band panels, and a parked list.** `CORE_PROGRAM` is what has caught fish from a driven
+  boat in daylight — the one-piece rig (4 lb mono rainbows / 8 lb fluoro browns), a Power
+  Egg or Mice Tail with a crawdad tail or a nightcrawler, hardware at first light, fished
+  wherever the band panel says the fish hold (the Narrows on the first trip's low water; the
+  eddy at the head of a rapid upriver fished as well for the group beside us) — with
+  `core_evidence_line()` totalling `EVIDENCE`. `EXPERIMENTS` (A–F) is **where the species
+  split now lives**: each has `program` (browns/rainbows), the `bands` it fits, `text`,
+  `needs`, `sources` and a hand-kept `status`; A–E are the daylight browns bets, F is the
+  fly rod (a learning block, Dad drifting a bait rod beside Brian). One or two a session,
+  chosen the night before — the stop rule is advice. `PARKED` is what the river ruled out
+  with the reason (night browns; the crawdad on the open Ned head), rendered collapsed as
+  "Tried and parked". The band panels keep where / boat / **wading** / rig + spin notes /
+  fly setup + notes, list the experiments that fit (`experiments_for`), and carry the
+  journal lines per program (`evidence_lines`). **No species headers in the panels** — a
+  test asserts it; the two-spool rule now runs over core, experiments, panels and rigging.
+  Season adds are flat lists (`spin_add`/`fly_add`). Brian's steer on the rewrite: don't
+  over-emphasise the Narrows (the flow decided it), don't emphasise Gulp (nightcrawlers are
+  viable, bought once on the way in), the Keitech is weedless on its Flashy Swimmer, sculpin
+  and crawlers are experiments not parked, wading happens (his one wade caught nothing) and
+  is said so.
 - **The band picker** (`BAND_PICKER`, `_band_block`, `_band_picker_html`,
-  `_band_panel_html`): ported from the archived White Hole Book's flow selector.
+  `_band_panel_html`): ported from the archived White Hole Book's flow selector; the panels
+  now carry where / boat / wading / rig and tackle notes, not species programs (above).
   `generate_fishing_report` builds `report["bands"]` — one block per `FLOW_BANDS` entry with
   the season's adds applied — and the renderer emits a tap-to-pick strip plus one
   `<div class="wh-band-panel" data-band=…>` per band (`<!-- band:key -->` marker before each;
   only the live band is unhidden and badged "at White Hole now"; an inline script toggles
-  them, no persistence so a reload shows the live band). Where/boat/spin/fly and the
-  per-program Journal lines are per panel; Timing, This season, regulations, gear and
-  rigging stay shared. `<!-- /bands -->` closes the last panel — tests split on it. Top-level `report["spin"]`/`["fly"]`/`["where"]` remain the live
+  them, no persistence so a reload shows the live band). Where/boat/wading/spin/fly and the
+  per-program Journal lines are per panel; Timing, This season, the core program, the
+  experiments, regulations, gear and rigging stay shared. `<!-- /bands -->` closes the last panel — tests split on it. Top-level `report["spin"]`/`["fly"]`/`["where"]` remain the live
   band's for compatibility.
 - **Expanded = driven by flow, time or season; everything else is collapsed** (Brian,
   2026-10-04: "there is just a lot of information. I want it focused"). Order: flow line +
-  USGS water lines → Timing → This season (`SEASON_CONTENT[...]["notes"]`, short) → band
-  picker and panels → "Before the trip (reference)": Regulations and Gear check as
-  collapsed blocks (`_collapsible_html`, the same block the rigging reference uses), then
+  USGS water lines → Timing → This season (`SEASON_CONTENT[...]["notes"]`, short) → the
+  core program → the experiments → band picker and panels → "Before the trip (reference)":
+  Regulations, Gear check and Tried-and-parked as collapsed blocks (`_collapsible_html`, the same block the rigging reference uses), then
   Rigging. The Regulations summary line carries the on-the-water rules
   (`REGULATIONS_HINT`). A season's when-to-fish sentence lives in
   `SEASON_CONTENT[...]["timing"]` and renders as a Timing bullet, not a season note.
@@ -315,8 +332,10 @@ appended to the bottom of the page. Design rules:
   names its sources and the page renders a "Sources:" line under it (`brief` links the
   restored research brief; a REPORTED or INFERRED claim stays that until a journal row or a
   primary source confirms it — never present it as a named local source's statement).
-  `EVIDENCE` maps `(band key, program)` → `{fish, dates, note}` and renders a "Journal: N
-  fish on record" line under each program block, defaulting to "no fish on record yet".
+  `EVIDENCE` maps `(band key, program)` → `{fish, dates, note}` and renders one "Journal —
+  <program>: N fish on record" line per program with fish under each band panel (default
+  "no fish on record yet in this band"), and a total under the core program; experiments
+  carry a hand-written `status` instead.
   **After each trip**: run the journal builder, read `journal/build/catches_report.md`'s
   "Bands and programs with a fish behind them" table, and update `EVIDENCE` by hand in the
   same commit as any doctrine change it justifies. The builder never writes `EVIDENCE`.
