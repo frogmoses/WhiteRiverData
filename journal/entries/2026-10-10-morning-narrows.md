@@ -74,6 +74,15 @@ Tail, on the last of the low water there. Day: 22 rainbows.
    past it. A knot in the same place would stop it just the same, so the ring may go either
    way; Brian is minded to drop it.
 
+**Counterweight to the Narrows (Brian, reported, not rows).** When we went up river on
+the 10th and tied to the bank below the Honey Hole, our buddies were sitting in an eddy at
+the head of a rapid up there and said they caught maybe 60 rainbows. The Narrows is where
+*we* fished on this trip's low water; it is not the only water that fishes, and at other
+flows other places will.
+
+**Wading (Brian).** Brian waded for a bit on this trip and caught nothing — recorded so the
+report does not pretend wading never happens here. Where and when were not noted.
+
 **Colour caveat (Brian).** The other group fishing alongside us used *white* Power Eggs with
 crawdad tails and "caught a lot". Our 38 on orange with a crawdad tail says the crawdad
 tail more than it says orange — don't let the tally over-sell orange. (Reported by that
