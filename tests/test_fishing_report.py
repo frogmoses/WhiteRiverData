@@ -240,9 +240,9 @@ class TestCoreAndExperiments:
     def test_experiments_render_with_needs_and_journal_status(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         block = html.split("One experiment per session", 1)[1].split("The playbook by flow", 1)[0]
-        for key in ("A.", "B.", "C.", "D.", "E.", "F."):
+        for key in ("A.", "B.", "C.", "D.", "E.", "F.", "G."):
             assert f"<strong>{key}" in block
-        assert block.count("<strong>Needs:</strong>") == 6
+        assert block.count("<strong>Needs:</strong>") == 7
         assert "trophy, all released" in block and "keep 2 under 14 in" in block
 
     def test_parked_renders_collapsed_with_reasons(self):
@@ -701,17 +701,20 @@ class TestGearDoctrine:
         fall_spin = " ".join(generate_fishing_report(750, OCTOBER)["gear_check"]["spin"])
         assert "soft craw" in fall_spin.lower()
 
-    def test_crawdad_presentation_is_parked_not_prescribed(self):
+    def test_crawdad_on_the_open_ned_head_is_parked_and_weedless_is_experiment_g(self):
         """First trip: the CrawZ on the open Ned head fouls in the weed every
-        cast. It is parked with the reason; no experiment prescribes it; the
-        gear check benches the craw instead of packing it."""
+        cast. The open head is parked with the reason; the craw itself comes
+        back weedless as experiment G on the bait rig, packs for it, and the
+        BulletZ weedless head is a buy item."""
         fall = generate_fishing_report(750, OCTOBER)
         craw = [p for p in fall["parked"] if "TRD CrawZ" in p["what"]]
-        assert craw and "Fouls" in craw[0]["why"] and "still to be found" in craw[0]["why"]
-        assert not any("TRD CrawZ" in x["text"] for x in fall["experiments"])
+        assert craw and "Fouls" in craw[0]["why"] and "experiment G" in craw[0]["why"]
+        g = next(x for x in fall["experiments"] if x["key"] == "G")
+        assert "TRD CrawZ" in g["text"] and "drop-shot hook" in g["text"] and g["program"] == "browns"
         actions = fall["gear_actions"]
-        assert any("TRD CrawZ" in i for i in actions["bench"]["spin"])
-        assert not any("TRD CrawZ" in i for i in actions["pack"]["spin"])
+        assert any("TRD CrawZ" in i for i in actions["pack"]["spin"])
+        assert not any("mushroom heads" in i for i in actions["pack"]["spin"] if "stay home" not in i)
+        assert any("BulletZ" in i for i in actions["buy"]["spin"])
 
     def test_fly_gear_marked_unverified(self):
         gear = generate_fishing_report(750, OCTOBER)["gear_check"]

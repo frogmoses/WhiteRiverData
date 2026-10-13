@@ -296,6 +296,14 @@ EXPERIMENTS = [
         "sources": ["brief", "brian"],
         "status": "1 landed, 2 lost on the first trip",
     },
+    {
+        "key": "G", "title": "The crawdad, weedless, on the bait rig", "program": "browns",
+        "bands": ["minimum", "one_unit"],
+        "text": "The Z-Man TRD CrawZ Texas-rigged on a #1 drop-shot hook — point through the nose, turned back and skin-hooked into the body — on a White River rig tied with a short hook leg (7–12 in): the bell sits in the weed, the craw rides a foot above it with the point buried. Tied up by rock or wood, hold it in the current and twitch it so the claws work. The weed fouled the open Ned head, not the weight: the same bells caught 73 fish through it.",
+        "needs": "Nothing new — the CrawZ, the #1 drop-shot hooks and the bells are owned. Carry a pack of Z-Man Finesse BulletZ 1/10 oz weedless heads (to buy) as the alternative if the hop-and-settle matters",
+        "sources": ["brief", "brian"],
+        "status": "untested",
+    },
 ]
 
 # Tried, or ruled out on contact with the river, and parked with the reason —
@@ -308,7 +316,7 @@ PARKED = [
     },
     {
         "what": "The crawdad on the open Ned head — the Z-Man TRD CrawZ, or the green pumpkin Senko half, on the 1/10 oz mushroom head",
-        "why": "Fouls in the aquatic weed every cast at the White Hole. The forage is real (one seen on the gravel), so a crawdad presentation is still to be found; until then the soft craw is a bench item, not a program",
+        "why": "Fouls in the aquatic weed every cast at the White Hole. The forage is real (one seen on the gravel), so the craw gets a weedless presentation instead — experiment G — and the open mushroom heads stay home",
         "sources": ["brian"],
     },
 ]
@@ -371,7 +379,7 @@ BAND_CONTENT = {
                 "The core bait on the rig: a Power Egg (orange or white) or a Mice Tail with a crawdad tail; the changes are crawler stubs, peeled shrimp chunks (they stay on in current) or the egg-bead variant — an orange bead pegged a couple of inches above a bare #4 on the hook leg",
                 "Float rig — the highest-leverage low-water method: slip float + bobber stop, 1/16 oz panfish head with a 2 in white grub or pink-head crappie jig, 1–3 ft off bottom, fed 40–80 ft downstream and repeated",
                 "1/16 oz Beetle Spin or the small Panther Martin along seams and soft edges; the Cleo or Rooster Tail at first light (experiment A)",
-                "Sculpin on the split-shot rig at the rock openings is experiment C; the sculpin jig is D",
+                "Sculpin on the split-shot rig at the rock openings is experiment C; the sculpin jig is D; the crawdad plastic, weedless on the rig, is G",
                 "One rod per angler in the water (regulation) — keep the second rod rigged and ready to swap, not fishing",
             ],
         },
@@ -569,8 +577,9 @@ SEASON_CONTENT = {
             "spin": {
                 "bench": [
                     "Warm-water season line rule: fluoro hook legs (they sink) — except on floating-bait rigs, which stay mono",
-                
-                    "The soft craw — Z-Man TRD CrawZ 2.5 in Mudbug x12 and tungsten 1/10 oz mushroom heads x5 — is OWNED but the open Ned head drags weed every cast at the White Hole, so it does not pack as a program: find a weedless way to fish the craw (a weed-guard head, or the craw on a light Texas rig) before it goes back in the box",
+                ],
+                "pack": [
+                    "The soft craw — Z-Man TRD CrawZ 2.5 in Mudbug x12 — OWNED, packs for experiment G with the #1 drop-shot hooks; the open 1/10 oz mushroom heads stay home, they drag weed every cast here",
                 ],
                 
             },
@@ -644,6 +653,7 @@ GEAR_KINDS = [
 GEAR_CHECK = {
     "spin": {
         "buy": [
+            "Z-Man Finesse BulletZ 1/10 oz weedless heads (~$6) — the weedless Ned head for the CrawZ, carried as experiment G's alternative when the hop-and-settle matters",
             "Hand dip net for sculpin collection (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
             "Bait is bought fresh in Arkansas on the way in — one stop, kept in the cooler, not a run after each session: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough: Brian does not fish it, and the line is drawn by form, not by the brand — the moulded eggs and Mice Tails stay",
         ],
@@ -1262,7 +1272,7 @@ def _experiments_html(experiments):
         <h4 style="color: #2c3e50; margin: 18px 0 2px;">One experiment per session</h4>
         <p style="color: #666; margin: 0 0 4px; font-size: 0.9em;">Pick one or two the night before and have
         them in the boat. An hour, or until the water changes, then back to the core. The browns program lives
-        here: A–E; F is the fly rod.</p>{"".join(blocks)}''')
+        here: A–E and G; F is the fly rod.</p>{"".join(blocks)}''')
 
 
 def _parked_html(parked):

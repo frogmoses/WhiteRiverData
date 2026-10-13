@@ -109,6 +109,9 @@ BUY_OR_VERIFY = [
     # (the Dforce row mentions the phantom "AR Presso" in passing, so the row
     # pattern wants the brand)
     ("Presso ultralight to replace the Dforce (2027)", r"Presso", r"AR \|[^|]*Daiwa Presso"),
+    # the weedless Ned head for the CrawZ (experiment G); owned once the
+    # inventory's Ned-head row names it
+    ("Z-Man Finesse BulletZ weedless heads", r"BulletZ", r"Finesse BulletZ"),
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory
@@ -124,7 +127,7 @@ UNINVENTORIED = [
 # one of the three registries. Brand/model words and rigging hardware only —
 # baits bought fresh in Arkansas are not gear.
 GEAR_TOKENS = re.compile(
-    r"Kastmaster|Cleo|Keitech|Flashy Swimmer|Tab Tail|Countdown|sinking swimmers|Rapala|Rogue|"
+    r"Kastmaster|Cleo|Keitech|Flashy Swimmer|Tab Tail|Countdown|sinking swimmers|Rapala|Rogue|BulletZ|"
     r"Beetle Spin|Panther Martin|Rooster Tail|Mepps|Aglia|Black Fury|[Mm]arabou|Ned head|Senko|"
     r"Fire Tube|crappie jig|panfish head|slip float|bobber stop|Aberdeen|drop-shot hook|Kahle|"
     r"swivel|bell sinker|oz bell|bank sinker|egg sinker|split shot|rubber-core|Cherrywood|"

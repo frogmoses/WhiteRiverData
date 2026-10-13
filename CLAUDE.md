@@ -276,9 +276,12 @@ appended to the bottom of the page. Design rules:
   Egg or Mice Tail with a crawdad tail or a nightcrawler, hardware at first light, fished
   wherever the band panel says the fish hold (the Narrows on the first trip's low water; the
   eddy at the head of a rapid upriver fished as well for the group beside us) — with
-  `core_evidence_line()` totalling `EVIDENCE`. `EXPERIMENTS` (A–F) is **where the species
+  `core_evidence_line()` totalling `EVIDENCE`. `EXPERIMENTS` (A–G) is **where the species
   split now lives**: each has `program` (browns/rainbows), the `bands` it fits, `text`,
-  `needs`, `sources` and a hand-kept `status`; A–E are the daylight browns bets, F is the
+  `needs`, `sources` and a hand-kept `status`; A–E and G are the daylight browns bets (G, added 2026-10-13: the CrawZ Texas-rigged on
+  a #1 drop-shot hook on a short-hook-leg White River rig, held and twitched from a tied
+  boat — the weed fouled the open Ned head, not the bell; the Z-Man Finesse BulletZ weedless
+  head is the buy-item alternative, registered in `BUY_OR_VERIFY`), F is the
   fly rod (a learning block, Dad drifting a bait rod beside Brian). One or two a session,
   chosen the night before — the stop rule is advice. `PARKED` is what the river ruled out
   with the reason (night browns; the crawdad on the open Ned head), rendered collapsed as
