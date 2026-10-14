@@ -953,3 +953,4 @@ run_time,latest_reading_time,latest_dam_cfs,white_hole_cfs,white_hole_release_ti
 2026-10-14T02:30-05:00,2026-10-14T01:00-05:00,713,748,2026-10-13T23:00-05:00,falling,stable conditions expected,,,,,,,,,,60.6,6.6,0
 2026-10-14T02:45-05:00,2026-10-14T01:00-05:00,713,763,2026-10-14T00:00-05:00,stable,stable conditions expected,,,,,,,,,,60.6,6.6,0
 2026-10-14T03:00-05:00,2026-10-14T02:00-05:00,766,763,2026-10-14T00:00-05:00,stable,stable conditions expected,,,,,,,,,,60.6,6.6,0
+2026-10-14T03:15-05:00,2026-10-14T02:00-05:00,766,763,2026-10-14T00:00-05:00,stable,stable conditions expected,,,,,,,,,,60.8,6.8,0
