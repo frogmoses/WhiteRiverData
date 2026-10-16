@@ -7,7 +7,8 @@ the page and its workflows is in README.md; this file is about finding and chang
 
 Real-time water conditions for the White Hole on the White River below Bull Shoals Dam
 (Arkansas), plus a flow-driven fishing report for the Gaston's → Cranor's Island reach. A
-Raspberry Pi rebuilds the page every quarter hour and commits it; GitHub Pages serves it. Two goals, in
+Raspberry Pi rebuilds the page every quarter hour and rsyncs it to Brian's Hetzner box, which serves it
+at whiteriver.briancarroll.cool. Two goals, in
 Brian's words: predict the water at White Hole, and help him catch more and bigger trout on
 this stretch. The 2026-09-20 adversarial review against those goals and its fixes are
 summarised in the "Key Calculations" entries below.
@@ -22,7 +23,7 @@ summarised in the "Key Calculations" entries below.
 | `uv run python scripts/audit_gear_inventory.py [inventory.md]` | `inventory_audit.audit` | stdout; exit 1 on drift, 2 when the inventory file is absent |
 | `uv run python generate_test_html.py` | `generate_white_hole_summary` over 8 fixture scenarios | `white_hole_conditions_{scenario}.html` + charts (gitignored) |
 | `uv run pytest` | the suite, offline, from a tmp dir | — |
-| `./run_white_hole.sh` | production, every 15 min: pull, `main.py`, commit (page + chart only when a new dam row landed or on the hour), push | see Deployment |
+| `./run_white_hole.sh` | production, every 15 min: pull, `main.py`, rsync page + chart + `index.html` to the box; on the hour commit and push the log and cache | see Deployment |
 
 Setup: `uv sync --extra test` and `playwright install chromium` (only `main.py` and the
 standalone fishing report without `--cfs` launch a browser).
@@ -45,8 +46,8 @@ WhiteRiverData/
 ├── suncalc.py               # NOAA sunrise/sunset (copied from new-croton-fishing) — the one copy page, report and journal share
 ├── inventory_audit.py       # Gear registries + drift audit against the Croton tackle inventory
 ├── generate_test_html.py    # Renders the fixture scenarios for visual inspection
-├── run_white_hole.sh        # Production script (Pi): stash, pull --rebase, run, commit, push with one retry
-├── index.html               # GitHub Pages root redirect
+├── run_white_hole.sh        # Production script (Pi): pull --rebase --autostash, run, rsync the page to the box, hourly log commit
+├── index.html               # The site's root redirect (rsynced to the box with the page)
 ├── scripts/
 │   ├── build_journal.py         # journal/entries/*.md → journal/build/ (venv-tier: imports the report's vocabulary)
 │   └── audit_gear_inventory.py  # CLI for inventory_audit
@@ -150,7 +151,7 @@ unused (an open item from the review).
 - **MW→CFS** (`forecast_fetcher.mw_to_cfs`): linear via `BSD_FULL_MW = 391`, `BSD_FULL_CFS = 26400` (validated ±5% against actuals), plus `BSD_MIN_FLOW_CFS = 250` base flow, floored at `BSD_MIN_TOTAL_CFS = 750` — the dam never runs below its minimum-flow release (~750 observed, ~850 per His Place). Entry `min_flow_cfs` is `cfs - generation_cfs` so a breakdown always sums.
 - **Forecast validity and horizon** (`forecast_fetcher.get_swpa_forecast`): fetches today's day-of-week page **and tomorrow's** (posted by ~5 p.m.; Friday covers the weekend), validating each against the date in the `<pre>` header line (`PROJECTED LOADING SCHEDULE <DAY> <MONTH> <DD>, <YYYY>`, `SCHEDULE_DATE_RE`). A page that is undated or dated for another day is dropped — the day pages persist for a week, so a missed post would otherwise serve last week's schedule. **Never validate against the `<title>`**: its date is the CMS render date and every one of the seven pages carries *today's* date there (verified 2026-09-20). Returns remaining today + all of tomorrow, chronological.
 - **Staleness guard** (`main.py:STALE_DATA_HOURS = 3`): when the newest USACE reading is older than this, `stale_hours` flows into both formatters and renders a "DAM DATA DELAYED" warning.
-- **A copy of the page knows its own age** (`formatters.freshness_meta` / `freshness_html`, `STALE_COPY_MINUTES = 75`, `FRESHNESS_CHECK_SECONDS = 300`): every page carries `<meta name="generated" content="<epoch>">` and a "Built 6:16 PM Central · N min ago" line kept live by an inline script; past 75 min the script shows a red "this copy is N old — the river has moved on — Reload" block, and every 5 min (and whenever the tab comes back into view) it fetches the page uncached, reads the newer copy's stamp and reloads if there is one. Added 2026-10-07 after Brian, at the ramp at 6:23 PM with 9,700 CFS in front of him, read "excellent wading, since 4:44 PM" — a copy from the 5:12 run his phone had kept; the live site was current (GitHub Pages caches 10 min, phones hold a tab for hours). The error page has no script and no stamp on purpose. The age is client-side arithmetic on the stamp, so test fixtures' naive datetimes stamp as local time — harmless.
+- **A copy of the page knows its own age** (`formatters.freshness_meta` / `freshness_html`, `STALE_COPY_MINUTES = 75`, `FRESHNESS_CHECK_SECONDS = 300`): every page carries `<meta name="generated" content="<epoch>">` and a "Built 6:16 PM Central · N min ago" line kept live by an inline script; past 75 min the script shows a red "this copy is N old — the river has moved on — Reload" block, and every 5 min (and whenever the tab comes back into view) it fetches the page uncached, reads the newer copy's stamp and reloads if there is one. Added 2026-10-07 after Brian, at the ramp at 6:23 PM with 9,700 CFS in front of him, read "excellent wading, since 4:44 PM" — a copy from the 5:12 run his phone had kept; the live site was current (GitHub Pages cached 10 min — the box now sends the page `Cache-Control: no-cache` — and phones hold a tab for hours). The error page has no script and no stamp on purpose. The age is client-side arithmetic on the stamp, so test fixtures' naive datetimes stamp as local time — harmless.
 - **Two kinds of outage, worded differently** (`data_fetcher.OUTAGE_FETCH_FAILED` /
   `OUTAGE_NO_DATA_PUBLISHED`, `formatters.outage_headline`/`outage_sentence`): the error
   sentinel carries a `reason`. A failed fetch (DNS, TLS, site down) is ours to chase and
@@ -182,7 +183,7 @@ unused (an open item from the review).
   measured)" in the text; a test asserts "AT WHITE HOLE NOW" never appears there. A
   usable cache still wins over the schedule (measured water beats a plan), and with both
   feeds down it is still the error page.
-- **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails, `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed`), plus the stale banner once the cache ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the error page. The cache is **committed** by `run_white_hole.sh` (its `git stash -u` would destroy an untracked copy). Motivated by the Aug 27 2026 army.mil DNS outage.
+- **Outage fallback** (`main.py:MAX_CACHE_AGE_HOURS = 24`): each successful production run saves the fetched data to `last_good_data.json` (`data_fetcher.save_last_good_data`, called only from `main.py.__main__`). When the live fetch fails, `generate_white_hole_summary` falls back to `load_last_good_data` and renders the normal report with a red "LIVE DAM FEED UNAVAILABLE" banner (`feed_failed`), plus the stale banner once the cache ages past `STALE_DATA_HOURS`. Cache older than 24 h, missing, corrupt, or error-flagged → the error page. The cache is **committed** by `run_white_hole.sh` on the hour (it survives between runs because the pull is `--autostash`, not `stash -u`). Motivated by the Aug 27 2026 army.mil DNS outage.
 - **DNS fallback** (`data_fetcher.get_bull_shoals_data`): on `ERR_NAME_NOT_RESOLVED`, `resolve_via_doh` asks cloudflare-dns.com for the A record and Chromium is relaunched with `--host-resolver-rules=MAP host ip` (the existing `--ignore-certificate-errors` covers a mismatched cert on the pinned IP). Other errors are not retried. Added 2026-09-21 after the Pi's resolver failed army.mil; the Pi's resolver was also fixed (see Deployment).
 - **CWMS fallback** (`data_fetcher.get_cwms_data`, `build_cwms_entries`, `CWMS_SERIES`): the second source for the dam readings — the Corps' CWMS Data API (`cwms-data.usace.army.mil/cwms-data/timeseries`, office SWL, plain `requests`, no browser), which is what the district's replacement site reads. Public Affairs sent that site's two links (`water.usace.army.mil/office/swl/hourly` and `/reports`) on 2026-10-05 in reply to Brian's outage report; the pages are a JavaScript app behind a DoD consent banner, so the API is read directly. Five hourly series (headwater, tailwater, plant MWh, `Flow-Plant`, `Flow-Res Out`) merge into entries shaped like the legacy rows; spillway is total − plant. Verified 2026-10-05: identical to the legacy table row for row and complete through the Oct 1–4 blank spell — but **it stalls**: that afternoon every SWL series in the API (releases, turbines, lake, sensors, even Norfork and Calico Rock) stopped at 12:00 Central and was still there seven hours later while the legacy table had 18:00, and the outage days were presumably backfilled. So `get_bull_shoals_data` keeps legacy first and takes CWMS when the legacy fetch fails, the table is all dashes, or its newest row is older than `LEGACY_STALE_HOURS` (3) and CWMS is newer. The error sentinel (and its `reason`) only when both are empty. The new site says it "will replace our legacy website in 2026": when the legacy URL dies for good, CWMS is already carrying the page — promote it then.
 - **Lake level** (`release_outlook.get_lake_level` / `describe_lake`, riding on the outlook as `outlook["lake"]` and rendered in the same block and text line): Bull Shoals pool elevation, % of conservation pool, % of flood pool in use (hourly CWMS series) and the Corps' forecast elevation (stamped 07:00 on the day it is for — no shift, unlike the release forecast). Same convention as the Corps' own report: when the flood pool is above 0 it leads, otherwise the conservation percentage does. The sentence under it — flood water means heavier, longer generation until it is evacuated; an empty flood pool means releases follow power demand — is **this repo's inference** from how the pools are operated, not a Corps statement; keep it that modest. The lake renders alone when the release forecast is missing. Asked for by Brian 2026-10-05.
@@ -532,23 +533,34 @@ for three weeks before that existed.
   pipeline datetimes are timezone-aware Central. Commit timestamps are Eastern; the page is
   Central.
 - **Reach it**: `ssh briancarroll` (workstation alias → 192.168.1.181, user frogmoses).
-- **Serving**: GitHub Pages from `master`; live at
-  https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html
+- **Serving (since 2026-10-16)**: the Hetzner box (`ssh familytree`, 62.238.52.205 — the family-tree and
+  podcasts host), nginx vhost `/etc/nginx/sites-available/whiteriver`, web root `/srv/whiteriver/www`,
+  certbot TLS; live at https://whiteriver.briancarroll.cool/white_hole_conditions.html. HTML and PNG
+  are sent `Cache-Control: no-cache, must-revalidate`. The Pi reaches it as ssh alias `whiteriver`
+  (key `~/.ssh/whiteriver_deploy`, authorised on the box with
+  `restrict,command="/usr/bin/rrsync /srv/whiteriver/www"` — that key can rsync into the web root
+  and do nothing else, so the script's `rsync … whiteriver:/` lands in the web root).
+  **The page and chart are not in git** (gitignored). The old URL,
+  https://briancarroll.cool/WhiteRiverData/white_hole_conditions.html, is still served by GitHub
+  Pages from the orphan `gh-pages` branch — two redirect pages, the HTML one carrying a far-future
+  `generated` stamp so a stale copy on a phone self-reloads into the redirect. Before 2026-10-16 the
+  Pi committed the page and chart to `master` every run and GitHub Pages served `master`; that put
+  5,219 chart blobs (570 MB) into `.git`.
 - **Cron**: every quarter hour —
   `0,15,30,45 * * * * cd /home/frogmoses/WhiteRiverData && ./run_white_hole.sh >> /home/frogmoses/log/white_hole.log 2>&1`.
   Was hourly on the hour until 2026-10-07; the dam's rows post ~10 min past the hour, so
   the :00 run read each row an hour late and flagged that day's rise 12 min after it
   reached the ramp. The :15 run now reads it within minutes.
-- **`run_white_hole.sh`**: venv Python if present; `git stash push -u`; `git pull --rebase`
-  (not `--ff-only`: a stranded local output commit from a rejected push must ride on top of
-  origin, keeping its `predictions.csv` row); `main.py`; `git add` `last_good_data.json` and
-  `predictions.csv` when present, plus the page and chart **only when the cache changed (a
-  new dam row) or the minute is 00** — the 130 KB chart is what has grown `.git` to 450 MB,
-  and between readings only the "now" row, the schedule and the gauges move; a skipped page
-  is `git checkout`ed away so no stash accumulates; `FORCE_PUBLISH=1` publishes regardless
-  (use it after a code push so the page does not wait for the hour); commit; `git push`, and on rejection
-  `git pull --rebase && git push` once. The prediction log therefore gains four rows an hour.
-- **Push race**: the Pi pulls, runs and pushes at :00, :15, :30 and :45. A workstation push
+- **`run_white_hole.sh`**: venv Python if present; `git pull --rebase --autostash` (autostash
+  carries the uncommitted log rows and cache across the pull; `--rebase` so a stranded local commit
+  from a rejected push rides on top of origin); `main.py`; `rsync -az --chmod=F644` the page, chart
+  and `index.html` to `$WHITERIVER_HOST` (default `whiteriver`) — every run, and a failed rsync is a
+  WARNING that leaves the previous page on the site and does not stop the run; then, **only on the
+  hour or with `FORCE_COMMIT=1`**, `git add` `last_good_data.json` and `predictions.csv`, commit
+  "Update prediction log …", `git push`, and on rejection `git pull --rebase && git push` once. The
+  log still gains four rows an hour; the repo gains one commit. After a code push, just run the
+  script on the Pi — it publishes every time (the old `FORCE_PUBLISH` is gone).
+- **Push race**: the Pi pulls at :00, :15, :30 and :45 and pushes at :00. A workstation push
   landing inside one of those windows gets the Pi's push rejected (it happened 2026-09-21
   06:00); the script heals itself, but avoid pushing code in the two minutes after a
   quarter hour.

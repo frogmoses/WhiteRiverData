@@ -21,3 +21,8 @@ fishing_report.html
 
 # Journal build outputs (regenerable: uv run python scripts/build_journal.py)
 journal/build/
+
+# The published page and chart: rsynced from the Pi to whiteriver.briancarroll.cool,
+# never committed (the chart alone put 570 MB into .git before 2026-10-16)
+white_hole_conditions.html
+vertical_flow_chart.png
