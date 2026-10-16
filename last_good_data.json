@@ -346,6 +346,7 @@
   "generation": 35,
   "turbine_release": 2618,
   "spillway_release": 0,
-  "total_release": 2618
+  "total_release": 2618,
+  "units_running": 2
  }
 ]
