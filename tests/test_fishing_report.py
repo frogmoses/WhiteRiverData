@@ -202,8 +202,8 @@ class TestCoreAndExperiments:
             report = generate_fishing_report(cfs, OCTOBER)
             assert report["core"]["lines"] == CORE_PROGRAM["lines"]
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
-        order = [html.index(m) for m in (">This season<", "The core program", "One experiment per session",
-                                         "The playbook by flow")]
+        order = [html.index(m) for m in ("Today at White Hole", "The core program", "The playbook by flow",
+                                         "Things to try — one or two a session")]
         assert order == sorted(order)
         assert "Journal: 77 fish on record" in html or "fish on record —" in html
 
@@ -234,16 +234,30 @@ class TestCoreAndExperiments:
         expected = [x["key"] for x in EXPERIMENTS if band in x["bands"]]
         current = next(b for b in report["bands"] if b["key"] == band)
         assert current["experiments"] == expected
+        # the panel prints titles, not letters
+        assert current["experiment_titles"] == [x["title"] for x in EXPERIMENTS if band in x["bands"]]
         html = render_fishing_report_html(report)
-        assert "Experiments that fit this water:" in html
+        assert "Worth trying at this level:" in html
+        panel = html.split(f"<!-- band:{band} -->", 1)[1].split("<!-- /bands -->", 1)[0]
+        for title in current["experiment_titles"]:
+            assert title in panel
 
-    def test_experiments_render_with_needs_and_journal_status(self):
+    def test_things_to_try_render_as_titles_with_what_to_bring(self):
+        """No letters, no 'Needs: nothing new — owned', no untested status
+        lines (Joe: 'a science fair'; the newcomer: 'owned by whom?')."""
+        from fishing_report import EXPERIMENTS
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
-        block = html.split("One experiment per session", 1)[1].split("The playbook by flow", 1)[0]
-        for key in ("A.", "B.", "C.", "D.", "E.", "F.", "G."):
-            assert f"<strong>{key}" in block
-        assert block.count("<strong>Needs:</strong>") == 7
+        block = html.split("Things to try", 1)[1].split("Before the trip", 1)[0]
+        for x in EXPERIMENTS:
+            assert f"<strong>{x['title']}</strong>" in block
+            assert f"<strong>{x['key']}." not in block
+        assert block.count("Bring:") == len(EXPERIMENTS)
+        assert "Needs:" not in block and "Nothing new" not in block
+        assert "untested" not in block and "[CONFIRMED]" not in block and "[REPORTED]" not in block
         assert "trophy, all released" in block and "keep 2 under 14 in" in block
+        # a rainbow count never stands as evidence for a browns bet
+        dawn = next(x for x in EXPERIMENTS if x["key"] == "A")
+        assert dawn["status"].startswith("no brown yet")
 
     def test_parked_renders_collapsed_with_reasons(self):
         report = generate_fishing_report(750, OCTOBER)
@@ -263,7 +277,8 @@ class TestCoreAndExperiments:
         report = generate_fishing_report(cfs, when)
         prescriptions = [report["spin"]["rig"], report["fly"]["setup"]]
         prescriptions += report["spin"]["notes"] + report["fly"]["notes"]
-        prescriptions += report["core"]["lines"]
+        prescriptions += report["season_adds"]["spin"] + report["season_adds"]["fly"]
+        prescriptions += report["core"]["lines"] + [text for _, text in report["today"]]
         for x in report["experiments"]:
             prescriptions += [x["text"], x["needs"]]
         for section in report["rigging"]:
@@ -340,24 +355,68 @@ class TestCoreAndExperiments:
 
 
 class TestFocusedLayout:
-    """What flow, time and season drive stays expanded and in that order;
-    everything else is a collapsed reference block below the band panels."""
+    """What the reader needs now leads (today, the rules, the core, the live
+    band); the clock and the season follow; the bets after them; everything
+    else is a collapsed reference block, with one Sources block for the lot."""
 
-    def test_expanded_order_is_timing_season_core_experiments_playbook(self):
+    def test_expanded_order_is_today_core_playbook_timing_season_tries(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         order = [html.index(marker) for marker in (
-            ">Timing<", ">This season<", "The core program", "One experiment per session",
-            "The playbook by flow", "<!-- /bands -->")]
+            "Today at White Hole", "<strong>Rules:</strong>", "New to this river?", "The core program",
+            "The playbook by flow", "<!-- /bands -->", ">Timing<", ">This season<",
+            "Things to try — one or two a session", "Before the trip", "Rigging &amp; techniques",
+            ">Sources <span")]
         assert order == sorted(order)
 
     def test_reference_blocks_are_collapsed_below_the_bands(self):
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         tail = html.split("<!-- /bands -->", 1)[1]
-        for title in (">Regulations <span", ">Gear check <span"):
-            assert title in tail
+        for title in (">Regulations <span", ">Gear check <span", ">New to this river?" ):
+            assert title in tail or title in html
         assert "<details open" not in tail
         # The on-the-water rules ride in the collapsed summary line
         assert "2 rainbows under 14 in, all other trout released" in tail
+
+    def test_rules_line_is_open_above_the_core(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        head = html.split("The core program", 1)[0]
+        assert "<strong>Rules:</strong> 2 rainbows under 14 in" in head
+        assert 'href="#wh-before-trip"' in head and 'id="wh-before-trip"' in html
+
+    def test_new_here_glossary_is_collapsed_and_defines_the_words(self):
+        """The newcomer's list of undefined words, answered once and folded
+        away so the regulars never see it."""
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        block = html.split("New to this river?", 1)[1].split("</details>", 1)[0]
+        for phrase in ("cubic feet per second", "eight turbines", "1.5–4 hours", "7 miles below the dam",
+                       "bell sinker", "Power Egg", "Mice Tail", "crawdad tail", "Corps", "SWPA", "USGS"):
+            assert phrase in block, phrase
+        # the map pins live here now
+        assert "google.com/maps?q=" in block
+        opening = html.split("New to this river?", 1)[0].rsplit("<details", 1)[1]
+        assert "open" not in opening
+
+    def test_season_adds_render_once_not_in_every_panel(self):
+        """The orange-garlic bullet used to print in all five panels."""
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert html.count("Orange garlic is the named fall colour") == 1
+        assert html.count("#10 hopper on warm afternoons") == 1
+        season = html.split(">This season<", 1)[1].split("Things to try", 1)[0]
+        assert "Spin this season" in season and "Fly this season" in season
+        assert season.index("Spin this season") < season.index("Fly this season")
+
+    def test_one_sources_block_not_a_line_per_section(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        assert "Sources:" not in html
+        assert html.count(">Sources <span") == 1
+        assert html.index(">Sources <span") > html.index("Rigging &amp; techniques")
+
+    def test_pack_list_is_one_tap_further_in(self):
+        html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
+        gear = html.split(">Gear check <span", 1)[1].split("Tried and parked", 1)[0]
+        assert re.search(r"<summary[^>]*>Owned — pack it \(", gear), \
+            "the pack list must sit behind its own <summary>"
+        assert "SCPS70MF2-SG" in gear
 
     def test_seasonal_pattern_is_a_timing_bullet(self):
         fall = generate_fishing_report(750, OCTOBER)
@@ -454,12 +513,13 @@ class TestRiggingReference:
 
     def test_season_adds_land_in_the_right_section(self):
         fall = generate_fishing_report(750, OCTOBER)
-        assert any("garlic" in item for item in fall["spin"]["notes"])
-        assert any("hopper" in item for item in fall["fly"]["notes"])
+        assert any("garlic" in item for item in fall["season_adds"]["spin"])
+        assert any("hopper" in item for item in fall["season_adds"]["fly"])
+        assert not any("garlic" in item for item in fall["spin"]["notes"])
         spring = generate_fishing_report(750, APRIL)
-        assert any("Flashy Swimmer" in item for item in spring["spin"]["notes"])
-        assert any("caddis pupa" in item for item in spring["fly"]["notes"])
-        assert any("Elk Hair Caddis" in item for item in spring["fly"]["notes"])
+        assert any("Flashy Swimmer" in item for item in spring["season_adds"]["spin"])
+        assert any("caddis pupa" in item for item in spring["season_adds"]["fly"])
+        assert any("Elk Hair Caddis" in item for item in spring["season_adds"]["fly"])
 
 
 class TestTiming:
@@ -708,7 +768,7 @@ class TestGearDoctrine:
         BulletZ weedless head is a buy item."""
         fall = generate_fishing_report(750, OCTOBER)
         craw = [p for p in fall["parked"] if "TRD CrawZ" in p["what"]]
-        assert craw and "Fouls" in craw[0]["why"] and "experiment G" in craw[0]["why"]
+        assert craw and "Fouls" in craw[0]["why"] and "weedless crawdad" in craw[0]["why"]
         g = next(x for x in fall["experiments"] if x["key"] == "G")
         assert "TRD CrawZ" in g["text"] and "drop-shot hook" in g["text"] and g["program"] == "browns"
         actions = fall["gear_actions"]
@@ -743,7 +803,7 @@ class TestWaterNotes:
     def test_fallback_without_a_reading(self):
         for when in (OCTOBER, APRIL):
             notes = generate_fishing_report(750, when, water_quality=None)["water"]
-            assert "USGS tailwater reading unavailable" in notes[0]
+            assert notes[0].startswith("No temperature reading from the USGS gauge")
 
     def test_no_hardcoded_temperature_claims(self):
         """The old fixed '~53–56°F' note contradicted the live gauge."""
@@ -777,6 +837,126 @@ class TestLightWindows:
         assert "until further notice" in regs
 
 
+class TestTodayBlock:
+    """The lead for a reader with one minute: water, where, rig, next — from
+    the live band and the flow model (Joe: 'lead with the day')."""
+
+    def test_four_lines_from_the_live_band(self):
+        report = generate_fishing_report(750, OCTOBER)
+        labels = [label for label, _ in report["today"]]
+        assert labels == ["Water", "Go", "Rig", "Next"]
+        today = dict(report["today"])
+        assert today["Water"].startswith("Minimum flow (dead low) — 750 CFS at White Hole")
+        assert "Excellent wading" in today["Water"]
+        assert today["Go"] == report["go"] and "Cranor's Island" in today["Go"]
+        assert today["Rig"].startswith(report["spin"]["rig"]) and "crawdad tail" in today["Rig"]
+        html = render_fishing_report_html(report)
+        head = html.split("The core program", 1)[0]
+        assert "Today at White Hole" in head and "<strong>Next:</strong>" in head
+        # the gauge lines ride inside the box
+        assert "USGS gauge" in head
+
+    def test_every_band_has_a_go_line(self):
+        from fishing_report import BAND_CONTENT
+        for key, content in BAND_CONTENT.items():
+            assert content["go"], key
+
+    def test_next_line_from_released_rise_and_the_wading_caveat(self):
+        timeline_data = [{
+            "release_time": OCTOBER - timedelta(hours=1), "cfs": 9900, "generators": "3 generators",
+            "arrival_time": OCTOBER + timedelta(hours=1.5), "status": "incoming", "minutes_until": 90,
+        }]
+        report = generate_fishing_report(750, OCTOBER, timeline_data=timeline_data)
+        today = dict(report["today"])
+        eta = (OCTOBER + timedelta(hours=1.5)).strftime("%I:%M %p").lstrip("0")
+        assert today["Next"].startswith("A rise to 9,900 CFS") and eta in today["Next"]
+        assert "off the bars" in today["Next"]
+        assert today["Water"].endswith("until the rise gets here.")
+
+    def test_next_line_from_released_drop(self):
+        start = OCTOBER + timedelta(minutes=70)
+        down = OCTOBER + timedelta(minutes=110)
+        timeline_data = [{
+            "release_time": OCTOBER - timedelta(hours=1), "cfs": 750, "generators": "0-1 generators",
+            "arrival_time": down, "status": "incoming", "minutes_until": 110, "change": "falling",
+            "recession_start": start,
+        }]
+        today = dict(generate_fishing_report(13000, OCTOBER, timeline_data=timeline_data)["today"])
+        assert today["Next"].startswith("A drop to 750 CFS")
+        assert start.strftime("%I:%M %p").lstrip("0") in today["Next"]
+        assert "first hour of the drop" in today["Next"]
+
+    def test_next_line_from_the_schedule(self):
+        scheduled = OCTOBER + timedelta(hours=2)
+        forecast = [{"scheduled_time": scheduled, "cfs": 13504,
+                     "arrival_time": scheduled + timedelta(hours=2.4)}]
+        today = dict(generate_fishing_report(750, OCTOBER, forecast_timeline=forecast)["today"])
+        from water_calculator import front_travel_time
+        eta = scheduled + timedelta(hours=front_travel_time(13504, 750))
+        assert "is scheduled for 2 PM" in today["Next"]
+        assert eta.strftime("%I:%M %p").lstrip("0") in today["Next"]
+
+    def test_next_line_is_honest_when_nothing_is_coming(self):
+        today = dict(generate_fishing_report(750, OCTOBER, timeline_data=[], forecast_timeline=[])["today"])
+        assert today["Next"].startswith("No rise or drop has been released or scheduled")
+        preview = dict(generate_fishing_report(750, OCTOBER)["today"])
+        assert "preview" in preview["Next"]
+
+    def test_minimum_band_warns_about_the_rise(self):
+        """The safety gap both reviewers found: 'anchoring is safe' and 'wading
+        is wide open' with nothing about the afternoon rise reaching someone on
+        a gravel bar."""
+        from fishing_report import BAND_CONTENT
+        low = BAND_CONTENT["minimum"]
+        assert "until the rise" in " ".join(low["boat"]) and "arrivals table" in " ".join(low["boat"])
+        wading = " ".join(low["wading"])
+        assert "until the rise arrives" in wading and "arrivals table" in wading
+        assert "grey rock" in wading
+
+
+class TestWrittenForWhoeverIsInTheBoat:
+    """The report is read by more than its author: no names, no trip numbers,
+    no one's private deliberations in the copy that renders for everyone. The
+    gear check's pack list is the one exception — it is the kit, and it says
+    where the rods live."""
+
+    DIARY = re.compile(r"\bDad\b|\bBrian\b|first trip|minded to|Brian's call")
+
+    def _strings(self, value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for item in value.values():
+                yield from self._strings(item)
+        elif isinstance(value, (list, tuple)):
+            for item in value:
+                yield from self._strings(item)
+
+    def test_no_diary_in_the_rendered_copy(self):
+        from fishing_report import (BAND_CONTENT, SEASON_CONTENT, RIGGING_REFERENCE,
+                                    CORE_PROGRAM, EXPERIMENTS, PARKED, NEW_HERE, GEAR_CHECK)
+        blocks = [BAND_CONTENT, SEASON_CONTENT, RIGGING_REFERENCE, CORE_PROGRAM, EXPERIMENTS, PARKED, NEW_HERE]
+        offenders = [t for block in blocks for t in self._strings(block) if self.DIARY.search(t)]
+        # the gear check minus its pack lists
+        jobs = {kind: {a: items for a, items in actions.items() if a != "pack"}
+                for kind, actions in GEAR_CHECK.items()}
+        offenders += [t for t in self._strings(jobs) if self.DIARY.search(t)]
+        assert not offenders, "\n- ".join(["diary in rendered copy:"] + [t[:100] for t in offenders])
+
+    def test_the_bait_rig_still_says_who_drives(self):
+        text = " ".join(generate_fishing_report(750, OCTOBER)["core"]["lines"])
+        assert "One drives, one fishes" in text
+
+    def test_sculpin_netting_is_from_the_bank_not_a_night_on_the_water(self):
+        """The headlamp and dip net sat beside 'night browns — we are off the
+        water by dark', which read as a contradiction."""
+        report = generate_fishing_report(750, OCTOBER)
+        boat = " ".join(report["gear_actions"]["pack"]["boat"])
+        assert "Headlamp" in boat and "from the bank" in boat
+        night = next(p for p in report["parked"] if p["what"] == "Night browns")
+        assert "from the bank" in night["why"]
+
+
 class TestNoScheduleOutline:
     """The per-day outline bullets repeated the arrivals table in a form that
     was hard to read; Timing keeps only the first scheduled change."""
@@ -799,10 +979,13 @@ class TestProvenance:
 
     @pytest.mark.parametrize("cfs", [750, 3300, 6600, 12000, 20000])
     def test_sources_and_evidence_render(self, cfs):
+        from fishing_report import SOURCES
         html = render_fishing_report_html(generate_fishing_report(cfs, OCTOBER))
-        assert html.count("Sources:") >= 3          # band, season, regulations
-        assert "hisplaceresort.net" in html
-        assert "agfc.com" in html
+        footnote = html.split(">Sources <span", 1)[1]
+        for label, url in SOURCES.values():
+            assert label in footnote
+            if url:
+                assert url in footnote
         assert "no fish on record yet" in html
 
     def test_evidence_renders_when_recorded(self, monkeypatch):
@@ -810,8 +993,18 @@ class TestProvenance:
         monkeypatch.setitem(fishing_report.EVIDENCE, ("minimum", "browns"),
                             {"fish": 2, "dates": ["2026-10-06"], "note": "sculpin at dawn"})
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
-        assert "Journal — browns: 2 fish on record (2026-10-06) — sculpin at dawn" in html
+        assert "Journal — browns: 2 fish on record (Oct 6) — sculpin at dawn" in html
         assert "no fish on record yet in this band" in html      # the heavy-water band is still empty
+
+    def test_dates_read_like_a_person_says_them(self):
+        """'73 fish on record (2026-10-08, 2026-10-09, 2026-10-10)' read as a
+        database dump to the newcomer."""
+        from fishing_report import dates_phrase, evidence_lines
+        assert dates_phrase(["2026-10-06"]) == "Oct 6"
+        assert dates_phrase(["2026-10-08", "2026-10-09", "2026-10-10"]) == "Oct 8–10"
+        assert dates_phrase(["2026-09-30", "2026-10-01"]) == "Sep 30–Oct 1"
+        assert dates_phrase(["2026-10-06", "2026-10-09"]) == "Oct 6, Oct 9"
+        assert any("73 fish on record over 3 days (Oct 8–10)" in line for line in evidence_lines("minimum"))
 
 
 class TestBandPicker:
@@ -844,7 +1037,7 @@ class TestBandPicker:
                             {"fish": 1, "dates": ["2026-10-07"], "note": "swimbait in the slack"})
         html = render_fishing_report_html(generate_fishing_report(750, OCTOBER))
         heavy = html.split("<!-- band:high -->", 1)[1]
-        assert "Journal — browns: 1 fish on record (2026-10-07)" in heavy
+        assert "Journal — browns: 1 fish on record (Oct 7)" in heavy
         minimum = html.split("<!-- band:minimum -->", 1)[1].split("<!-- band:one_unit -->", 1)[0]
         assert "Journal — rainbows &amp; others" in minimum or "Journal — rainbows & others" in minimum
 
@@ -895,10 +1088,10 @@ class TestNoHousekeepingDates:
     def test_rendered_content_carries_no_iso_dates(self):
         from fishing_report import (
             BAND_CONTENT, SEASON_CONTENT, GEAR_CHECK, RIGGING_REFERENCE,
-            CORE_PROGRAM, EXPERIMENTS, PARKED)
+            CORE_PROGRAM, EXPERIMENTS, PARKED, NEW_HERE)
         offenders = [text for block in (BAND_CONTENT, SEASON_CONTENT,
                                         GEAR_CHECK, RIGGING_REFERENCE,
-                                        CORE_PROGRAM, EXPERIMENTS, PARKED)
+                                        CORE_PROGRAM, EXPERIMENTS, PARKED, NEW_HERE)
                      for text in self._strings(block)
                      if self.ISO_DATE.search(text)]
         assert not offenders, (
