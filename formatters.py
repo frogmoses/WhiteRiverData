@@ -195,8 +195,7 @@ def freshness_html(current_time):
     """
     stamp = int(current_time.timestamp())
     return f'''
-    <p id="freshness" class="subtitle" style="font-size: 0.85em; color: #718096;" data-generated="{stamp}">
-        Built {current_time.strftime('%-I:%M %p')} Central</p>
+    <p id="freshness" class="subtitle" style="font-size: 0.85em; color: #718096;" data-generated="{stamp}" data-built="{current_time.strftime('%-I:%M %p')} Central">Built {current_time.strftime('%-I:%M %p')} Central</p>
     <div id="stale-copy" style="display: none; margin: 10px 0; padding: 10px 14px; background: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; color: #9b2c2c; font-weight: bold;">
         This copy of the page is <span id="stale-age"></span> old — the river has moved on.
         <a href="javascript:location.reload(true)" style="color: #9b2c2c;">Reload</a> for the latest.
@@ -217,7 +216,7 @@ def freshness_html(current_time):
         function tick() {{
             var age = Date.now() - built;
             if (age < 0) age = 0;
-            line.textContent = "Built " + line.textContent.replace(/^Built /, "").replace(/ · .*$/, "") + " · " + ageText(age) + " ago";
+            line.textContent = "Built " + line.getAttribute("data-built") + " · " + ageText(age) + " ago";
             var stale = age > staleAfter;
             warn.style.display = stale ? "block" : "none";
             if (stale) ageEl.textContent = ageText(age);
