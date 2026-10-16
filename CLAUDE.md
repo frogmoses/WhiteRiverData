@@ -525,6 +525,12 @@ for three weeks before that existed.
   across days — the CFS labels carry the magnitude.
 - Test helpers that build forecast dicts may omit `generators`/`wading`;
   `group_forecast_runs` tolerates that.
+- **History was rewritten on 2026-10-16** (`git filter-repo`, dropping every version of
+  `vertical_flow_chart.png` and `white_hole_conditions.html`): 5,928 commits → 1,735, `.git`
+  509 MB → 7 MB, every hash before that date changed. Any clone older than that must be
+  re-cloned, not pulled. A full mirror of the pre-rewrite repository is at
+  `~/Backups/WhiteRiverData-pre-rewrite-2026-10-16.git` on the workstation. GitHub reports
+  the old size until its own garbage collection runs.
 
 ## Deployment
 
