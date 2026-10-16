@@ -113,6 +113,12 @@ BUY_OR_VERIFY = [
     # the weedless Ned head for the CrawZ (experiment G); owned once the
     # inventory's Ned-head row names it
     ("Z-Man Finesse BulletZ weedless heads", r"BulletZ", r"Finesse BulletZ"),
+    # the small circle hook for the bait rig (the circle-hook try, 2026-10-16). The
+    # inventory already carries Gamakatsu Octopus Circle SIZE 6 — the carp hook — so
+    # the row pattern wants a size 10–14 beside one of the three named hooks
+    ("light-wire octopus-style circle hooks, size 10–14",
+     r"[Oo]ctopus[- ]style circle|Octopus Circle|Mutu|L702|circle hook",
+     r"(Octopus Circle|Mutu|L702)[^|]*(size 1[0-4]|#1[0-4])"),
 ]
 
 # Fly gear: uninventoried by Brian's standing decision (a future inventory
@@ -134,6 +140,7 @@ GEAR_TOKENS = re.compile(
     r"swivel|bell sinker|oz bell|bank sinker|egg sinker|split shot|rubber-core|Cherrywood|"
     r"Black Max|Presso|Dforce|DWB-562MLS|St\. Croix|Exceler|President|XPS|Phoebe|Dardevle|Spinnie|Thomas|"
     r"Trout Magnet|Zoom|Smithwick|Recon|5-wt|VersiLeader|polyleader|Airlock|Thingamabobber|"
+    r"Octopus Circle|Mutu|L702|circle hook|"
     r"browns rod|"
     r"tippet ring|worm blower|dip net|20 lb fluoro|30 lb fluoro|suspending perch|"
     r"Woolly Bugger|Girdle Bug|Sunday Special|Zebra|Ruby Midge|San Juan|Soft Hackle|"

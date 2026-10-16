@@ -288,7 +288,10 @@ appended to the bottom of the page. Design rules:
   hook on a short-hook-leg White River rig, held and twitched from a tied boat — the weed
   fouled the open Ned head, not the bell; the Z-Man Finesse BulletZ weedless head is the
   buy-item alternative, registered in `BUY_OR_VERIFY`), F is the fly rod (a learning block,
-  a bait rod drifting beside it). One or two a session, chosen the night before — the stop
+  a bait rod drifting beside it); H (Brian, 2026-10-16) is the core rig with a size 10–14
+  light-wire octopus-style circle hook in place of the Aberdeen — a regular circle's gap is too
+  small once shrunk; the owned size 6 Octopus Circles are the carp hook — a buy item registered
+  in `BUY_OR_VERIFY` with a row pattern that wants the small sizes. One or two a session, chosen the night before — the stop
   rule is advice. `PARKED` is what the river ruled out with the reason (night browns; the
   crawdad on the open Ned head), rendered collapsed as "Tried and parked". The band panels
   keep where / boat / **wading** / rig + spin notes / fly setup + notes, list the things to

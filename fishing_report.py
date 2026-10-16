@@ -344,6 +344,14 @@ EXPERIMENTS = [
         "sources": ["brief", "brian"],
         "status": "untested",
     },
+    {
+        "key": "H", "title": "A small circle hook on the bait rig", "program": "rainbows",
+        "bands": ["minimum", "one_unit", "two_three_units"],
+        "text": "The core rig and bait, with the Aberdeen swapped for a small, light-wire octopus-style circle hook — size 10–14 (Gamakatsu Octopus Circle, Owner Mutu Light, Eagle Claw L702; a regular circle's gap closes up too much once it is shrunk to egg size). No hookset: let the rod load on the hold or the drift and reel. The point is the corner of the mouth — every brown and every rainbow over 14 in goes back, and the deep-hooked rainbow on an Aberdeen is the one that does not swim off. Does the circle hook as many as the Aberdeen, and where?",
+        "needs": "A pack of size 10–14 light-wire octopus-style circle hooks (on the buy list) — the owned Gamakatsu Octopus Circles are size 6, the carp hook, too big for an egg",
+        "sources": ["brian"],
+        "status": "untested",
+    },
 ]
 
 # Tried, or ruled out on contact with the river, and parked with the reason —
@@ -705,6 +713,7 @@ GEAR_CHECK = {
     "spin": {
         "buy": [
             "Z-Man Finesse BulletZ 1/10 oz weedless heads (~$6) — the weedless Ned head for the CrawZ, the alternative for the weedless-craw try when the hop-and-settle matters",
+            "Light-wire octopus-style circle hooks, size 10–14 (Gamakatsu Octopus Circle, Owner Mutu Light or Eagle Claw L702, ~$5 a pack) — for the circle-hook try on the bait rig; a regular circle's gap is too small at these sizes, and the owned size 6 Octopus Circles are the carp hook, too big for an egg",
             "Hand dip net for netting sculpin from the bank (~$8, e.g. Frabill 9x8 baitwell net) — fine mesh well under the 1 in legal max, short handle for one-hand work against the rocks",
             "Bait is bought fresh in Arkansas on the way in — one stop, kept in the cooler, not a run after each session: night crawlers + red worms, Power Eggs (orange-garlic in fall), pink/white Mice Tails or floating worms, cocktail shrimp, corn — plus mini marshmallows for flotation. NO jarred PowerBait dough — the line is drawn by form, not by the brand: the moulded eggs and Mice Tails stay",
         ],
