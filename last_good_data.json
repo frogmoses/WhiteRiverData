@@ -1,15 +1,5 @@
 [
  {
-  "date_time": "2026-10-18T13:00:00-05:00",
-  "elevation": 653.29,
-  "tailwater": 450.83,
-  "generation": 9,
-  "turbine_release": 814,
-  "spillway_release": 0,
-  "total_release": 814,
-  "units_running": 1
- },
- {
   "date_time": "2026-10-18T14:00:00-05:00",
   "elevation": 653.29,
   "tailwater": 450.8,
@@ -357,6 +347,16 @@
   "turbine_release": 635,
   "spillway_release": 0,
   "total_release": 635,
+  "units_running": 1
+ },
+ {
+  "date_time": "2026-10-20T01:00:00-05:00",
+  "elevation": 653.23,
+  "tailwater": 450.74,
+  "generation": 8,
+  "turbine_release": 710,
+  "spillway_release": 0,
+  "total_release": 710,
   "units_running": 1
  }
 ]
